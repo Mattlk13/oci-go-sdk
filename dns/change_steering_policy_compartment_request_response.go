@@ -1,14 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package dns
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // ChangeSteeringPolicyCompartmentRequest wrapper for the ChangeSteeringPolicyCompartment operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dns/ChangeSteeringPolicyCompartment.go.html to see an example of how to use ChangeSteeringPolicyCompartmentRequest.
 type ChangeSteeringPolicyCompartmentRequest struct {
 
 	// The OCID of the target steering policy.
@@ -32,9 +37,13 @@ type ChangeSteeringPolicyCompartmentRequest struct {
 	// request may be rejected).
 	OpcRetryToken *string `mandatory:"false" contributesTo:"header" name:"opc-retry-token"`
 
-	// Unique Oracle-assigned identifier for the request.
-	// If you need to contact Oracle about a particular request, please provide the request ID.
+	// Unique Oracle-assigned identifier for the request. If you need
+	// to contact Oracle about a particular request, please provide
+	// the request ID.
 	OpcRequestId *string `mandatory:"false" contributesTo:"header" name:"opc-request-id"`
+
+	// Specifies to operate only on resources that have a matching DNS scope.
+	Scope ChangeSteeringPolicyCompartmentScopeEnum `mandatory:"false" contributesTo:"query" name:"scope" omitEmpty:"true"`
 
 	// Metadata about the request. This information will not be transmitted to the service, but
 	// represents information that the SDK will consume to drive retry behavior.
@@ -46,8 +55,16 @@ func (request ChangeSteeringPolicyCompartmentRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request ChangeSteeringPolicyCompartmentRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request ChangeSteeringPolicyCompartmentRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request ChangeSteeringPolicyCompartmentRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.
@@ -61,9 +78,8 @@ type ChangeSteeringPolicyCompartmentResponse struct {
 	// The underlying http response
 	RawResponse *http.Response
 
-	// Unique Oracle-assigned identifier for the request. If you need
-	// to contact Oracle about a particular request, please provide
-	// the request ID.
+	// Unique Oracle-assigned identifier for the request. If you need to
+	// contact Oracle about a particular request, please provide the request ID.
 	OpcRequestId *string `presentIn:"header" name:"opc-request-id"`
 }
 
@@ -74,4 +90,27 @@ func (response ChangeSteeringPolicyCompartmentResponse) String() string {
 // HTTPResponse implements the OCIResponse interface
 func (response ChangeSteeringPolicyCompartmentResponse) HTTPResponse() *http.Response {
 	return response.RawResponse
+}
+
+// ChangeSteeringPolicyCompartmentScopeEnum Enum with underlying type: string
+type ChangeSteeringPolicyCompartmentScopeEnum string
+
+// Set of constants representing the allowable values for ChangeSteeringPolicyCompartmentScopeEnum
+const (
+	ChangeSteeringPolicyCompartmentScopeGlobal  ChangeSteeringPolicyCompartmentScopeEnum = "GLOBAL"
+	ChangeSteeringPolicyCompartmentScopePrivate ChangeSteeringPolicyCompartmentScopeEnum = "PRIVATE"
+)
+
+var mappingChangeSteeringPolicyCompartmentScope = map[string]ChangeSteeringPolicyCompartmentScopeEnum{
+	"GLOBAL":  ChangeSteeringPolicyCompartmentScopeGlobal,
+	"PRIVATE": ChangeSteeringPolicyCompartmentScopePrivate,
+}
+
+// GetChangeSteeringPolicyCompartmentScopeEnumValues Enumerates the set of values for ChangeSteeringPolicyCompartmentScopeEnum
+func GetChangeSteeringPolicyCompartmentScopeEnumValues() []ChangeSteeringPolicyCompartmentScopeEnum {
+	values := make([]ChangeSteeringPolicyCompartmentScopeEnum, 0)
+	for _, v := range mappingChangeSteeringPolicyCompartmentScope {
+		values = append(values, v)
+	}
+	return values
 }

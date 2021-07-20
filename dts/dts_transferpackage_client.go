@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Data Transfer Service API
@@ -11,7 +12,8 @@ package dts
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type TransferPackageClient struct {
 // NewTransferPackageClientWithConfigurationProvider Creates a new default TransferPackage client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewTransferPackageClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client TransferPackageClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newTransferPackageClientFromBaseClient(baseClient, provider)
+}
+
+// NewTransferPackageClientWithOboToken Creates a new default TransferPackage client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewTransferPackageClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client TransferPackageClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newTransferPackageClientFromBaseClient(baseClient, configProvider)
+}
+
+func newTransferPackageClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client TransferPackageClient, err error) {
 	client = TransferPackageClient{BaseClient: baseClient}
 	client.BasePath = "20171001"
 	err = client.setConfigurationProvider(configProvider)
@@ -37,7 +58,7 @@ func NewTransferPackageClientWithConfigurationProvider(configProvider common.Con
 
 // SetRegion overrides the region of this client.
 func (client *TransferPackageClient) SetRegion(region string) {
-	client.Host = common.StringToRegion(region).EndpointForTemplate("dts", "https://datatransfer.{region}.{secondLevelDomain}")
+	client.Host = common.StringToRegion(region).EndpointForTemplate("dts", "https://datatransfer.{region}.oci.{secondLevelDomain}")
 }
 
 // SetConfigurationProvider sets the configuration provider including the region, returns an error if is not valid
@@ -59,16 +80,28 @@ func (client *TransferPackageClient) ConfigurationProvider() *common.Configurati
 }
 
 // AttachDevicesToTransferPackage Attaches Devices to a Transfer Package
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/AttachDevicesToTransferPackage.go.html to see an example of how to use AttachDevicesToTransferPackage API.
 func (client TransferPackageClient) AttachDevicesToTransferPackage(ctx context.Context, request AttachDevicesToTransferPackageRequest) (response AttachDevicesToTransferPackageResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.attachDevicesToTransferPackage, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = AttachDevicesToTransferPackageResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = AttachDevicesToTransferPackageResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = AttachDevicesToTransferPackageResponse{}
+			}
 		}
 		return
 	}
@@ -81,8 +114,9 @@ func (client TransferPackageClient) AttachDevicesToTransferPackage(ctx context.C
 }
 
 // attachDevicesToTransferPackage implements the OCIOperation interface (enables retrying operations)
-func (client TransferPackageClient) attachDevicesToTransferPackage(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferJobs/{id}/transferPackages/{transferPackageLabel}/actions/attachDevices")
+func (client TransferPackageClient) attachDevicesToTransferPackage(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferJobs/{id}/transferPackages/{transferPackageLabel}/actions/attachDevices", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -101,9 +135,16 @@ func (client TransferPackageClient) attachDevicesToTransferPackage(ctx context.C
 }
 
 // CreateTransferPackage Create a new Transfer Package
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/CreateTransferPackage.go.html to see an example of how to use CreateTransferPackage API.
 func (client TransferPackageClient) CreateTransferPackage(ctx context.Context, request CreateTransferPackageRequest) (response CreateTransferPackageResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -115,7 +156,12 @@ func (client TransferPackageClient) CreateTransferPackage(ctx context.Context, r
 	ociResponse, err = common.Retry(ctx, request, client.createTransferPackage, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateTransferPackageResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateTransferPackageResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateTransferPackageResponse{}
+			}
 		}
 		return
 	}
@@ -128,8 +174,9 @@ func (client TransferPackageClient) CreateTransferPackage(ctx context.Context, r
 }
 
 // createTransferPackage implements the OCIOperation interface (enables retrying operations)
-func (client TransferPackageClient) createTransferPackage(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferJobs/{id}/transferPackages")
+func (client TransferPackageClient) createTransferPackage(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferJobs/{id}/transferPackages", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -148,16 +195,28 @@ func (client TransferPackageClient) createTransferPackage(ctx context.Context, r
 }
 
 // DeleteTransferPackage deletes a transfer Package
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/DeleteTransferPackage.go.html to see an example of how to use DeleteTransferPackage API.
 func (client TransferPackageClient) DeleteTransferPackage(ctx context.Context, request DeleteTransferPackageRequest) (response DeleteTransferPackageResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteTransferPackage, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteTransferPackageResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteTransferPackageResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteTransferPackageResponse{}
+			}
 		}
 		return
 	}
@@ -170,8 +229,9 @@ func (client TransferPackageClient) DeleteTransferPackage(ctx context.Context, r
 }
 
 // deleteTransferPackage implements the OCIOperation interface (enables retrying operations)
-func (client TransferPackageClient) deleteTransferPackage(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/transferJobs/{id}/transferPackages/{transferPackageLabel}")
+func (client TransferPackageClient) deleteTransferPackage(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/transferJobs/{id}/transferPackages/{transferPackageLabel}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -190,16 +250,28 @@ func (client TransferPackageClient) deleteTransferPackage(ctx context.Context, r
 }
 
 // DetachDevicesFromTransferPackage Detaches Devices from a Transfer Package
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/DetachDevicesFromTransferPackage.go.html to see an example of how to use DetachDevicesFromTransferPackage API.
 func (client TransferPackageClient) DetachDevicesFromTransferPackage(ctx context.Context, request DetachDevicesFromTransferPackageRequest) (response DetachDevicesFromTransferPackageResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.detachDevicesFromTransferPackage, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DetachDevicesFromTransferPackageResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DetachDevicesFromTransferPackageResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DetachDevicesFromTransferPackageResponse{}
+			}
 		}
 		return
 	}
@@ -212,8 +284,9 @@ func (client TransferPackageClient) DetachDevicesFromTransferPackage(ctx context
 }
 
 // detachDevicesFromTransferPackage implements the OCIOperation interface (enables retrying operations)
-func (client TransferPackageClient) detachDevicesFromTransferPackage(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferJobs/{id}/transferPackages/{transferPackageLabel}/actions/detachDevices")
+func (client TransferPackageClient) detachDevicesFromTransferPackage(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferJobs/{id}/transferPackages/{transferPackageLabel}/actions/detachDevices", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -232,16 +305,28 @@ func (client TransferPackageClient) detachDevicesFromTransferPackage(ctx context
 }
 
 // GetTransferPackage Describes a transfer package in detail
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/GetTransferPackage.go.html to see an example of how to use GetTransferPackage API.
 func (client TransferPackageClient) GetTransferPackage(ctx context.Context, request GetTransferPackageRequest) (response GetTransferPackageResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getTransferPackage, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetTransferPackageResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetTransferPackageResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetTransferPackageResponse{}
+			}
 		}
 		return
 	}
@@ -254,8 +339,9 @@ func (client TransferPackageClient) GetTransferPackage(ctx context.Context, requ
 }
 
 // getTransferPackage implements the OCIOperation interface (enables retrying operations)
-func (client TransferPackageClient) getTransferPackage(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferPackages/{transferPackageLabel}")
+func (client TransferPackageClient) getTransferPackage(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferPackages/{transferPackageLabel}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -274,16 +360,28 @@ func (client TransferPackageClient) getTransferPackage(ctx context.Context, requ
 }
 
 // ListTransferPackages Lists Transfer Packages associated with a transferJob
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/ListTransferPackages.go.html to see an example of how to use ListTransferPackages API.
 func (client TransferPackageClient) ListTransferPackages(ctx context.Context, request ListTransferPackagesRequest) (response ListTransferPackagesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listTransferPackages, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListTransferPackagesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListTransferPackagesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListTransferPackagesResponse{}
+			}
 		}
 		return
 	}
@@ -296,8 +394,9 @@ func (client TransferPackageClient) ListTransferPackages(ctx context.Context, re
 }
 
 // listTransferPackages implements the OCIOperation interface (enables retrying operations)
-func (client TransferPackageClient) listTransferPackages(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferPackages")
+func (client TransferPackageClient) listTransferPackages(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferPackages", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -316,16 +415,28 @@ func (client TransferPackageClient) listTransferPackages(ctx context.Context, re
 }
 
 // UpdateTransferPackage Updates a Transfer Package
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/UpdateTransferPackage.go.html to see an example of how to use UpdateTransferPackage API.
 func (client TransferPackageClient) UpdateTransferPackage(ctx context.Context, request UpdateTransferPackageRequest) (response UpdateTransferPackageResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateTransferPackage, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateTransferPackageResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateTransferPackageResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateTransferPackageResponse{}
+			}
 		}
 		return
 	}
@@ -338,8 +449,9 @@ func (client TransferPackageClient) UpdateTransferPackage(ctx context.Context, r
 }
 
 // updateTransferPackage implements the OCIOperation interface (enables retrying operations)
-func (client TransferPackageClient) updateTransferPackage(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/transferJobs/{id}/transferPackages/{transferPackageLabel}")
+func (client TransferPackageClient) updateTransferPackage(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/transferJobs/{id}/transferPackages/{transferPackageLabel}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

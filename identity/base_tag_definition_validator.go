@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Identity and Access Management Service API
@@ -10,16 +11,18 @@ package identity
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// BaseTagDefinitionValidator Validates a definedTag value. Each validator performs validation steps in addition to the standard validation
-// for definedTag values (See Limits on Tags (https://docs.cloud.oracle.com/Content/Identity/Concepts/taggingoverview.htm#Limits).
-// If a validator is defined after a value has been set for a definedTag, then any UPDATE operation that attempts
-// to change the value must pass the additional validation defined by this rule. Previously set values, that would
-// fail validation, are not updated and it is possible to update other attributes of an OCI resource that contains
-// a non-valid definedTag.
-// To clear the validator call the UPDATE operation with DefaultTagDefinitionValidator.
+// BaseTagDefinitionValidator Validates a definedTag value. Each validator performs validation steps in addition to the standard
+// validation for definedTag values. For more information, see
+// Limits on Tags (https://docs.cloud.oracle.com/Content/Identity/Concepts/taggingoverview.htm#Limits).
+// If you define a validator after a value has been set for a defined tag, then any updates that
+// attempt to change the value must pass the additional validation defined by the current rule.
+// Previously set values (even those that would fail the current validation) are not updated. You can
+// still update other attributes to resources that contain a non-valid defined tag.
+// To clear the validator call UpdateTag with
+// DefaultTagDefinitionValidator (https://docs.cloud.oracle.com/api/#/en/identity/latest/datatypes/DefaultTagDefinitionValidator).
 type BaseTagDefinitionValidator interface {
 }
 

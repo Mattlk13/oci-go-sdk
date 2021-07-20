@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,21 +14,22 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // Vcn A virtual cloud network (VCN). For more information, see
-// Overview of the Networking Service (https://docs.cloud.oracle.com/Content/Network/Concepts/overview.htm).
+// Overview of the Networking Service (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/overview.htm).
 // To use any of the API operations, you must be authorized in an IAM policy. If you're not authorized,
 // talk to an administrator. If you're an administrator who needs to write policies to give users access, see
-// Getting Started with Policies (https://docs.cloud.oracle.com/Content/Identity/Concepts/policygetstarted.htm).
-// **Warning:** Oracle recommends that you avoid using any confidential information when you
-// supply string values using the API.
+// Getting Started with Policies (https://docs.cloud.oracle.com/iaas/Content/Identity/Concepts/policygetstarted.htm).
 type Vcn struct {
 
-	// The CIDR IP address block of the VCN.
+	// Deprecated. The first CIDR IP address from cidrBlocks.
 	// Example: `172.16.0.0/16`
 	CidrBlock *string `mandatory:"true" json:"cidrBlock"`
+
+	// The list of IPv4 CIDR blocks the VCN will use.
+	CidrBlocks []string `mandatory:"true" json:"cidrBlocks"`
 
 	// The OCID of the compartment containing the VCN.
 	CompartmentId *string `mandatory:"true" json:"compartmentId"`
@@ -48,7 +50,7 @@ type Vcn struct {
 	DefaultSecurityListId *string `mandatory:"false" json:"defaultSecurityListId"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
@@ -64,39 +66,27 @@ type Vcn struct {
 	// The absence of this parameter means the Internet and VCN Resolver will
 	// not work for this VCN.
 	// For more information, see
-	// DNS in Your Virtual Cloud Network (https://docs.cloud.oracle.com/Content/Network/Concepts/dns.htm).
+	// DNS in Your Virtual Cloud Network (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/dns.htm).
 	// Example: `vcn1`
 	DnsLabel *string `mandatory:"false" json:"dnsLabel"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
-	// For an IPv6-enabled VCN, this is the IPv6 CIDR block for the VCN's private IP address space.
-	// The VCN size is always /48. If you don't provide a value when creating the VCN, Oracle
-	// provides one and uses that *same* CIDR for the `ipv6PublicCidrBlock`. If you do provide a
-	// value, Oracle provides a *different* CIDR for the `ipv6PublicCidrBlock`. Note that IPv6
-	// addressing is currently supported only in the Government Cloud.
-	// Example: `2001:0db8:0123::/48`
-	Ipv6CidrBlock *string `mandatory:"false" json:"ipv6CidrBlock"`
+	// For an IPv6-enabled VCN, this is the list of IPv6 CIDR blocks for the VCN's IP address space.
+	// The CIDRs are provided by Oracle and the sizes are always /56.
+	Ipv6CidrBlocks []string `mandatory:"false" json:"ipv6CidrBlocks"`
 
-	// For an IPv6-enabled VCN, this is the IPv6 CIDR block for the VCN's public IP address space.
-	// The VCN size is always /48. This CIDR is always provided by Oracle. If you don't provide a
-	// custom CIDR for the `ipv6CidrBlock` when creating the VCN, Oracle assigns that value and also
-	// uses it for `ipv6PublicCidrBlock`. Oracle uses addresses from this block for the `publicIpAddress`
-	// attribute of an Ipv6 that has internet access allowed.
-	// Example: `2001:0db8:0123::/48`
-	Ipv6PublicCidrBlock *string `mandatory:"false" json:"ipv6PublicCidrBlock"`
-
-	// The date and time the VCN was created, in the format defined by RFC3339.
+	// The date and time the VCN was created, in the format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"false" json:"timeCreated"`
 
 	// The VCN's domain name, which consists of the VCN's DNS label, and the
 	// `oraclevcn.com` domain.
 	// For more information, see
-	// DNS in Your Virtual Cloud Network (https://docs.cloud.oracle.com/Content/Network/Concepts/dns.htm).
+	// DNS in Your Virtual Cloud Network (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/dns.htm).
 	// Example: `vcn1.oraclevcn.com`
 	VcnDomainName *string `mandatory:"false" json:"vcnDomainName"`
 }
@@ -114,6 +104,7 @@ const (
 	VcnLifecycleStateAvailable    VcnLifecycleStateEnum = "AVAILABLE"
 	VcnLifecycleStateTerminating  VcnLifecycleStateEnum = "TERMINATING"
 	VcnLifecycleStateTerminated   VcnLifecycleStateEnum = "TERMINATED"
+	VcnLifecycleStateUpdating     VcnLifecycleStateEnum = "UPDATING"
 )
 
 var mappingVcnLifecycleState = map[string]VcnLifecycleStateEnum{
@@ -121,6 +112,7 @@ var mappingVcnLifecycleState = map[string]VcnLifecycleStateEnum{
 	"AVAILABLE":    VcnLifecycleStateAvailable,
 	"TERMINATING":  VcnLifecycleStateTerminating,
 	"TERMINATED":   VcnLifecycleStateTerminated,
+	"UPDATING":     VcnLifecycleStateUpdating,
 }
 
 // GetVcnLifecycleStateEnumValues Enumerates the set of values for VcnLifecycleStateEnum

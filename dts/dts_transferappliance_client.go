@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Data Transfer Service API
@@ -11,7 +12,8 @@ package dts
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type TransferApplianceClient struct {
 // NewTransferApplianceClientWithConfigurationProvider Creates a new default TransferAppliance client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewTransferApplianceClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client TransferApplianceClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newTransferApplianceClientFromBaseClient(baseClient, provider)
+}
+
+// NewTransferApplianceClientWithOboToken Creates a new default TransferAppliance client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewTransferApplianceClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client TransferApplianceClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newTransferApplianceClientFromBaseClient(baseClient, configProvider)
+}
+
+func newTransferApplianceClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client TransferApplianceClient, err error) {
 	client = TransferApplianceClient{BaseClient: baseClient}
 	client.BasePath = "20171001"
 	err = client.setConfigurationProvider(configProvider)
@@ -37,7 +58,7 @@ func NewTransferApplianceClientWithConfigurationProvider(configProvider common.C
 
 // SetRegion overrides the region of this client.
 func (client *TransferApplianceClient) SetRegion(region string) {
-	client.Host = common.StringToRegion(region).EndpointForTemplate("dts", "https://datatransfer.{region}.{secondLevelDomain}")
+	client.Host = common.StringToRegion(region).EndpointForTemplate("dts", "https://datatransfer.{region}.oci.{secondLevelDomain}")
 }
 
 // SetConfigurationProvider sets the configuration provider including the region, returns an error if is not valid
@@ -59,9 +80,16 @@ func (client *TransferApplianceClient) ConfigurationProvider() *common.Configura
 }
 
 // CreateTransferAppliance Create a new Transfer Appliance
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/CreateTransferAppliance.go.html to see an example of how to use CreateTransferAppliance API.
 func (client TransferApplianceClient) CreateTransferAppliance(ctx context.Context, request CreateTransferApplianceRequest) (response CreateTransferApplianceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -73,7 +101,12 @@ func (client TransferApplianceClient) CreateTransferAppliance(ctx context.Contex
 	ociResponse, err = common.Retry(ctx, request, client.createTransferAppliance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateTransferApplianceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateTransferApplianceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateTransferApplianceResponse{}
+			}
 		}
 		return
 	}
@@ -86,8 +119,9 @@ func (client TransferApplianceClient) CreateTransferAppliance(ctx context.Contex
 }
 
 // createTransferAppliance implements the OCIOperation interface (enables retrying operations)
-func (client TransferApplianceClient) createTransferAppliance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferJobs/{id}/transferAppliances")
+func (client TransferApplianceClient) createTransferAppliance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferJobs/{id}/transferAppliances", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -106,16 +140,28 @@ func (client TransferApplianceClient) createTransferAppliance(ctx context.Contex
 }
 
 // CreateTransferApplianceAdminCredentials Creates an X.509 certificate from a public key
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/CreateTransferApplianceAdminCredentials.go.html to see an example of how to use CreateTransferApplianceAdminCredentials API.
 func (client TransferApplianceClient) CreateTransferApplianceAdminCredentials(ctx context.Context, request CreateTransferApplianceAdminCredentialsRequest) (response CreateTransferApplianceAdminCredentialsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.createTransferApplianceAdminCredentials, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateTransferApplianceAdminCredentialsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateTransferApplianceAdminCredentialsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateTransferApplianceAdminCredentialsResponse{}
+			}
 		}
 		return
 	}
@@ -128,8 +174,9 @@ func (client TransferApplianceClient) CreateTransferApplianceAdminCredentials(ct
 }
 
 // createTransferApplianceAdminCredentials implements the OCIOperation interface (enables retrying operations)
-func (client TransferApplianceClient) createTransferApplianceAdminCredentials(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferJobs/{id}/transferAppliances/{transferApplianceLabel}/admin_credentials")
+func (client TransferApplianceClient) createTransferApplianceAdminCredentials(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferJobs/{id}/transferAppliances/{transferApplianceLabel}/admin_credentials", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -148,16 +195,28 @@ func (client TransferApplianceClient) createTransferApplianceAdminCredentials(ct
 }
 
 // DeleteTransferAppliance deletes a transfer Appliance
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/DeleteTransferAppliance.go.html to see an example of how to use DeleteTransferAppliance API.
 func (client TransferApplianceClient) DeleteTransferAppliance(ctx context.Context, request DeleteTransferApplianceRequest) (response DeleteTransferApplianceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteTransferAppliance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteTransferApplianceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteTransferApplianceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteTransferApplianceResponse{}
+			}
 		}
 		return
 	}
@@ -170,8 +229,9 @@ func (client TransferApplianceClient) DeleteTransferAppliance(ctx context.Contex
 }
 
 // deleteTransferAppliance implements the OCIOperation interface (enables retrying operations)
-func (client TransferApplianceClient) deleteTransferAppliance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/transferJobs/{id}/transferAppliances/{transferApplianceLabel}")
+func (client TransferApplianceClient) deleteTransferAppliance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/transferJobs/{id}/transferAppliances/{transferApplianceLabel}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -190,16 +250,28 @@ func (client TransferApplianceClient) deleteTransferAppliance(ctx context.Contex
 }
 
 // GetTransferAppliance Describes a transfer appliance in detail
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/GetTransferAppliance.go.html to see an example of how to use GetTransferAppliance API.
 func (client TransferApplianceClient) GetTransferAppliance(ctx context.Context, request GetTransferApplianceRequest) (response GetTransferApplianceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getTransferAppliance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetTransferApplianceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetTransferApplianceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetTransferApplianceResponse{}
+			}
 		}
 		return
 	}
@@ -212,8 +284,9 @@ func (client TransferApplianceClient) GetTransferAppliance(ctx context.Context, 
 }
 
 // getTransferAppliance implements the OCIOperation interface (enables retrying operations)
-func (client TransferApplianceClient) getTransferAppliance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferAppliances/{transferApplianceLabel}")
+func (client TransferApplianceClient) getTransferAppliance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferAppliances/{transferApplianceLabel}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -232,16 +305,28 @@ func (client TransferApplianceClient) getTransferAppliance(ctx context.Context, 
 }
 
 // GetTransferApplianceCertificateAuthorityCertificate Gets the x.509 certificate for the Transfer Appliance's dedicated Certificate Authority (CA)
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/GetTransferApplianceCertificateAuthorityCertificate.go.html to see an example of how to use GetTransferApplianceCertificateAuthorityCertificate API.
 func (client TransferApplianceClient) GetTransferApplianceCertificateAuthorityCertificate(ctx context.Context, request GetTransferApplianceCertificateAuthorityCertificateRequest) (response GetTransferApplianceCertificateAuthorityCertificateResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getTransferApplianceCertificateAuthorityCertificate, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetTransferApplianceCertificateAuthorityCertificateResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetTransferApplianceCertificateAuthorityCertificateResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetTransferApplianceCertificateAuthorityCertificateResponse{}
+			}
 		}
 		return
 	}
@@ -254,8 +339,9 @@ func (client TransferApplianceClient) GetTransferApplianceCertificateAuthorityCe
 }
 
 // getTransferApplianceCertificateAuthorityCertificate implements the OCIOperation interface (enables retrying operations)
-func (client TransferApplianceClient) getTransferApplianceCertificateAuthorityCertificate(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferAppliances/{transferApplianceLabel}/certificate_authority_certificate")
+func (client TransferApplianceClient) getTransferApplianceCertificateAuthorityCertificate(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferAppliances/{transferApplianceLabel}/certificate_authority_certificate", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -274,16 +360,28 @@ func (client TransferApplianceClient) getTransferApplianceCertificateAuthorityCe
 }
 
 // GetTransferApplianceEncryptionPassphrase Describes a transfer appliance encryptionPassphrase in detail
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/GetTransferApplianceEncryptionPassphrase.go.html to see an example of how to use GetTransferApplianceEncryptionPassphrase API.
 func (client TransferApplianceClient) GetTransferApplianceEncryptionPassphrase(ctx context.Context, request GetTransferApplianceEncryptionPassphraseRequest) (response GetTransferApplianceEncryptionPassphraseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getTransferApplianceEncryptionPassphrase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetTransferApplianceEncryptionPassphraseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetTransferApplianceEncryptionPassphraseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetTransferApplianceEncryptionPassphraseResponse{}
+			}
 		}
 		return
 	}
@@ -296,8 +394,9 @@ func (client TransferApplianceClient) GetTransferApplianceEncryptionPassphrase(c
 }
 
 // getTransferApplianceEncryptionPassphrase implements the OCIOperation interface (enables retrying operations)
-func (client TransferApplianceClient) getTransferApplianceEncryptionPassphrase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferAppliances/{transferApplianceLabel}/encryptionPassphrase")
+func (client TransferApplianceClient) getTransferApplianceEncryptionPassphrase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferAppliances/{transferApplianceLabel}/encryptionPassphrase", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -316,16 +415,28 @@ func (client TransferApplianceClient) getTransferApplianceEncryptionPassphrase(c
 }
 
 // ListTransferAppliances Lists Transfer Appliances associated with a transferJob
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/ListTransferAppliances.go.html to see an example of how to use ListTransferAppliances API.
 func (client TransferApplianceClient) ListTransferAppliances(ctx context.Context, request ListTransferAppliancesRequest) (response ListTransferAppliancesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listTransferAppliances, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListTransferAppliancesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListTransferAppliancesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListTransferAppliancesResponse{}
+			}
 		}
 		return
 	}
@@ -338,8 +449,9 @@ func (client TransferApplianceClient) ListTransferAppliances(ctx context.Context
 }
 
 // listTransferAppliances implements the OCIOperation interface (enables retrying operations)
-func (client TransferApplianceClient) listTransferAppliances(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferAppliances")
+func (client TransferApplianceClient) listTransferAppliances(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferAppliances", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -358,16 +470,28 @@ func (client TransferApplianceClient) listTransferAppliances(ctx context.Context
 }
 
 // UpdateTransferAppliance Updates a Transfer Appliance
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/UpdateTransferAppliance.go.html to see an example of how to use UpdateTransferAppliance API.
 func (client TransferApplianceClient) UpdateTransferAppliance(ctx context.Context, request UpdateTransferApplianceRequest) (response UpdateTransferApplianceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateTransferAppliance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateTransferApplianceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateTransferApplianceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateTransferApplianceResponse{}
+			}
 		}
 		return
 	}
@@ -380,8 +504,9 @@ func (client TransferApplianceClient) UpdateTransferAppliance(ctx context.Contex
 }
 
 // updateTransferAppliance implements the OCIOperation interface (enables retrying operations)
-func (client TransferApplianceClient) updateTransferAppliance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/transferJobs/{id}/transferAppliances/{transferApplianceLabel}")
+func (client TransferApplianceClient) updateTransferAppliance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/transferJobs/{id}/transferAppliances/{transferApplianceLabel}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

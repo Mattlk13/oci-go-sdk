@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Budgets API
@@ -11,7 +12,8 @@ package budget
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type BudgetClient struct {
 // NewBudgetClientWithConfigurationProvider Creates a new default Budget client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewBudgetClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client BudgetClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newBudgetClientFromBaseClient(baseClient, provider)
+}
+
+// NewBudgetClientWithOboToken Creates a new default Budget client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewBudgetClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client BudgetClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newBudgetClientFromBaseClient(baseClient, configProvider)
+}
+
+func newBudgetClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client BudgetClient, err error) {
 	client = BudgetClient{BaseClient: baseClient}
 	client.BasePath = "20190111"
 	err = client.setConfigurationProvider(configProvider)
@@ -59,9 +80,16 @@ func (client *BudgetClient) ConfigurationProvider() *common.ConfigurationProvide
 }
 
 // CreateAlertRule Creates a new Alert Rule.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/budget/CreateAlertRule.go.html to see an example of how to use CreateAlertRule API.
 func (client BudgetClient) CreateAlertRule(ctx context.Context, request CreateAlertRuleRequest) (response CreateAlertRuleResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -73,7 +101,12 @@ func (client BudgetClient) CreateAlertRule(ctx context.Context, request CreateAl
 	ociResponse, err = common.Retry(ctx, request, client.createAlertRule, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateAlertRuleResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateAlertRuleResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateAlertRuleResponse{}
+			}
 		}
 		return
 	}
@@ -86,8 +119,9 @@ func (client BudgetClient) CreateAlertRule(ctx context.Context, request CreateAl
 }
 
 // createAlertRule implements the OCIOperation interface (enables retrying operations)
-func (client BudgetClient) createAlertRule(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/budgets/{budgetId}/alertRules")
+func (client BudgetClient) createAlertRule(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/budgets/{budgetId}/alertRules", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -106,9 +140,16 @@ func (client BudgetClient) createAlertRule(ctx context.Context, request common.O
 }
 
 // CreateBudget Creates a new Budget.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/budget/CreateBudget.go.html to see an example of how to use CreateBudget API.
 func (client BudgetClient) CreateBudget(ctx context.Context, request CreateBudgetRequest) (response CreateBudgetResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -120,7 +161,12 @@ func (client BudgetClient) CreateBudget(ctx context.Context, request CreateBudge
 	ociResponse, err = common.Retry(ctx, request, client.createBudget, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateBudgetResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateBudgetResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateBudgetResponse{}
+			}
 		}
 		return
 	}
@@ -133,8 +179,9 @@ func (client BudgetClient) CreateBudget(ctx context.Context, request CreateBudge
 }
 
 // createBudget implements the OCIOperation interface (enables retrying operations)
-func (client BudgetClient) createBudget(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/budgets")
+func (client BudgetClient) createBudget(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/budgets", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -153,16 +200,28 @@ func (client BudgetClient) createBudget(ctx context.Context, request common.OCIR
 }
 
 // DeleteAlertRule Deletes a specified Alert Rule resource.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/budget/DeleteAlertRule.go.html to see an example of how to use DeleteAlertRule API.
 func (client BudgetClient) DeleteAlertRule(ctx context.Context, request DeleteAlertRuleRequest) (response DeleteAlertRuleResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteAlertRule, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteAlertRuleResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteAlertRuleResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteAlertRuleResponse{}
+			}
 		}
 		return
 	}
@@ -175,8 +234,9 @@ func (client BudgetClient) DeleteAlertRule(ctx context.Context, request DeleteAl
 }
 
 // deleteAlertRule implements the OCIOperation interface (enables retrying operations)
-func (client BudgetClient) deleteAlertRule(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/budgets/{budgetId}/alertRules/{alertRuleId}")
+func (client BudgetClient) deleteAlertRule(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/budgets/{budgetId}/alertRules/{alertRuleId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -195,16 +255,28 @@ func (client BudgetClient) deleteAlertRule(ctx context.Context, request common.O
 }
 
 // DeleteBudget Deletes a specified Budget resource
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/budget/DeleteBudget.go.html to see an example of how to use DeleteBudget API.
 func (client BudgetClient) DeleteBudget(ctx context.Context, request DeleteBudgetRequest) (response DeleteBudgetResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteBudget, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteBudgetResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteBudgetResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteBudgetResponse{}
+			}
 		}
 		return
 	}
@@ -217,8 +289,9 @@ func (client BudgetClient) DeleteBudget(ctx context.Context, request DeleteBudge
 }
 
 // deleteBudget implements the OCIOperation interface (enables retrying operations)
-func (client BudgetClient) deleteBudget(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/budgets/{budgetId}")
+func (client BudgetClient) deleteBudget(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/budgets/{budgetId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -237,16 +310,28 @@ func (client BudgetClient) deleteBudget(ctx context.Context, request common.OCIR
 }
 
 // GetAlertRule Gets an Alert Rule for a specified Budget.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/budget/GetAlertRule.go.html to see an example of how to use GetAlertRule API.
 func (client BudgetClient) GetAlertRule(ctx context.Context, request GetAlertRuleRequest) (response GetAlertRuleResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAlertRule, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAlertRuleResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAlertRuleResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAlertRuleResponse{}
+			}
 		}
 		return
 	}
@@ -259,8 +344,9 @@ func (client BudgetClient) GetAlertRule(ctx context.Context, request GetAlertRul
 }
 
 // getAlertRule implements the OCIOperation interface (enables retrying operations)
-func (client BudgetClient) getAlertRule(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/budgets/{budgetId}/alertRules/{alertRuleId}")
+func (client BudgetClient) getAlertRule(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/budgets/{budgetId}/alertRules/{alertRuleId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -279,16 +365,28 @@ func (client BudgetClient) getAlertRule(ctx context.Context, request common.OCIR
 }
 
 // GetBudget Gets a Budget by identifier
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/budget/GetBudget.go.html to see an example of how to use GetBudget API.
 func (client BudgetClient) GetBudget(ctx context.Context, request GetBudgetRequest) (response GetBudgetResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getBudget, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetBudgetResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetBudgetResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetBudgetResponse{}
+			}
 		}
 		return
 	}
@@ -301,8 +399,9 @@ func (client BudgetClient) GetBudget(ctx context.Context, request GetBudgetReque
 }
 
 // getBudget implements the OCIOperation interface (enables retrying operations)
-func (client BudgetClient) getBudget(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/budgets/{budgetId}")
+func (client BudgetClient) getBudget(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/budgets/{budgetId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -321,16 +420,28 @@ func (client BudgetClient) getBudget(ctx context.Context, request common.OCIRequ
 }
 
 // ListAlertRules Returns a list of Alert Rules for a specified Budget.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/budget/ListAlertRules.go.html to see an example of how to use ListAlertRules API.
 func (client BudgetClient) ListAlertRules(ctx context.Context, request ListAlertRulesRequest) (response ListAlertRulesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAlertRules, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAlertRulesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAlertRulesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAlertRulesResponse{}
+			}
 		}
 		return
 	}
@@ -343,8 +454,9 @@ func (client BudgetClient) ListAlertRules(ctx context.Context, request ListAlert
 }
 
 // listAlertRules implements the OCIOperation interface (enables retrying operations)
-func (client BudgetClient) listAlertRules(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/budgets/{budgetId}/alertRules")
+func (client BudgetClient) listAlertRules(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/budgets/{budgetId}/alertRules", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -369,16 +481,28 @@ func (client BudgetClient) listAlertRules(ctx context.Context, request common.OC
 //   'targetType=ALL'
 // Additional targetTypes would be available in future releases. Clients should ignore new targetType
 // or upgrade to latest version of client SDK to handle new targetType.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/budget/ListBudgets.go.html to see an example of how to use ListBudgets API.
 func (client BudgetClient) ListBudgets(ctx context.Context, request ListBudgetsRequest) (response ListBudgetsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listBudgets, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListBudgetsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListBudgetsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListBudgetsResponse{}
+			}
 		}
 		return
 	}
@@ -391,8 +515,9 @@ func (client BudgetClient) ListBudgets(ctx context.Context, request ListBudgetsR
 }
 
 // listBudgets implements the OCIOperation interface (enables retrying operations)
-func (client BudgetClient) listBudgets(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/budgets")
+func (client BudgetClient) listBudgets(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/budgets", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -411,16 +536,28 @@ func (client BudgetClient) listBudgets(ctx context.Context, request common.OCIRe
 }
 
 // UpdateAlertRule Update an Alert Rule for the budget identified by the OCID.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/budget/UpdateAlertRule.go.html to see an example of how to use UpdateAlertRule API.
 func (client BudgetClient) UpdateAlertRule(ctx context.Context, request UpdateAlertRuleRequest) (response UpdateAlertRuleResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateAlertRule, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateAlertRuleResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAlertRuleResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAlertRuleResponse{}
+			}
 		}
 		return
 	}
@@ -433,8 +570,9 @@ func (client BudgetClient) UpdateAlertRule(ctx context.Context, request UpdateAl
 }
 
 // updateAlertRule implements the OCIOperation interface (enables retrying operations)
-func (client BudgetClient) updateAlertRule(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/budgets/{budgetId}/alertRules/{alertRuleId}")
+func (client BudgetClient) updateAlertRule(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/budgets/{budgetId}/alertRules/{alertRuleId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -453,16 +591,28 @@ func (client BudgetClient) updateAlertRule(ctx context.Context, request common.O
 }
 
 // UpdateBudget Update a Budget identified by the OCID
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/budget/UpdateBudget.go.html to see an example of how to use UpdateBudget API.
 func (client BudgetClient) UpdateBudget(ctx context.Context, request UpdateBudgetRequest) (response UpdateBudgetResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateBudget, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateBudgetResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateBudgetResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateBudgetResponse{}
+			}
 		}
 		return
 	}
@@ -475,8 +625,9 @@ func (client BudgetClient) UpdateBudget(ctx context.Context, request UpdateBudge
 }
 
 // updateBudget implements the OCIOperation interface (enables retrying operations)
-func (client BudgetClient) updateBudget(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/budgets/{budgetId}")
+func (client BudgetClient) updateBudget(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/budgets/{budgetId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

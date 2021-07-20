@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Streaming Service API
@@ -9,7 +10,7 @@
 package streaming
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateStreamDetails Object used to create a stream.
@@ -23,7 +24,10 @@ type CreateStreamDetails struct {
 	Partitions *int `mandatory:"true" json:"partitions"`
 
 	// The OCID of the compartment that contains the stream.
-	CompartmentId *string `mandatory:"true" json:"compartmentId"`
+	CompartmentId *string `mandatory:"false" json:"compartmentId"`
+
+	// The OCID of the stream pool that contains the stream.
+	StreamPoolId *string `mandatory:"false" json:"streamPoolId"`
 
 	// The retention period of the stream, in hours. Accepted values are between 24 and 168 (7 days).
 	// If not specified, the stream will have a retention period of 24 hours.

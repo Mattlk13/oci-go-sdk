@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // DNS API
@@ -10,7 +11,7 @@
 package dns
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // RecordOperation An extension of the existing record resource, describing either a
@@ -38,8 +39,7 @@ type RecordOperation struct {
 	// from the preceding version.
 	RrsetVersion *string `mandatory:"false" json:"rrsetVersion"`
 
-	// The canonical name for the record's type, such as A or CNAME. For more
-	// information, see Resource Record (RR) TYPEs (https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-4).
+	// The type of DNS record, such as A or CNAME. For more information, see Resource Record (RR) TYPEs (https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-4).
 	Rtype *string `mandatory:"false" json:"rtype"`
 
 	// The Time To Live for the record, in seconds.

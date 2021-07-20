@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,14 +14,14 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // Image A boot disk image for launching an instance. For more information, see
-// Overview of the Compute Service (https://docs.cloud.oracle.com/Content/Compute/Concepts/computeoverview.htm).
+// Overview of the Compute Service (https://docs.cloud.oracle.com/iaas/Content/Compute/Concepts/computeoverview.htm).
 // To use any of the API operations, you must be authorized in an IAM policy. If you're not authorized,
 // talk to an administrator. If you're an administrator who needs to write policies to give users access, see
-// Getting Started with Policies (https://docs.cloud.oracle.com/Content/Identity/Concepts/policygetstarted.htm).
+// Getting Started with Policies (https://docs.cloud.oracle.com/iaas/Content/Identity/Concepts/policygetstarted.htm).
 // **Warning:** Oracle recommends that you avoid using any confidential information when you
 // supply string values using the API.
 type Image struct {
@@ -46,7 +47,7 @@ type Image struct {
 	// Example: `7.2`
 	OperatingSystemVersion *string `mandatory:"true" json:"operatingSystemVersion"`
 
-	// The date and time the image was created, in the format defined by RFC3339.
+	// The date and time the image was created, in the format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 
@@ -54,25 +55,25 @@ type Image struct {
 	BaseImageId *string `mandatory:"false" json:"baseImageId"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
 	// A user-friendly name for the image. It does not have to be unique, and it's changeable.
 	// Avoid entering confidential information.
-	// You cannot use an Oracle-provided image name as a custom image name.
+	// You cannot use a platform image name as a custom image name.
 	// Example: `My custom Oracle Linux image`
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
 	// Specifies the configuration mode for launching virtual machine (VM) instances. The configuration modes are:
-	// * `NATIVE` - VM instances launch with iSCSI boot and VFIO devices. The default value for Oracle-provided images.
+	// * `NATIVE` - VM instances launch with iSCSI boot and VFIO devices. The default value for platform images.
 	// * `EMULATED` - VM instances launch with emulated devices, such as the E1000 network driver and emulated SCSI disk controller.
-	// * `PARAVIRTUALIZED` - VM instances launch with paravirtualized devices using virtio drivers.
+	// * `PARAVIRTUALIZED` - VM instances launch with paravirtualized devices using VirtIO drivers.
 	// * `CUSTOM` - VM instances launch with custom configuration settings specified in the `LaunchOptions` parameter.
 	LaunchMode ImageLaunchModeEnum `mandatory:"false" json:"launchMode,omitempty"`
 
@@ -80,10 +81,17 @@ type Image struct {
 
 	AgentFeatures *InstanceAgentFeatures `mandatory:"false" json:"agentFeatures"`
 
-	// The boot volume size for an instance launched from this image, (1 MB = 1048576 bytes).
+	// The listing type of the image. The default value is "NONE".
+	ListingType ImageListingTypeEnum `mandatory:"false" json:"listingType,omitempty"`
+
+	// The boot volume size for an instance launched from this image (1 MB = 1,048,576 bytes).
 	// Note this is not the same as the size of the image when it was exported or the actual size of the image.
 	// Example: `47694`
 	SizeInMBs *int64 `mandatory:"false" json:"sizeInMBs"`
+
+	// The size of the internal storage for this image that is subject to billing (1 GB = 1,073,741,824 bytes).
+	// Example: `100`
+	BillableSizeInGBs *int64 `mandatory:"false" json:"billableSizeInGBs"`
 }
 
 func (m Image) String() string {
@@ -143,6 +151,29 @@ var mappingImageLifecycleState = map[string]ImageLifecycleStateEnum{
 func GetImageLifecycleStateEnumValues() []ImageLifecycleStateEnum {
 	values := make([]ImageLifecycleStateEnum, 0)
 	for _, v := range mappingImageLifecycleState {
+		values = append(values, v)
+	}
+	return values
+}
+
+// ImageListingTypeEnum Enum with underlying type: string
+type ImageListingTypeEnum string
+
+// Set of constants representing the allowable values for ImageListingTypeEnum
+const (
+	ImageListingTypeCommunity ImageListingTypeEnum = "COMMUNITY"
+	ImageListingTypeNone      ImageListingTypeEnum = "NONE"
+)
+
+var mappingImageListingType = map[string]ImageListingTypeEnum{
+	"COMMUNITY": ImageListingTypeCommunity,
+	"NONE":      ImageListingTypeNone,
+}
+
+// GetImageListingTypeEnumValues Enumerates the set of values for ImageListingTypeEnum
+func GetImageListingTypeEnumValues() []ImageListingTypeEnum {
+	values := make([]ImageListingTypeEnum, 0)
+	for _, v := range mappingImageListingType {
 		values = append(values, v)
 	}
 	return values

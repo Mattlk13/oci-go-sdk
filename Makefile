@@ -1,14 +1,16 @@
 DOC_SERVER_URL=https:\/\/docs.cloud.oracle.com
 
-GEN_TARGETS = identity core objectstorage loadbalancer database audit dns filestorage email containerengine resourcesearch keymanagement announcementsservice healthchecks waas autoscaling streaming ons monitoring resourcemanager budget workrequests functions limits events dts oce oda analytics integration ##SPECNAME##
+GEN_TARGETS = identity core objectstorage loadbalancer database audit dns filestorage email containerengine resourcesearch keymanagement announcementsservice healthchecks waas autoscaling streaming ons monitoring resourcemanager budget workrequests functions limits events dts oce oda analytics integration osmanagement marketplace apigateway applicationmigration datacatalog dataflow datascience nosql secrets vault bds cims datasafe mysql dataintegration ocvp usageapi blockchain loggingingestion logging loganalytics managementdashboard sch loggingsearch managementagent cloudguard opsi computeinstanceagent optimizer tenantmanagercontrolplane rover databasemanagement artifacts apmsynthetics goldengate apmcontrolplane apmtraces networkloadbalancer vulnerabilityscanning databasemigration servicecatalog ailanguage operatoraccesscontrol bastion genericartifactscontent jms devops aianomalydetection ##SPECNAME##
 NON_GEN_TARGETS = common common/auth objectstorage/transfer example
 TARGETS = $(NON_GEN_TARGETS) $(GEN_TARGETS)
 
 TARGETS_WITH_TESTS = common common/auth objectstorage/transfer
+TARGETS_WITH_INTEG_TESTS = integtest
 TARGETS_BUILD = $(patsubst %,build-%, $(TARGETS))
 TARGETS_CLEAN = $(patsubst %,clean-%, $(GEN_TARGETS))
 TARGETS_LINT = $(patsubst %,lint-%, $(TARGETS))
 TARGETS_TEST = $(patsubst %,test-%, $(TARGETS_WITH_TESTS))
+TARGETS_INTEG_TEST = $(patsubst %,test-%, $(TARGETS_WITH_INTEG_TESTS))
 TARGETS_RELEASE= $(patsubst %,release-%, $(TARGETS))
 GOLINT=$(GOPATH)/bin/golint
 LINT_FLAGS=-min_confidence 0.9 -set_exit_status
@@ -21,6 +23,8 @@ EXCLUDED_CLEAN_DIRECTORIES = objectstorage/transfer*
 build: lint $(TARGETS_BUILD)
 
 test: build $(TARGETS_TEST)
+
+test-integ: build $(TARGETS_INTEG_TEST)
 
 lint: $(TARGETS_LINT)
 
@@ -48,6 +52,9 @@ $(TARGETS_BUILD): build-%:%
 $(TARGETS_TEST): test-%:%
 	@(cd $< && go test -v)
 
+$(TARGETS_INTEG_TEST): test-%:%
+	@(cd $< && go test -v)
+
 $(TARGETS_CLEAN): clean-%:%
 	@echo "cleaning $<"
 	@-find $< -not -path "$<" | grep -vZ ${EXCLUDED_CLEAN_DIRECTORIES} | xargs rm -rf
@@ -62,6 +69,8 @@ clean-generate:
 pre-doc:
 	@echo "Rendering doc server to ${DOC_SERVER_URL}"
 	find . -name \*.go |xargs sed -i '' 's/{{DOC_SERVER_URL}}/${DOC_SERVER_URL}/g'
+	# Note: This should stay the old docs URL (with us-phoenix-1), because it
+	# processes go files and changes the old URL into the new URL
 	find . -name \*.go |xargs sed -i '' 's/https:\/\/docs.us-phoenix-1.oraclecloud.com/${DOC_SERVER_URL}/g'
 
 gen-version:

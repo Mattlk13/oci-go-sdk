@@ -1,18 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// VmClusterSummary Details of the VM cluster.
+// VmClusterSummary Details of the Exadata Cloud@Customer VM cluster.
 type VmClusterSummary struct {
 
 	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the VM cluster.
@@ -21,10 +22,13 @@ type VmClusterSummary struct {
 	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the compartment.
 	CompartmentId *string `mandatory:"false" json:"compartmentId"`
 
+	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the last patch history. This value is updated as soon as a patch operation starts.
+	LastPatchHistoryEntryId *string `mandatory:"false" json:"lastPatchHistoryEntryId"`
+
 	// The current state of the VM cluster.
 	LifecycleState VmClusterSummaryLifecycleStateEnum `mandatory:"false" json:"lifecycleState,omitempty"`
 
-	// The user-friendly name for the VM cluster. The name does not need to be unique.
+	// The user-friendly name for the Exadata Cloud@Customer VM cluster. The name does not need to be unique.
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// The date and time that the VM cluster was created.
@@ -51,14 +55,23 @@ type VmClusterSummary struct {
 	// The number of enabled CPU cores.
 	CpusEnabled *int `mandatory:"false" json:"cpusEnabled"`
 
+	// The memory allocated in GBs.
+	MemorySizeInGBs *int `mandatory:"false" json:"memorySizeInGBs"`
+
+	// The local node storage allocated in GBs.
+	DbNodeStorageSizeInGBs *int `mandatory:"false" json:"dbNodeStorageSizeInGBs"`
+
 	// Size, in terabytes, of the DATA disk group.
-	DataStorageSizeInTBs *int `mandatory:"false" json:"dataStorageSizeInTBs"`
+	DataStorageSizeInTBs *float64 `mandatory:"false" json:"dataStorageSizeInTBs"`
 
 	// The shape of the Exadata infrastructure. The shape determines the amount of CPU, storage, and memory resources allocated to the instance.
 	Shape *string `mandatory:"false" json:"shape"`
 
 	// The Oracle Grid Infrastructure software version for the VM cluster.
 	GiVersion *string `mandatory:"false" json:"giVersion"`
+
+	// Operating system version of the image.
+	SystemVersion *string `mandatory:"false" json:"systemVersion"`
 
 	// The public key portion of one or more key pairs used for SSH access to the VM cluster.
 	SshPublicKeys []string `mandatory:"false" json:"sshPublicKeys"`
@@ -85,21 +98,23 @@ type VmClusterSummaryLifecycleStateEnum string
 
 // Set of constants representing the allowable values for VmClusterSummaryLifecycleStateEnum
 const (
-	VmClusterSummaryLifecycleStateProvisioning VmClusterSummaryLifecycleStateEnum = "PROVISIONING"
-	VmClusterSummaryLifecycleStateAvailable    VmClusterSummaryLifecycleStateEnum = "AVAILABLE"
-	VmClusterSummaryLifecycleStateUpdating     VmClusterSummaryLifecycleStateEnum = "UPDATING"
-	VmClusterSummaryLifecycleStateTerminating  VmClusterSummaryLifecycleStateEnum = "TERMINATING"
-	VmClusterSummaryLifecycleStateTerminated   VmClusterSummaryLifecycleStateEnum = "TERMINATED"
-	VmClusterSummaryLifecycleStateFailed       VmClusterSummaryLifecycleStateEnum = "FAILED"
+	VmClusterSummaryLifecycleStateProvisioning          VmClusterSummaryLifecycleStateEnum = "PROVISIONING"
+	VmClusterSummaryLifecycleStateAvailable             VmClusterSummaryLifecycleStateEnum = "AVAILABLE"
+	VmClusterSummaryLifecycleStateUpdating              VmClusterSummaryLifecycleStateEnum = "UPDATING"
+	VmClusterSummaryLifecycleStateTerminating           VmClusterSummaryLifecycleStateEnum = "TERMINATING"
+	VmClusterSummaryLifecycleStateTerminated            VmClusterSummaryLifecycleStateEnum = "TERMINATED"
+	VmClusterSummaryLifecycleStateFailed                VmClusterSummaryLifecycleStateEnum = "FAILED"
+	VmClusterSummaryLifecycleStateMaintenanceInProgress VmClusterSummaryLifecycleStateEnum = "MAINTENANCE_IN_PROGRESS"
 )
 
 var mappingVmClusterSummaryLifecycleState = map[string]VmClusterSummaryLifecycleStateEnum{
-	"PROVISIONING": VmClusterSummaryLifecycleStateProvisioning,
-	"AVAILABLE":    VmClusterSummaryLifecycleStateAvailable,
-	"UPDATING":     VmClusterSummaryLifecycleStateUpdating,
-	"TERMINATING":  VmClusterSummaryLifecycleStateTerminating,
-	"TERMINATED":   VmClusterSummaryLifecycleStateTerminated,
-	"FAILED":       VmClusterSummaryLifecycleStateFailed,
+	"PROVISIONING":            VmClusterSummaryLifecycleStateProvisioning,
+	"AVAILABLE":               VmClusterSummaryLifecycleStateAvailable,
+	"UPDATING":                VmClusterSummaryLifecycleStateUpdating,
+	"TERMINATING":             VmClusterSummaryLifecycleStateTerminating,
+	"TERMINATED":              VmClusterSummaryLifecycleStateTerminated,
+	"FAILED":                  VmClusterSummaryLifecycleStateFailed,
+	"MAINTENANCE_IN_PROGRESS": VmClusterSummaryLifecycleStateMaintenanceInProgress,
 }
 
 // GetVmClusterSummaryLifecycleStateEnumValues Enumerates the set of values for VmClusterSummaryLifecycleStateEnum

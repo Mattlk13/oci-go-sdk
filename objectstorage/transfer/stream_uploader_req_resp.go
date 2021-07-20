@@ -1,12 +1,13 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2020, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 package transfer
 
 import (
 	"errors"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"io"
-
-	"github.com/oracle/oci-go-sdk/common"
+	"reflect"
 )
 
 // UploadStreamRequest defines the input parameters for UploadFile method
@@ -28,11 +29,23 @@ func (request UploadStreamRequest) validate() error {
 		return err
 	}
 
-	if request.StreamReader == nil {
+	if isNil(request.StreamReader) {
 		return errorInvalidStream
 	}
 
 	return nil
+}
+
+func isNil(i interface{}) bool {
+	if i == nil {
+		return true
+	}
+	kind := reflect.TypeOf(i).Kind()
+	switch kind {
+	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
+		return reflect.ValueOf(i).IsNil()
+	}
+	return false
 }
 
 func (request *UploadStreamRequest) initDefaultValues() error {

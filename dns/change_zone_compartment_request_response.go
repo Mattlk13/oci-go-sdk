@@ -1,14 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package dns
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // ChangeZoneCompartmentRequest wrapper for the ChangeZoneCompartment operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dns/ChangeZoneCompartment.go.html to see an example of how to use ChangeZoneCompartmentRequest.
 type ChangeZoneCompartmentRequest struct {
 
 	// The OCID of the target zone.
@@ -32,9 +37,13 @@ type ChangeZoneCompartmentRequest struct {
 	// request may be rejected).
 	OpcRetryToken *string `mandatory:"false" contributesTo:"header" name:"opc-retry-token"`
 
-	// Unique Oracle-assigned identifier for the request.
-	// If you need to contact Oracle about a particular request, please provide the request ID.
+	// Unique Oracle-assigned identifier for the request. If you need
+	// to contact Oracle about a particular request, please provide
+	// the request ID.
 	OpcRequestId *string `mandatory:"false" contributesTo:"header" name:"opc-request-id"`
+
+	// Specifies to operate only on resources that have a matching DNS scope.
+	Scope ChangeZoneCompartmentScopeEnum `mandatory:"false" contributesTo:"query" name:"scope" omitEmpty:"true"`
 
 	// Metadata about the request. This information will not be transmitted to the service, but
 	// represents information that the SDK will consume to drive retry behavior.
@@ -46,8 +55,16 @@ func (request ChangeZoneCompartmentRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request ChangeZoneCompartmentRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request ChangeZoneCompartmentRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request ChangeZoneCompartmentRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.
@@ -61,10 +78,13 @@ type ChangeZoneCompartmentResponse struct {
 	// The underlying http response
 	RawResponse *http.Response
 
-	// Unique Oracle-assigned identifier for the request. If you need
-	// to contact Oracle about a particular request, please provide
-	// the request ID.
+	// Unique Oracle-assigned identifier for the request. If you need to
+	// contact Oracle about a particular request, please provide the request ID.
 	OpcRequestId *string `presentIn:"header" name:"opc-request-id"`
+
+	// Unique Oracle-assigned identifier for the asynchronous request.
+	// You can use this to query status of the asynchronous operation.
+	OpcWorkRequestId *string `presentIn:"header" name:"opc-work-request-id"`
 }
 
 func (response ChangeZoneCompartmentResponse) String() string {
@@ -74,4 +94,27 @@ func (response ChangeZoneCompartmentResponse) String() string {
 // HTTPResponse implements the OCIResponse interface
 func (response ChangeZoneCompartmentResponse) HTTPResponse() *http.Response {
 	return response.RawResponse
+}
+
+// ChangeZoneCompartmentScopeEnum Enum with underlying type: string
+type ChangeZoneCompartmentScopeEnum string
+
+// Set of constants representing the allowable values for ChangeZoneCompartmentScopeEnum
+const (
+	ChangeZoneCompartmentScopeGlobal  ChangeZoneCompartmentScopeEnum = "GLOBAL"
+	ChangeZoneCompartmentScopePrivate ChangeZoneCompartmentScopeEnum = "PRIVATE"
+)
+
+var mappingChangeZoneCompartmentScope = map[string]ChangeZoneCompartmentScopeEnum{
+	"GLOBAL":  ChangeZoneCompartmentScopeGlobal,
+	"PRIVATE": ChangeZoneCompartmentScopePrivate,
+}
+
+// GetChangeZoneCompartmentScopeEnumValues Enumerates the set of values for ChangeZoneCompartmentScopeEnum
+func GetChangeZoneCompartmentScopeEnumValues() []ChangeZoneCompartmentScopeEnum {
+	values := make([]ChangeZoneCompartmentScopeEnum, 0)
+	for _, v := range mappingChangeZoneCompartmentScope {
+		values = append(values, v)
+	}
+	return values
 }

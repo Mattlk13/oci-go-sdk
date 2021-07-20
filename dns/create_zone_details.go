@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // DNS API
@@ -11,7 +12,7 @@ package dns
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateZoneDetails The body for defining a new zone.
@@ -36,12 +37,19 @@ type CreateZoneDetails struct {
 	// **Example:** `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
+	// This value will be null for zones in the global DNS.
+	ViewId *string `mandatory:"false" json:"viewId"`
+
 	// External master servers for the zone. `externalMasters` becomes a
 	// required parameter when the `zoneType` value is `SECONDARY`.
 	ExternalMasters []ExternalMaster `mandatory:"false" json:"externalMasters"`
 
-	// The type of the zone. Must be either `PRIMARY` or `SECONDARY`.
+	// The type of the zone. Must be either `PRIMARY` or `SECONDARY`. `SECONDARY` is only supported for GLOBAL
+	// zones.
 	ZoneType CreateZoneDetailsZoneTypeEnum `mandatory:"false" json:"zoneType,omitempty"`
+
+	// The scope of the zone.
+	Scope ScopeEnum `mandatory:"false" json:"scope,omitempty"`
 }
 
 //GetName returns Name

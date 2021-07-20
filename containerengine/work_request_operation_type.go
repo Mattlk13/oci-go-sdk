@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Container Engine for Kubernetes API
@@ -21,6 +22,7 @@ const (
 	WorkRequestOperationTypeNodepoolCreate    WorkRequestOperationTypeEnum = "NODEPOOL_CREATE"
 	WorkRequestOperationTypeNodepoolUpdate    WorkRequestOperationTypeEnum = "NODEPOOL_UPDATE"
 	WorkRequestOperationTypeNodepoolDelete    WorkRequestOperationTypeEnum = "NODEPOOL_DELETE"
+	WorkRequestOperationTypeNodepoolReconcile WorkRequestOperationTypeEnum = "NODEPOOL_RECONCILE"
 	WorkRequestOperationTypeWorkrequestCancel WorkRequestOperationTypeEnum = "WORKREQUEST_CANCEL"
 )
 
@@ -31,6 +33,7 @@ var mappingWorkRequestOperationType = map[string]WorkRequestOperationTypeEnum{
 	"NODEPOOL_CREATE":    WorkRequestOperationTypeNodepoolCreate,
 	"NODEPOOL_UPDATE":    WorkRequestOperationTypeNodepoolUpdate,
 	"NODEPOOL_DELETE":    WorkRequestOperationTypeNodepoolDelete,
+	"NODEPOOL_RECONCILE": WorkRequestOperationTypeNodepoolReconcile,
 	"WORKREQUEST_CANCEL": WorkRequestOperationTypeWorkrequestCancel,
 }
 

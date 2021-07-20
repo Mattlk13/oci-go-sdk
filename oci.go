@@ -19,8 +19,8 @@ them out to stdout
 		"context"
 		"fmt"
 
-		"github.com/oracle/oci-go-sdk/common"
-		"github.com/oracle/oci-go-sdk/identity"
+		"github.com/oracle/oci-go-sdk/v45/common"
+		"github.com/oracle/oci-go-sdk/v45/identity"
 	)
 
 	func main() {
@@ -257,6 +257,16 @@ Built-in logging in the SDK is controlled via the environment variable "OCI_GO_S
 If the value of the environment variable does not match any of the above then default logging level is "info".
 If the environment variable is not present then no logging messages are emitted.
 
+The default destination for logging is Stderr and if you want to output log to a file you can set via environment variable "OCI_GO_SDK_LOG_OUTPUT_MODE". The below are possible values
+
+1. "file" or "f" enables all logging output saved to file
+
+2. "combine" or "c" enables all logging output to both stderr and file
+
+If the value does not match any of the above or does not exist then default logging output will be set to Stderr
+
+You can also customize the log file location and name via "OCI_GO_SDK_LOG_FILE" environment variable, the value should be the path to a specific file
+If this environment variable is not present, the default location will be the project root path
 
 Retry
 
@@ -264,6 +274,8 @@ Sometimes you may need to wait until an attribute of a resource, such as an inst
 An example of this would be launching an instance and then waiting for the instance to become available, or waiting until a subnet in a VCN has been terminated.
 You might also want to retry the same operation again if there's network issue etc...
 This can be accomplished by using the RequestMetadata.RetryPolicy. You can find the examples here: https://github.com/oracle/oci-go-sdk/blob/master/example/example_retry_test.go
+
+If you are trying to make a PUT/POST API call with binary request body, please make sure the binary request body is resettable, which means the request body should inherit Seeker interface.
 
 Using the SDK with a Proxy Server
 

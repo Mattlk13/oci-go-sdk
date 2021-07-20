@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,47 +14,49 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// LaunchOptions Options for tuning compatibility and performance of VM shapes.
+// LaunchOptions Options for tuning the compatibility and performance of VM shapes. The values that you specify override any
+// default values.
 type LaunchOptions struct {
 
-	// Emulation type for volume.
-	// * `ISCSI` - ISCSI attached block storage device. This is the default for Boot Volumes and Remote Block
-	// Storage volumes on Oracle provided images.
+	// Emulation type for the boot volume.
+	// * `ISCSI` - ISCSI attached block storage device.
 	// * `SCSI` - Emulated SCSI disk.
 	// * `IDE` - Emulated IDE disk.
-	// * `VFIO` - Direct attached Virtual Function storage.  This is the default option for Local data
-	// volumes on Oracle provided images.
-	// * `PARAVIRTUALIZED` - Paravirtualized disk.
+	// * `VFIO` - Direct attached Virtual Function storage. This is the default option for local data
+	// volumes on platform images.
+	// * `PARAVIRTUALIZED` - Paravirtualized disk. This is the default for boot volumes and remote block
+	// storage volumes on platform images.
 	BootVolumeType LaunchOptionsBootVolumeTypeEnum `mandatory:"false" json:"bootVolumeType,omitempty"`
 
-	// Firmware used to boot VM.  Select the option that matches your operating system.
-	// * `BIOS` - Boot VM using BIOS style firmware.  This is compatible with both 32 bit and 64 bit operating
+	// Firmware used to boot VM. Select the option that matches your operating system.
+	// * `BIOS` - Boot VM using BIOS style firmware. This is compatible with both 32 bit and 64 bit operating
 	// systems that boot using MBR style bootloaders.
-	// * `UEFI_64` - Boot VM using UEFI style firmware compatible with 64 bit operating systems.  This is the
-	// default for Oracle provided images.
+	// * `UEFI_64` - Boot VM using UEFI style firmware compatible with 64 bit operating systems. This is the
+	// default for platform images.
 	Firmware LaunchOptionsFirmwareEnum `mandatory:"false" json:"firmware,omitempty"`
 
 	// Emulation type for the physical network interface card (NIC).
-	// * `E1000` - Emulated Gigabit ethernet controller.  Compatible with Linux e1000 network driver.
+	// * `E1000` - Emulated Gigabit ethernet controller. Compatible with Linux e1000 network driver.
 	// * `VFIO` - Direct attached Virtual Function network controller. This is the networking type
 	// when you launch an instance using hardware-assisted (SR-IOV) networking.
-	// * `PARAVIRTUALIZED` - VM instances launch with paravirtualized devices using virtio drivers.
+	// * `PARAVIRTUALIZED` - VM instances launch with paravirtualized devices using VirtIO drivers.
 	NetworkType LaunchOptionsNetworkTypeEnum `mandatory:"false" json:"networkType,omitempty"`
 
 	// Emulation type for volume.
-	// * `ISCSI` - ISCSI attached block storage device. This is the default for Boot Volumes and Remote Block
-	// Storage volumes on Oracle provided images.
+	// * `ISCSI` - ISCSI attached block storage device.
 	// * `SCSI` - Emulated SCSI disk.
 	// * `IDE` - Emulated IDE disk.
-	// * `VFIO` - Direct attached Virtual Function storage.  This is the default option for Local data
-	// volumes on Oracle provided images.
-	// * `PARAVIRTUALIZED` - Paravirtualized disk.
+	// * `VFIO` - Direct attached Virtual Function storage. This is the default option for local data
+	// volumes on platform images.
+	// * `PARAVIRTUALIZED` - Paravirtualized disk. This is the default for boot volumes and remote block
+	// storage volumes on platform images.
 	RemoteDataVolumeType LaunchOptionsRemoteDataVolumeTypeEnum `mandatory:"false" json:"remoteDataVolumeType,omitempty"`
 
-	// Whether to enable in-transit encryption for the boot volume's paravirtualized attachment. The default value is false.
+	// Deprecated. Instead use `isPvEncryptionInTransitEnabled` in
+	// LaunchInstanceDetails.
 	IsPvEncryptionInTransitEnabled *bool `mandatory:"false" json:"isPvEncryptionInTransitEnabled"`
 
 	// Whether to enable consistent volume naming feature. Defaults to false.

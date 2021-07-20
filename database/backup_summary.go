@@ -1,15 +1,16 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // BackupSummary A database backup.
@@ -38,7 +39,7 @@ type BackupSummary struct {
 	// The date and time the backup was completed.
 	TimeEnded *common.SDKTime `mandatory:"false" json:"timeEnded"`
 
-	// Additional information about the current lifecycleState.
+	// Additional information about the current lifecycle state.
 	LifecycleDetails *string `mandatory:"false" json:"lifecycleDetails"`
 
 	// The name of the availability domain where the database backup is stored.
@@ -52,6 +53,15 @@ type BackupSummary struct {
 
 	// The size of the database in gigabytes at the time the backup was taken.
 	DatabaseSizeInGBs *float64 `mandatory:"false" json:"databaseSizeInGBs"`
+
+	// Shape of the backup's source database.
+	Shape *string `mandatory:"false" json:"shape"`
+
+	// Version of the backup's source database
+	Version *string `mandatory:"false" json:"version"`
+
+	// The OCID of the key container that is used as the master encryption key in database transparent data encryption (TDE) operations.
+	KmsKeyId *string `mandatory:"false" json:"kmsKeyId"`
 }
 
 func (m BackupSummary) String() string {

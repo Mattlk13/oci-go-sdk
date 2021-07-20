@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // DNS API
@@ -10,7 +11,7 @@
 package dns
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // SteeringPolicyAnswer DNS record data with metadata for processing in a steering policy.
@@ -35,7 +36,7 @@ type SteeringPolicyAnswer struct {
 	//   ]
 	Name *string `mandatory:"true" json:"name"`
 
-	// The canonical name for the record's type. Only A, AAAA, and CNAME are supported. For more
+	// The type of DNS record, such as A or CNAME. Only A, AAAA, and CNAME are supported. For more
 	// information, see Supported DNS Resource Record Types (https://docs.cloud.oracle.com/iaas/Content/DNS/Reference/supporteddnsresource.htm).
 	Rtype *string `mandatory:"true" json:"rtype"`
 

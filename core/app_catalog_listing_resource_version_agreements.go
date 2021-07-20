@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,7 +14,7 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // AppCatalogListingResourceVersionAgreements Agreements for a listing resource version.
@@ -31,7 +32,7 @@ type AppCatalogListingResourceVersionAgreements struct {
 	// EULA link
 	EulaLink *string `mandatory:"false" json:"eulaLink"`
 
-	// Date and time the agreements were retrieved, in RFC3339 format.
+	// Date and time the agreements were retrieved, in RFC3339 (https://tools.ietf.org/html/rfc3339) format.
 	// Example: `2018-03-20T12:32:53.532Z`
 	TimeRetrieved *common.SDKTime `mandatory:"false" json:"timeRetrieved"`
 

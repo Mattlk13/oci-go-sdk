@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,14 +14,17 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// InstanceAgentFeatures Instance agent features supported on the image
+// InstanceAgentFeatures Oracle Cloud Agent features supported on the image.
 type InstanceAgentFeatures struct {
 
-	// Whether the agent running on the instance can gather performance metrics and monitor the instance.
+	// This attribute is not used.
 	IsMonitoringSupported *bool `mandatory:"false" json:"isMonitoringSupported"`
+
+	// This attribute is not used.
+	IsManagementSupported *bool `mandatory:"false" json:"isManagementSupported"`
 }
 
 func (m InstanceAgentFeatures) String() string {

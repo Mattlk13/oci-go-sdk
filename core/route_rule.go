@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,7 +14,7 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // RouteRule A mapping between a destination IP address range and a virtual device to route matching
@@ -22,7 +23,7 @@ type RouteRule struct {
 
 	// The OCID for the route rule's target. For information about the type of
 	// targets you can specify, see
-	// Route Tables (https://docs.cloud.oracle.com/Content/Network/Tasks/managingroutetables.htm).
+	// Route Tables (https://docs.cloud.oracle.com/iaas/Content/Network/Tasks/managingroutetables.htm).
 	NetworkEntityId *string `mandatory:"true" json:"networkEntityId"`
 
 	// Deprecated. Instead use `destination` and `destinationType`. Requests that include both
@@ -38,8 +39,9 @@ type RouteRule struct {
 	// Allowed values:
 	//   * IP address range in CIDR notation. Can be an IPv4 or IPv6 CIDR. For example: `192.168.1.0/24`
 	//   or `2001:0db8:0123:45::/56`. If you set this to an IPv6 CIDR, the route rule's target
-	//   can only be a DRG or internet gateway. Note that IPv6 addressing is currently supported only
-	//   in the Government Cloud.
+	//   can only be a DRG or internet gateway.
+	//   IPv6 addressing is supported for all commercial and government regions.
+	//   See IPv6 Addresses (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/ipv6.htm).
 	//   * The `cidrBlock` value for a Service, if you're
 	//     setting up a route rule for traffic destined for a particular `Service` through
 	//     a service gateway. For example: `oci-phx-objectstorage`.
@@ -51,6 +53,9 @@ type RouteRule struct {
 	//     Service (the rule is for traffic destined for a
 	//     particular `Service` through a service gateway).
 	DestinationType RouteRuleDestinationTypeEnum `mandatory:"false" json:"destinationType,omitempty"`
+
+	// An optional description of your choice for the rule.
+	Description *string `mandatory:"false" json:"description"`
 }
 
 func (m RouteRule) String() string {

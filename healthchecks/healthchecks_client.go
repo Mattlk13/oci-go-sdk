@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Health Checks API
@@ -13,7 +14,8 @@ package healthchecks
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -26,11 +28,30 @@ type HealthChecksClient struct {
 // NewHealthChecksClientWithConfigurationProvider Creates a new default HealthChecks client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewHealthChecksClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client HealthChecksClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newHealthChecksClientFromBaseClient(baseClient, provider)
+}
+
+// NewHealthChecksClientWithOboToken Creates a new default HealthChecks client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewHealthChecksClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client HealthChecksClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newHealthChecksClientFromBaseClient(baseClient, configProvider)
+}
+
+func newHealthChecksClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client HealthChecksClient, err error) {
 	client = HealthChecksClient{BaseClient: baseClient}
 	client.BasePath = "20180501"
 	err = client.setConfigurationProvider(configProvider)
@@ -62,9 +83,16 @@ func (client *HealthChecksClient) ConfigurationProvider() *common.ConfigurationP
 
 // ChangeHttpMonitorCompartment Moves a monitor into a different compartment. When provided, `If-Match` is checked
 // against ETag values of the resource.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/ChangeHttpMonitorCompartment.go.html to see an example of how to use ChangeHttpMonitorCompartment API.
 func (client HealthChecksClient) ChangeHttpMonitorCompartment(ctx context.Context, request ChangeHttpMonitorCompartmentRequest) (response ChangeHttpMonitorCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -76,7 +104,12 @@ func (client HealthChecksClient) ChangeHttpMonitorCompartment(ctx context.Contex
 	ociResponse, err = common.Retry(ctx, request, client.changeHttpMonitorCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeHttpMonitorCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeHttpMonitorCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeHttpMonitorCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -89,8 +122,9 @@ func (client HealthChecksClient) ChangeHttpMonitorCompartment(ctx context.Contex
 }
 
 // changeHttpMonitorCompartment implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) changeHttpMonitorCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/httpMonitors/{monitorId}/actions/changeCompartment")
+func (client HealthChecksClient) changeHttpMonitorCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/httpMonitors/{monitorId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -110,9 +144,16 @@ func (client HealthChecksClient) changeHttpMonitorCompartment(ctx context.Contex
 
 // ChangePingMonitorCompartment Moves a monitor into a different compartment. When provided, `If-Match` is checked
 // against ETag values of the resource.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/ChangePingMonitorCompartment.go.html to see an example of how to use ChangePingMonitorCompartment API.
 func (client HealthChecksClient) ChangePingMonitorCompartment(ctx context.Context, request ChangePingMonitorCompartmentRequest) (response ChangePingMonitorCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -124,7 +165,12 @@ func (client HealthChecksClient) ChangePingMonitorCompartment(ctx context.Contex
 	ociResponse, err = common.Retry(ctx, request, client.changePingMonitorCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangePingMonitorCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangePingMonitorCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangePingMonitorCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -137,8 +183,9 @@ func (client HealthChecksClient) ChangePingMonitorCompartment(ctx context.Contex
 }
 
 // changePingMonitorCompartment implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) changePingMonitorCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/pingMonitors/{monitorId}/actions/changeCompartment")
+func (client HealthChecksClient) changePingMonitorCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/pingMonitors/{monitorId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -159,9 +206,16 @@ func (client HealthChecksClient) changePingMonitorCompartment(ctx context.Contex
 // CreateHttpMonitor Creates an HTTP monitor. Vantage points will be automatically selected if not specified,
 // and probes will be initiated from each vantage point to each of the targets at the frequency
 // specified by `intervalInSeconds`.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/CreateHttpMonitor.go.html to see an example of how to use CreateHttpMonitor API.
 func (client HealthChecksClient) CreateHttpMonitor(ctx context.Context, request CreateHttpMonitorRequest) (response CreateHttpMonitorResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -173,7 +227,12 @@ func (client HealthChecksClient) CreateHttpMonitor(ctx context.Context, request 
 	ociResponse, err = common.Retry(ctx, request, client.createHttpMonitor, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateHttpMonitorResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateHttpMonitorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateHttpMonitorResponse{}
+			}
 		}
 		return
 	}
@@ -186,8 +245,9 @@ func (client HealthChecksClient) CreateHttpMonitor(ctx context.Context, request 
 }
 
 // createHttpMonitor implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) createHttpMonitor(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/httpMonitors")
+func (client HealthChecksClient) createHttpMonitor(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/httpMonitors", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -208,16 +268,28 @@ func (client HealthChecksClient) createHttpMonitor(ctx context.Context, request 
 // CreateOnDemandHttpProbe Creates an on-demand HTTP probe. The location response header contains the URL for
 // fetching the probe results.
 // *Note:* On-demand probe configurations are not saved.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/CreateOnDemandHttpProbe.go.html to see an example of how to use CreateOnDemandHttpProbe API.
 func (client HealthChecksClient) CreateOnDemandHttpProbe(ctx context.Context, request CreateOnDemandHttpProbeRequest) (response CreateOnDemandHttpProbeResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.createOnDemandHttpProbe, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateOnDemandHttpProbeResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateOnDemandHttpProbeResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateOnDemandHttpProbeResponse{}
+			}
 		}
 		return
 	}
@@ -230,8 +302,9 @@ func (client HealthChecksClient) CreateOnDemandHttpProbe(ctx context.Context, re
 }
 
 // createOnDemandHttpProbe implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) createOnDemandHttpProbe(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/httpProbeResults")
+func (client HealthChecksClient) createOnDemandHttpProbe(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/httpProbeResults", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -252,16 +325,28 @@ func (client HealthChecksClient) createOnDemandHttpProbe(ctx context.Context, re
 // CreateOnDemandPingProbe Creates an on-demand ping probe. The location response header contains the URL for
 // fetching probe results.
 // *Note:* The on-demand probe configuration is not saved.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/CreateOnDemandPingProbe.go.html to see an example of how to use CreateOnDemandPingProbe API.
 func (client HealthChecksClient) CreateOnDemandPingProbe(ctx context.Context, request CreateOnDemandPingProbeRequest) (response CreateOnDemandPingProbeResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.createOnDemandPingProbe, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateOnDemandPingProbeResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateOnDemandPingProbeResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateOnDemandPingProbeResponse{}
+			}
 		}
 		return
 	}
@@ -274,8 +359,9 @@ func (client HealthChecksClient) CreateOnDemandPingProbe(ctx context.Context, re
 }
 
 // createOnDemandPingProbe implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) createOnDemandPingProbe(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/pingProbeResults")
+func (client HealthChecksClient) createOnDemandPingProbe(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/pingProbeResults", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -296,9 +382,16 @@ func (client HealthChecksClient) createOnDemandPingProbe(ctx context.Context, re
 // CreatePingMonitor Creates a ping monitor. Vantage points will be automatically selected if not specified,
 // and probes will be initiated from each vantage point to each of the targets at the frequency
 // specified by `intervalInSeconds`.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/CreatePingMonitor.go.html to see an example of how to use CreatePingMonitor API.
 func (client HealthChecksClient) CreatePingMonitor(ctx context.Context, request CreatePingMonitorRequest) (response CreatePingMonitorResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -310,7 +403,12 @@ func (client HealthChecksClient) CreatePingMonitor(ctx context.Context, request 
 	ociResponse, err = common.Retry(ctx, request, client.createPingMonitor, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreatePingMonitorResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreatePingMonitorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreatePingMonitorResponse{}
+			}
 		}
 		return
 	}
@@ -323,8 +421,9 @@ func (client HealthChecksClient) CreatePingMonitor(ctx context.Context, request 
 }
 
 // createPingMonitor implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) createPingMonitor(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/pingMonitors")
+func (client HealthChecksClient) createPingMonitor(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/pingMonitors", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -344,16 +443,28 @@ func (client HealthChecksClient) createPingMonitor(ctx context.Context, request 
 
 // DeleteHttpMonitor Deletes the HTTP monitor and its configuration. All future probes of this
 // monitor are stopped. Results associated with the monitor are not deleted.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/DeleteHttpMonitor.go.html to see an example of how to use DeleteHttpMonitor API.
 func (client HealthChecksClient) DeleteHttpMonitor(ctx context.Context, request DeleteHttpMonitorRequest) (response DeleteHttpMonitorResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteHttpMonitor, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteHttpMonitorResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteHttpMonitorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteHttpMonitorResponse{}
+			}
 		}
 		return
 	}
@@ -366,8 +477,9 @@ func (client HealthChecksClient) DeleteHttpMonitor(ctx context.Context, request 
 }
 
 // deleteHttpMonitor implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) deleteHttpMonitor(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/httpMonitors/{monitorId}")
+func (client HealthChecksClient) deleteHttpMonitor(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/httpMonitors/{monitorId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -387,16 +499,28 @@ func (client HealthChecksClient) deleteHttpMonitor(ctx context.Context, request 
 
 // DeletePingMonitor Deletes the ping monitor and its configuration. All future probes of this
 // monitor are stopped. Results associated with the monitor are not deleted.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/DeletePingMonitor.go.html to see an example of how to use DeletePingMonitor API.
 func (client HealthChecksClient) DeletePingMonitor(ctx context.Context, request DeletePingMonitorRequest) (response DeletePingMonitorResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deletePingMonitor, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeletePingMonitorResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeletePingMonitorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeletePingMonitorResponse{}
+			}
 		}
 		return
 	}
@@ -409,8 +533,9 @@ func (client HealthChecksClient) DeletePingMonitor(ctx context.Context, request 
 }
 
 // deletePingMonitor implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) deletePingMonitor(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/pingMonitors/{monitorId}")
+func (client HealthChecksClient) deletePingMonitor(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/pingMonitors/{monitorId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -429,16 +554,28 @@ func (client HealthChecksClient) deletePingMonitor(ctx context.Context, request 
 }
 
 // GetHttpMonitor Gets the configuration for the specified monitor.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/GetHttpMonitor.go.html to see an example of how to use GetHttpMonitor API.
 func (client HealthChecksClient) GetHttpMonitor(ctx context.Context, request GetHttpMonitorRequest) (response GetHttpMonitorResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getHttpMonitor, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetHttpMonitorResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetHttpMonitorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetHttpMonitorResponse{}
+			}
 		}
 		return
 	}
@@ -451,8 +588,9 @@ func (client HealthChecksClient) GetHttpMonitor(ctx context.Context, request Get
 }
 
 // getHttpMonitor implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) getHttpMonitor(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/httpMonitors/{monitorId}")
+func (client HealthChecksClient) getHttpMonitor(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/httpMonitors/{monitorId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -471,16 +609,28 @@ func (client HealthChecksClient) getHttpMonitor(ctx context.Context, request com
 }
 
 // GetPingMonitor Gets the configuration for the specified ping monitor.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/GetPingMonitor.go.html to see an example of how to use GetPingMonitor API.
 func (client HealthChecksClient) GetPingMonitor(ctx context.Context, request GetPingMonitorRequest) (response GetPingMonitorResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getPingMonitor, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetPingMonitorResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetPingMonitorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetPingMonitorResponse{}
+			}
 		}
 		return
 	}
@@ -493,8 +643,9 @@ func (client HealthChecksClient) GetPingMonitor(ctx context.Context, request Get
 }
 
 // getPingMonitor implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) getPingMonitor(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/pingMonitors/{monitorId}")
+func (client HealthChecksClient) getPingMonitor(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/pingMonitors/{monitorId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -513,16 +664,28 @@ func (client HealthChecksClient) getPingMonitor(ctx context.Context, request com
 }
 
 // ListHealthChecksVantagePoints Gets information about all vantage points available to the user.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/ListHealthChecksVantagePoints.go.html to see an example of how to use ListHealthChecksVantagePoints API.
 func (client HealthChecksClient) ListHealthChecksVantagePoints(ctx context.Context, request ListHealthChecksVantagePointsRequest) (response ListHealthChecksVantagePointsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listHealthChecksVantagePoints, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListHealthChecksVantagePointsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListHealthChecksVantagePointsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListHealthChecksVantagePointsResponse{}
+			}
 		}
 		return
 	}
@@ -535,8 +698,9 @@ func (client HealthChecksClient) ListHealthChecksVantagePoints(ctx context.Conte
 }
 
 // listHealthChecksVantagePoints implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) listHealthChecksVantagePoints(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vantagePoints")
+func (client HealthChecksClient) listHealthChecksVantagePoints(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vantagePoints", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -555,16 +719,28 @@ func (client HealthChecksClient) listHealthChecksVantagePoints(ctx context.Conte
 }
 
 // ListHttpMonitors Gets a list of HTTP monitors.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/ListHttpMonitors.go.html to see an example of how to use ListHttpMonitors API.
 func (client HealthChecksClient) ListHttpMonitors(ctx context.Context, request ListHttpMonitorsRequest) (response ListHttpMonitorsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listHttpMonitors, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListHttpMonitorsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListHttpMonitorsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListHttpMonitorsResponse{}
+			}
 		}
 		return
 	}
@@ -577,8 +753,9 @@ func (client HealthChecksClient) ListHttpMonitors(ctx context.Context, request L
 }
 
 // listHttpMonitors implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) listHttpMonitors(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/httpMonitors")
+func (client HealthChecksClient) listHttpMonitors(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/httpMonitors", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -599,16 +776,28 @@ func (client HealthChecksClient) listHttpMonitors(ctx context.Context, request c
 // ListHttpProbeResults Gets the HTTP probe results for the specified probe or monitor, where
 // the `probeConfigurationId` is the OCID of either a monitor or an
 // on-demand probe.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/ListHttpProbeResults.go.html to see an example of how to use ListHttpProbeResults API.
 func (client HealthChecksClient) ListHttpProbeResults(ctx context.Context, request ListHttpProbeResultsRequest) (response ListHttpProbeResultsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listHttpProbeResults, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListHttpProbeResultsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListHttpProbeResultsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListHttpProbeResultsResponse{}
+			}
 		}
 		return
 	}
@@ -621,8 +810,9 @@ func (client HealthChecksClient) ListHttpProbeResults(ctx context.Context, reque
 }
 
 // listHttpProbeResults implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) listHttpProbeResults(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/httpProbeResults/{probeConfigurationId}")
+func (client HealthChecksClient) listHttpProbeResults(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/httpProbeResults/{probeConfigurationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -643,16 +833,28 @@ func (client HealthChecksClient) listHttpProbeResults(ctx context.Context, reque
 // ListPingMonitors Gets a list of configured ping monitors.
 // Results are paginated based on `page` and `limit`.  The `opc-next-page` header provides
 // a URL for fetching the next page.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/ListPingMonitors.go.html to see an example of how to use ListPingMonitors API.
 func (client HealthChecksClient) ListPingMonitors(ctx context.Context, request ListPingMonitorsRequest) (response ListPingMonitorsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listPingMonitors, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListPingMonitorsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListPingMonitorsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListPingMonitorsResponse{}
+			}
 		}
 		return
 	}
@@ -665,8 +867,9 @@ func (client HealthChecksClient) ListPingMonitors(ctx context.Context, request L
 }
 
 // listPingMonitors implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) listPingMonitors(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/pingMonitors")
+func (client HealthChecksClient) listPingMonitors(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/pingMonitors", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -690,16 +893,28 @@ func (client HealthChecksClient) listPingMonitors(ctx context.Context, request c
 // a URL for fetching the next page.  Use `sortOrder` to set the order of the
 // results.  If `sortOrder` is unspecified, results are sorted in ascending order by
 // `startTime`.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/ListPingProbeResults.go.html to see an example of how to use ListPingProbeResults API.
 func (client HealthChecksClient) ListPingProbeResults(ctx context.Context, request ListPingProbeResultsRequest) (response ListPingProbeResultsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listPingProbeResults, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListPingProbeResultsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListPingProbeResultsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListPingProbeResultsResponse{}
+			}
 		}
 		return
 	}
@@ -712,8 +927,9 @@ func (client HealthChecksClient) ListPingProbeResults(ctx context.Context, reque
 }
 
 // listPingProbeResults implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) listPingProbeResults(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/pingProbeResults/{probeConfigurationId}")
+func (client HealthChecksClient) listPingProbeResults(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/pingProbeResults/{probeConfigurationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -734,16 +950,28 @@ func (client HealthChecksClient) listPingProbeResults(ctx context.Context, reque
 // UpdateHttpMonitor Updates the configuration of the specified HTTP monitor. Only the fields
 // specified in the request body will be updated; all other configuration
 // properties will remain unchanged.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/UpdateHttpMonitor.go.html to see an example of how to use UpdateHttpMonitor API.
 func (client HealthChecksClient) UpdateHttpMonitor(ctx context.Context, request UpdateHttpMonitorRequest) (response UpdateHttpMonitorResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateHttpMonitor, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateHttpMonitorResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateHttpMonitorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateHttpMonitorResponse{}
+			}
 		}
 		return
 	}
@@ -756,8 +984,9 @@ func (client HealthChecksClient) UpdateHttpMonitor(ctx context.Context, request 
 }
 
 // updateHttpMonitor implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) updateHttpMonitor(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/httpMonitors/{monitorId}")
+func (client HealthChecksClient) updateHttpMonitor(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/httpMonitors/{monitorId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -778,16 +1007,28 @@ func (client HealthChecksClient) updateHttpMonitor(ctx context.Context, request 
 // UpdatePingMonitor Updates the configuration of the specified ping monitor. Only the fields
 // specified in the request body will be updated; all other configuration properties
 // will remain unchanged.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/healthchecks/UpdatePingMonitor.go.html to see an example of how to use UpdatePingMonitor API.
 func (client HealthChecksClient) UpdatePingMonitor(ctx context.Context, request UpdatePingMonitorRequest) (response UpdatePingMonitorResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updatePingMonitor, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdatePingMonitorResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdatePingMonitorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdatePingMonitorResponse{}
+			}
 		}
 		return
 	}
@@ -800,8 +1041,9 @@ func (client HealthChecksClient) UpdatePingMonitor(ctx context.Context, request 
 }
 
 // updatePingMonitor implements the OCIOperation interface (enables retrying operations)
-func (client HealthChecksClient) updatePingMonitor(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/pingMonitors/{monitorId}")
+func (client HealthChecksClient) updatePingMonitor(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/pingMonitors/{monitorId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

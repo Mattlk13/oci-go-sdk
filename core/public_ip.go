@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,7 +14,7 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // PublicIp A *public IP* is a conceptual term that refers to a public IP address and related properties.
@@ -22,9 +23,7 @@ import (
 // 1. Ephemeral
 // 2. Reserved
 // For more information and comparison of the two types,
-// see Public IP Addresses (https://docs.cloud.oracle.com/Content/Network/Tasks/managingpublicIPs.htm).
-// **Warning:** Oracle recommends that you avoid using any confidential information when you
-// supply string values using the API.
+// see Public IP Addresses (https://docs.cloud.oracle.com/iaas/Content/Network/Tasks/managingpublicIPs.htm).
 type PublicIp struct {
 
 	// The OCID of the entity the public IP is assigned to, or in the process of
@@ -48,7 +47,7 @@ type PublicIp struct {
 	CompartmentId *string `mandatory:"false" json:"compartmentId"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
@@ -57,7 +56,7 @@ type PublicIp struct {
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
@@ -65,7 +64,7 @@ type PublicIp struct {
 	Id *string `mandatory:"false" json:"id"`
 
 	// The public IP address of the `publicIp` object.
-	// Example: `129.146.2.1`
+	// Example: `203.0.113.2`
 	IpAddress *string `mandatory:"false" json:"ipAddress"`
 
 	// The public IP's current state.
@@ -81,7 +80,7 @@ type PublicIp struct {
 	// * `RESERVED`: You control the public IP's lifetime. You can delete a reserved public IP
 	// whenever you like. It does not need to be assigned to a private IP at all times.
 	// For more information and comparison of the two types,
-	// see Public IP Addresses (https://docs.cloud.oracle.com/Content/Network/Tasks/managingpublicIPs.htm).
+	// see Public IP Addresses (https://docs.cloud.oracle.com/iaas/Content/Network/Tasks/managingpublicIPs.htm).
 	Lifetime PublicIpLifetimeEnum `mandatory:"false" json:"lifetime,omitempty"`
 
 	// Deprecated. Use `assignedEntityId` instead.
@@ -101,9 +100,12 @@ type PublicIp struct {
 	// Ephemeral public IPs that are assigned to private IPs have `scope` = `AVAILABILITY_DOMAIN`.
 	Scope PublicIpScopeEnum `mandatory:"false" json:"scope,omitempty"`
 
-	// The date and time the public IP was created, in the format defined by RFC3339.
+	// The date and time the public IP was created, in the format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"false" json:"timeCreated"`
+
+	// The OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the pool object created in the current tenancy.
+	PublicIpPoolId *string `mandatory:"false" json:"publicIpPoolId"`
 }
 
 func (m PublicIp) String() string {

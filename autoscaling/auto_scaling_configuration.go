@@ -1,20 +1,24 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Autoscaling API
 //
-// APIs for dynamically scaling Compute resources to meet application requirements.
-// For information about the Compute service, see Overview of the Compute Service (https://docs.cloud.oracle.com/Content/Compute/Concepts/computeoverview.htm).
+// APIs for dynamically scaling Compute resources to meet application requirements. For more information about
+// autoscaling, see Autoscaling (https://docs.cloud.oracle.com/Content/Compute/Tasks/autoscalinginstancepools.htm). For information about the
+// Compute service, see Overview of the Compute Service (https://docs.cloud.oracle.com/Content/Compute/Concepts/computeoverview.htm).
+// **Note:** Autoscaling is not available in US Government Cloud tenancies. For more information, see
+// Oracle Cloud Infrastructure US Government Cloud (https://docs.cloud.oracle.com/Content/General/Concepts/govoverview.htm).
 //
 
 package autoscaling
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// AutoScalingConfiguration An autoscaling configuration allows you to dynamically scale the resources in a Compute instance pool.
+// AutoScalingConfiguration An autoscaling configuration lets you dynamically scale the resources in a Compute instance pool.
 // For more information, see Autoscaling (https://docs.cloud.oracle.com/iaas/Content/Compute/Tasks/autoscalinginstancepools.htm).
 type AutoScalingConfiguration struct {
 
@@ -28,10 +32,9 @@ type AutoScalingConfiguration struct {
 
 	// Autoscaling policy definitions for the autoscaling configuration. An autoscaling policy defines the criteria that
 	// trigger autoscaling actions and the actions to take.
-	// Each autoscaling configuration can have one autoscaling policy.
 	Policies []AutoScalingPolicy `mandatory:"true" json:"policies"`
 
-	// The date and time the AutoScalingConfiguration was created, in the format defined by RFC3339.
+	// The date and time the autoscaling configuration was created, in the format defined by RFC3339.
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 
@@ -48,12 +51,20 @@ type AutoScalingConfiguration struct {
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
-	// The minimum period of time to wait between scaling actions. The cooldown period gives the system time to stabilize
-	// before rescaling. The minimum value is 300 seconds, which is also the default.
+	// For threshold-based autoscaling policies, this value is the minimum period of time to wait between scaling actions.
+	// The cooldown period gives the system time to stabilize before rescaling. The minimum value is 300 seconds, which
+	// is also the default. The cooldown period starts when the instance pool reaches the running state.
+	// For schedule-based autoscaling policies, this value is not used.
 	CoolDownInSeconds *int `mandatory:"false" json:"coolDownInSeconds"`
 
 	// Whether the autoscaling configuration is enabled.
 	IsEnabled *bool `mandatory:"false" json:"isEnabled"`
+
+	// The maximum number of resources to scale out to.
+	MaxResourceCount *int `mandatory:"false" json:"maxResourceCount"`
+
+	// The minimum number of resources to scale in to.
+	MinResourceCount *int `mandatory:"false" json:"minResourceCount"`
 }
 
 func (m AutoScalingConfiguration) String() string {
@@ -68,6 +79,8 @@ func (m *AutoScalingConfiguration) UnmarshalJSON(data []byte) (e error) {
 		FreeformTags      map[string]string                 `json:"freeformTags"`
 		CoolDownInSeconds *int                              `json:"coolDownInSeconds"`
 		IsEnabled         *bool                             `json:"isEnabled"`
+		MaxResourceCount  *int                              `json:"maxResourceCount"`
+		MinResourceCount  *int                              `json:"minResourceCount"`
 		CompartmentId     *string                           `json:"compartmentId"`
 		Id                *string                           `json:"id"`
 		Resource          resource                          `json:"resource"`
@@ -79,14 +92,26 @@ func (m *AutoScalingConfiguration) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.DefinedTags = model.DefinedTags
+
 	m.DisplayName = model.DisplayName
+
 	m.FreeformTags = model.FreeformTags
+
 	m.CoolDownInSeconds = model.CoolDownInSeconds
+
 	m.IsEnabled = model.IsEnabled
+
+	m.MaxResourceCount = model.MaxResourceCount
+
+	m.MinResourceCount = model.MinResourceCount
+
 	m.CompartmentId = model.CompartmentId
+
 	m.Id = model.Id
-	nn, e := model.Resource.UnmarshalPolymorphicJSON(model.Resource.JsonData)
+
+	nn, e = model.Resource.UnmarshalPolymorphicJSON(model.Resource.JsonData)
 	if e != nil {
 		return
 	}
@@ -95,11 +120,12 @@ func (m *AutoScalingConfiguration) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.Resource = nil
 	}
+
 	m.Policies = make([]AutoScalingPolicy, len(model.Policies))
 	for i, n := range model.Policies {
-		nn, err := n.UnmarshalPolymorphicJSON(n.JsonData)
-		if err != nil {
-			return err
+		nn, e = n.UnmarshalPolymorphicJSON(n.JsonData)
+		if e != nil {
+			return e
 		}
 		if nn != nil {
 			m.Policies[i] = nn.(AutoScalingPolicy)
@@ -107,6 +133,8 @@ func (m *AutoScalingConfiguration) UnmarshalJSON(data []byte) (e error) {
 			m.Policies[i] = nil
 		}
 	}
+
 	m.TimeCreated = model.TimeCreated
+
 	return
 }

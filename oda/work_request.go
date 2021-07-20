@@ -1,7 +1,8 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
-// Digital Assistant Control Plane API
+// Digital Assistant Service Instance API
 //
 // API to create and maintain Oracle Digital Assistant service instances.
 //
@@ -9,7 +10,7 @@
 package oda
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // WorkRequest The description of work request, including its status.
@@ -67,6 +68,8 @@ const (
 	WorkRequestRequestActionDeleteOdaInstance            WorkRequestRequestActionEnum = "DELETE_ODA_INSTANCE"
 	WorkRequestRequestActionPurgeOdaInstance             WorkRequestRequestActionEnum = "PURGE_ODA_INSTANCE"
 	WorkRequestRequestActionRecoverOdaInstance           WorkRequestRequestActionEnum = "RECOVER_ODA_INSTANCE"
+	WorkRequestRequestActionStopOdaInstance              WorkRequestRequestActionEnum = "STOP_ODA_INSTANCE"
+	WorkRequestRequestActionStartOdaInstance             WorkRequestRequestActionEnum = "START_ODA_INSTANCE"
 	WorkRequestRequestActionChangeOdaInstanceCompartment WorkRequestRequestActionEnum = "CHANGE_ODA_INSTANCE_COMPARTMENT"
 	WorkRequestRequestActionCreateAssociation            WorkRequestRequestActionEnum = "CREATE_ASSOCIATION"
 	WorkRequestRequestActionDeleteAssociation            WorkRequestRequestActionEnum = "DELETE_ASSOCIATION"
@@ -80,6 +83,8 @@ var mappingWorkRequestRequestAction = map[string]WorkRequestRequestActionEnum{
 	"DELETE_ODA_INSTANCE":             WorkRequestRequestActionDeleteOdaInstance,
 	"PURGE_ODA_INSTANCE":              WorkRequestRequestActionPurgeOdaInstance,
 	"RECOVER_ODA_INSTANCE":            WorkRequestRequestActionRecoverOdaInstance,
+	"STOP_ODA_INSTANCE":               WorkRequestRequestActionStopOdaInstance,
+	"START_ODA_INSTANCE":              WorkRequestRequestActionStartOdaInstance,
 	"CHANGE_ODA_INSTANCE_COMPARTMENT": WorkRequestRequestActionChangeOdaInstanceCompartment,
 	"CREATE_ASSOCIATION":              WorkRequestRequestActionCreateAssociation,
 	"DELETE_ASSOCIATION":              WorkRequestRequestActionDeleteAssociation,

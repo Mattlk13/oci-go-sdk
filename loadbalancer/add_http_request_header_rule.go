@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Load Balancing API
@@ -11,7 +12,7 @@ package loadbalancer
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // AddHttpRequestHeaderRule An object that represents the action of adding a header to a request.
@@ -28,7 +29,9 @@ type AddHttpRequestHeaderRule struct {
 	// Example: `example_header_name`
 	Header *string `mandatory:"true" json:"header"`
 
-	// A header value that conforms to RFC 7230.
+	// A header value that conforms to RFC 7230. With the following exceptions:
+	// *  value cannot contain `$`
+	// *  value cannot contain patterns like `{variable_name}`. They are reserved for future extensions. Currently, such values are invalid.
 	// Example: `example_value`
 	Value *string `mandatory:"true" json:"value"`
 }

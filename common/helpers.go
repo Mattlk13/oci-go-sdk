@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 package common
 
@@ -8,6 +9,8 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"net/textproto"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -229,13 +232,39 @@ func PrivateKeyFromBytesWithPassword(pemData, password []byte) (key *rsa.Private
 			}
 		}
 
-		key, e = x509.ParsePKCS1PrivateKey(decrypted)
+		key, e = parsePKCSPrivateKey(decrypted)
 
 	} else {
 		e = fmt.Errorf("PEM data was not found in buffer")
 		return
 	}
 	return
+}
+
+// ParsePrivateKey using PKCS1 or PKCS8
+func parsePKCSPrivateKey(decryptedKey []byte) (*rsa.PrivateKey, error) {
+	if key, err := x509.ParsePKCS1PrivateKey(decryptedKey); err == nil {
+		return key, nil
+	}
+	if key, err := x509.ParsePKCS8PrivateKey(decryptedKey); err == nil {
+		switch key := key.(type) {
+		case *rsa.PrivateKey:
+			return key, nil
+		default:
+			return nil, fmt.Errorf("unsupportesd private key type in PKCS8 wrapping")
+		}
+	}
+	return nil, fmt.Errorf("failed to parse private key")
+}
+
+// parseContentLength trims whitespace from cl and returns -1 if can't purse uint, or the value if it's no less than 0
+func parseContentLength(cl string) int64 {
+	cl = textproto.TrimString(cl)
+	n, err := strconv.ParseUint(cl, 10, 63)
+	if err != nil {
+		return -1
+	}
+	return int64(n)
 }
 
 func generateRandUUID() (string, error) {
@@ -253,4 +282,12 @@ func makeACopy(original []string) []string {
 	tmp := make([]string, len(original))
 	copy(tmp, original)
 	return tmp
+}
+
+// IsEnvVarFalse is used for checking if an environment variable is explicitly set to false, otherwise would set it true by default
+func IsEnvVarFalse(envVarKey string) bool {
+	if val, existed := os.LookupEnv(envVarKey); existed && strings.ToLower(val) == "false" {
+		return true
+	}
+	return false
 }

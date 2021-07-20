@@ -1,15 +1,16 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
-// File Storage Service API
+// File Storage API
 //
-// The API for the File Storage Service.
+// API for the File Storage service. Use this API to manage file systems, mount targets, and snapshots. For more information, see Overview of File Storage (https://docs.cloud.oracle.com/iaas/Content/File/Concepts/filestorageoverview.htm).
 //
 
 package filestorage
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateMountTargetDetails Details for creating the mount target.
@@ -19,10 +20,10 @@ type CreateMountTargetDetails struct {
 	// Example: `Uocm:PHX-AD-1`
 	AvailabilityDomain *string `mandatory:"true" json:"availabilityDomain"`
 
-	// The OCID of the compartment in which to create the mount target.
+	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the compartment in which to create the mount target.
 	CompartmentId *string `mandatory:"true" json:"compartmentId"`
 
-	// The OCID of the subnet in which to create the mount target.
+	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the subnet in which to create the mount target.
 	SubnetId *string `mandatory:"true" json:"subnetId"`
 
 	// A user-friendly name. It does not have to be unique, and it is changeable.
@@ -47,6 +48,12 @@ type CreateMountTargetDetails struct {
 	// assigns a private IP address from the subnet.
 	// Example: `10.0.3.3`
 	IpAddress *string `mandatory:"false" json:"ipAddress"`
+
+	// A list of Network Security Group OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) associated with this mount target.
+	// A maximum of 5 is allowed.
+	// Setting this to an empty array after the list is created removes the mount target from all NSGs.
+	// For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm).
+	NsgIds []string `mandatory:"false" json:"nsgIds"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair
 	//  with no predefined name, type, or namespace.

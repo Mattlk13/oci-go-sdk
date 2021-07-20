@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Container Engine for Kubernetes API
@@ -11,7 +12,7 @@
 package containerengine
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateNodePoolNodeConfigDetails The size and placement configuration of nodes in the node pool.
@@ -26,6 +27,9 @@ type CreateNodePoolNodeConfigDetails struct {
 	// each availability domain, and include the regional subnet in each placement
 	// configuration.
 	PlacementConfigs []NodePoolPlacementConfigDetails `mandatory:"true" json:"placementConfigs"`
+
+	// The OCIDs of the Network Security Group(s) to associate nodes for this node pool with. For more information about NSGs, see NetworkSecurityGroup.
+	NsgIds []string `mandatory:"false" json:"nsgIds"`
 }
 
 func (m CreateNodePoolNodeConfigDetails) String() string {

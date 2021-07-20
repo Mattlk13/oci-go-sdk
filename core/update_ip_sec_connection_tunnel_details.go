@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,7 +14,7 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // UpdateIpSecConnectionTunnelDetails The representation of UpdateIpSecConnectionTunnelDetails
@@ -29,8 +30,9 @@ type UpdateIpSecConnectionTunnelDetails struct {
 	// Internet Key Exchange protocol version.
 	IkeVersion UpdateIpSecConnectionTunnelDetailsIkeVersionEnum `mandatory:"false" json:"ikeVersion,omitempty"`
 
-	// Information for establishing a BGP session for the IPSec tunnel.
 	BgpSessionConfig *UpdateIpSecTunnelBgpSessionDetails `mandatory:"false" json:"bgpSessionConfig"`
+
+	EncryptionDomainConfig *UpdateIpSecTunnelEncryptionDomainDetails `mandatory:"false" json:"encryptionDomainConfig"`
 }
 
 func (m UpdateIpSecConnectionTunnelDetails) String() string {
@@ -44,11 +46,13 @@ type UpdateIpSecConnectionTunnelDetailsRoutingEnum string
 const (
 	UpdateIpSecConnectionTunnelDetailsRoutingBgp    UpdateIpSecConnectionTunnelDetailsRoutingEnum = "BGP"
 	UpdateIpSecConnectionTunnelDetailsRoutingStatic UpdateIpSecConnectionTunnelDetailsRoutingEnum = "STATIC"
+	UpdateIpSecConnectionTunnelDetailsRoutingPolicy UpdateIpSecConnectionTunnelDetailsRoutingEnum = "POLICY"
 )
 
 var mappingUpdateIpSecConnectionTunnelDetailsRouting = map[string]UpdateIpSecConnectionTunnelDetailsRoutingEnum{
 	"BGP":    UpdateIpSecConnectionTunnelDetailsRoutingBgp,
 	"STATIC": UpdateIpSecConnectionTunnelDetailsRoutingStatic,
+	"POLICY": UpdateIpSecConnectionTunnelDetailsRoutingPolicy,
 }
 
 // GetUpdateIpSecConnectionTunnelDetailsRoutingEnumValues Enumerates the set of values for UpdateIpSecConnectionTunnelDetailsRoutingEnum

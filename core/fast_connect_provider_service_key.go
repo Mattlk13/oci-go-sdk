@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,7 +14,7 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // FastConnectProviderServiceKey A provider service key and its details. A provider service key is an identifier for a provider's
@@ -24,9 +25,9 @@ type FastConnectProviderServiceKey struct {
 	// from the provider to Oracle Cloud Infrastructure. Use this value as the `providerServiceKeyName`
 	// query parameter for
 	// GetFastConnectProviderServiceKey.
-	Name *string `mandatory:"false" json:"name"`
+	Name *string `mandatory:"true" json:"name"`
 
-	// The provisioned data rate of the connection.  To get a list of the
+	// The provisioned data rate of the connection. To get a list of the
 	// available bandwidth levels (that is, shapes), see
 	// ListFastConnectProviderVirtualCircuitBandwidthShapes.
 	// Example: `10 Gbps`

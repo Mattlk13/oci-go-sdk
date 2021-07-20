@@ -1,18 +1,20 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// UpdateExadataInfrastructureDetails Updates the Exadata infrastructure.
+// UpdateExadataInfrastructureDetails Updates the Exadata infrastructure. Applies to Exadata Cloud@Customer instances only.
+// See UpdateCloudExadataInfrastructureDetails for information on updating Exadata Cloud Service cloud Exadata infrastructure resources.
 type UpdateExadataInfrastructureDetails struct {
 
 	// The IP address for the first control plane server.
@@ -35,6 +37,14 @@ type UpdateExadataInfrastructureDetails struct {
 
 	// The corporate network proxy for access to the control plane network.
 	CorporateProxy *string `mandatory:"false" json:"corporateProxy"`
+
+	// The list of contacts for the Exadata infrastructure.
+	Contacts []ExadataInfrastructureContact `mandatory:"false" json:"contacts"`
+
+	MaintenanceWindow *MaintenanceWindow `mandatory:"false" json:"maintenanceWindow"`
+
+	// The requested number of additional storage servers for the Exadata infrastructure.
+	AdditionalStorageCount *int `mandatory:"false" json:"additionalStorageCount"`
 
 	// The list of DNS server IP addresses. Maximum of 3 allowed.
 	DnsServer []string `mandatory:"false" json:"dnsServer"`

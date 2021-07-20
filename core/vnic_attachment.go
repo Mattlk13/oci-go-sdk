@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,11 +14,11 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // VnicAttachment Represents an attachment between a VNIC and an instance. For more information, see
-// Virtual Network Interface Cards (VNICs) (https://docs.cloud.oracle.com/Content/Network/Tasks/managingVNICs.htm).
+// Virtual Network Interface Cards (VNICs) (https://docs.cloud.oracle.com/iaas/Content/Network/Tasks/managingVNICs.htm).
 // **Warning:** Oracle recommends that you avoid using any confidential information when you
 // supply string values using the API.
 type VnicAttachment struct {
@@ -39,10 +40,7 @@ type VnicAttachment struct {
 	// The current state of the VNIC attachment.
 	LifecycleState VnicAttachmentLifecycleStateEnum `mandatory:"true" json:"lifecycleState"`
 
-	// The OCID of the VNIC's subnet.
-	SubnetId *string `mandatory:"true" json:"subnetId"`
-
-	// The date and time the VNIC attachment was created, in the format defined by RFC3339.
+	// The date and time the VNIC attachment was created, in the format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 
@@ -54,11 +52,23 @@ type VnicAttachment struct {
 	// Certain bare metal instance shapes have two active physical NICs (0 and 1). If
 	// you add a secondary VNIC to one of these instances, you can specify which NIC
 	// the VNIC will use. For more information, see
-	// Virtual Network Interface Cards (VNICs) (https://docs.cloud.oracle.com/Content/Network/Tasks/managingVNICs.htm).
+	// Virtual Network Interface Cards (VNICs) (https://docs.cloud.oracle.com/iaas/Content/Network/Tasks/managingVNICs.htm).
 	NicIndex *int `mandatory:"false" json:"nicIndex"`
+
+	// The OCID of the subnet to create the VNIC in.
+	SubnetId *string `mandatory:"false" json:"subnetId"`
+
+	// The OCID of the VLAN to create the VNIC in. Creating the VNIC in a VLAN (instead
+	// of a subnet) is possible only if you are an Oracle Cloud VMware Solution customer.
+	// See Vlan.
+	// An error is returned if the instance already has a VNIC attached to it from this VLAN.
+	VlanId *string `mandatory:"false" json:"vlanId"`
 
 	// The Oracle-assigned VLAN tag of the attached VNIC. Available after the
 	// attachment process is complete.
+	// However, if the VNIC belongs to a VLAN as part of the Oracle Cloud VMware Solution,
+	// the `vlanTag` value is instead the value of the `vlanTag` attribute for the VLAN.
+	// See Vlan.
 	// Example: `0`
 	VlanTag *int `mandatory:"false" json:"vlanTag"`
 

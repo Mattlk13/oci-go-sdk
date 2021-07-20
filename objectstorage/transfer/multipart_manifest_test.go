@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2020, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 package transfer
 
@@ -7,7 +8,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/oracle/oci-go-sdk/example/helpers"
+	"github.com/oracle/oci-go-sdk/v45/example/helpers"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,6 +20,7 @@ func TestSplitFileParts(t *testing.T) {
 		expectedInitOffset   int64
 		expectedLastOffset   int64
 		expectedLastPartSize int64
+		enableCheckSum       bool
 	}
 
 	testDataSet := []splitFilePartsTest{
@@ -29,6 +31,7 @@ func TestSplitFileParts(t *testing.T) {
 			expectedInitOffset:   10,
 			expectedLastOffset:   90,
 			expectedLastPartSize: 10,
+			enableCheckSum:       false,
 		},
 		{
 			contentLen:           30,
@@ -37,6 +40,7 @@ func TestSplitFileParts(t *testing.T) {
 			expectedInitOffset:   14,
 			expectedLastOffset:   28,
 			expectedLastPartSize: 2,
+			enableCheckSum:       false,
 		},
 	}
 
@@ -50,7 +54,7 @@ func TestSplitFileParts(t *testing.T) {
 		// UploadFileMultiparts closes the done channel when it returns; it may do so before
 		// receiving all the values from result and errc channel
 		done := make(chan struct{})
-		partsChannel := manifest.splitFileToParts(done, testData.partSize, file, fileSize)
+		partsChannel := manifest.splitFileToParts(done, testData.partSize, &testData.enableCheckSum, file, fileSize)
 
 		// read through channel
 		parts := []uploadPart{}

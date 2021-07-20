@@ -1,24 +1,35 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // ListDbHomesRequest wrapper for the ListDbHomes operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDbHomes.go.html to see an example of how to use ListDbHomesRequest.
 type ListDbHomesRequest struct {
 
 	// The compartment OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm).
 	CompartmentId *string `mandatory:"true" contributesTo:"query" name:"compartmentId"`
 
-	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the DB system.
+	// The DB system OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm). If provided, filters the results to the set of database versions which are supported for the DB system.
 	DbSystemId *string `mandatory:"false" contributesTo:"query" name:"dbSystemId"`
 
 	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the VM cluster.
 	VmClusterId *string `mandatory:"false" contributesTo:"query" name:"vmClusterId"`
+
+	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the backup. Specify a backupId to list only the DB systems or DB homes that support creating a database using this backup in this compartment.
+	BackupId *string `mandatory:"false" contributesTo:"query" name:"backupId"`
+
+	// A filter to return only DB Homes that match the specified dbVersion.
+	DbVersion *string `mandatory:"false" contributesTo:"query" name:"dbVersion"`
 
 	// The maximum number of items to return per page.
 	Limit *int `mandatory:"false" contributesTo:"query" name:"limit"`
@@ -52,8 +63,16 @@ func (request ListDbHomesRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request ListDbHomesRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request ListDbHomesRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request ListDbHomesRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.

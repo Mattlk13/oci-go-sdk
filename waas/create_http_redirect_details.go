@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Web Application Acceleration and Security Services API
@@ -9,7 +10,7 @@
 package waas
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateHttpRedirectDetails The details of a HTTP Redirect configured to redirect traffic from one hostname to another.
@@ -28,7 +29,7 @@ type CreateHttpRedirectDetails struct {
 	// The user-friendly name of the HTTP Redirect. The name can be changed and does not need to be unique.
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
-	// The response code returned for the redirect to the client. reference - https://tools.ietf.org/html/rfc7231#section-6.4
+	// The response code returned for the redirect to the client. For more information, see RFC 7231 (https://tools.ietf.org/html/rfc7231#section-6.4).
 	ResponseCode *int `mandatory:"false" json:"responseCode"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no predefined name, type, or namespace.

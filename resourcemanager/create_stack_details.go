@@ -1,19 +1,23 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Resource Manager API
 //
-// API for the Resource Manager service. Use this API to install, configure, and manage resources via the "infrastructure-as-code" model. For more information, see Overview of Resource Manager (https://docs.cloud.oracle.com/iaas/Content/ResourceManager/Concepts/resourcemanager.htm).
+// API for the Resource Manager service.
+// Use this API to install, configure, and manage resources via the "infrastructure-as-code" model.
+// For more information, see
+// Overview of Resource Manager (https://docs.cloud.oracle.com/iaas/Content/ResourceManager/Concepts/resourcemanager.htm).
 //
 
 package resourcemanager
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// CreateStackDetails Properties provided for creating a stack.
+// CreateStackDetails The configuration details for creating a stack.
 type CreateStackDetails struct {
 
 	// Unique identifier (OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm)) of the compartment in which the stack resides.
@@ -28,7 +32,7 @@ type CreateStackDetails struct {
 	Description *string `mandatory:"false" json:"description"`
 
 	// Terraform variables associated with this resource.
-	// Maximum number of variables supported is 100.
+	// Maximum number of variables supported is 250.
 	// The maximum size of each variable, including both name and value, is 4096 bytes.
 	// Example: `{"CompartmentId": "compartment-id-value"}`
 	Variables map[string]string `mandatory:"false" json:"variables"`
@@ -68,14 +72,22 @@ func (m *CreateStackDetails) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.DisplayName = model.DisplayName
+
 	m.Description = model.Description
+
 	m.Variables = model.Variables
+
 	m.TerraformVersion = model.TerraformVersion
+
 	m.FreeformTags = model.FreeformTags
+
 	m.DefinedTags = model.DefinedTags
+
 	m.CompartmentId = model.CompartmentId
-	nn, e := model.ConfigSource.UnmarshalPolymorphicJSON(model.ConfigSource.JsonData)
+
+	nn, e = model.ConfigSource.UnmarshalPolymorphicJSON(model.ConfigSource.JsonData)
 	if e != nil {
 		return
 	}
@@ -84,5 +96,6 @@ func (m *CreateStackDetails) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.ConfigSource = nil
 	}
+
 	return
 }

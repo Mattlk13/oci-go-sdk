@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,7 +14,7 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // PrivateIp A *private IP* is a conceptual term that refers to an IPv4 private IP address and related properties.
@@ -26,7 +27,7 @@ import (
 // automatically deleted when the VNIC is terminated.
 // You can add *secondary private IPs* to a VNIC after it's created. For more
 // information, see the `privateIp` operations and also
-// IP Addresses (https://docs.cloud.oracle.com/Content/Network/Tasks/managingIPaddresses.htm).
+// IP Addresses (https://docs.cloud.oracle.com/iaas/Content/Network/Tasks/managingIPaddresses.htm).
 // **Note:** Only
 // ListPrivateIps and
 // GetPrivateIp work with
@@ -37,11 +38,13 @@ import (
 // LaunchInstance or
 // AttachVnic. To update the hostname
 // for a primary private IP, you use UpdateVnic.
+// `PrivateIp` objects that are created for use with the Oracle Cloud VMware Solution are
+// assigned to a VLAN and not a VNIC in a subnet. See the
+// descriptions of the relevant attributes in the `PrivateIp` object. Also see
+// Vlan.
 // To use any of the API operations, you must be authorized in an IAM policy. If you're not authorized,
 // talk to an administrator. If you're an administrator who needs to write policies to give users access, see
-// Getting Started with Policies (https://docs.cloud.oracle.com/Content/Identity/Concepts/policygetstarted.htm).
-// **Warning:** Oracle recommends that you avoid using any confidential information when you
-// supply string values using the API.
+// Getting Started with Policies (https://docs.cloud.oracle.com/iaas/Content/Identity/Concepts/policygetstarted.htm).
 type PrivateIp struct {
 
 	// The private IP's availability domain. This attribute will be null if this is a *secondary*
@@ -53,7 +56,7 @@ type PrivateIp struct {
 	CompartmentId *string `mandatory:"false" json:"compartmentId"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
@@ -62,7 +65,7 @@ type PrivateIp struct {
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
@@ -73,7 +76,7 @@ type PrivateIp struct {
 	// RFC 952 (https://tools.ietf.org/html/rfc952) and
 	// RFC 1123 (https://tools.ietf.org/html/rfc1123).
 	// For more information, see
-	// DNS in Your Virtual Cloud Network (https://docs.cloud.oracle.com/Content/Network/Concepts/dns.htm).
+	// DNS in Your Virtual Cloud Network (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/dns.htm).
 	// Example: `bminstance-1`
 	HostnameLabel *string `mandatory:"false" json:"hostnameLabel"`
 
@@ -82,6 +85,9 @@ type PrivateIp struct {
 
 	// The private IP address of the `privateIp` object. The address is within the CIDR
 	// of the VNIC's subnet.
+	// However, if the `PrivateIp` object is being used with a VLAN as part of
+	// the Oracle Cloud VMware Solution, the address is from the range specified by the
+	// `cidrBlock` attribute for the VLAN. See Vlan.
 	// Example: `10.0.3.3`
 	IpAddress *string `mandatory:"false" json:"ipAddress"`
 
@@ -90,15 +96,24 @@ type PrivateIp struct {
 	// Example: `true`
 	IsPrimary *bool `mandatory:"false" json:"isPrimary"`
 
+	// Applicable only if the `PrivateIp` object is being used with a VLAN as part of
+	// the Oracle Cloud VMware Solution. The `vlanId` is the OCID of the VLAN. See
+	// Vlan.
+	VlanId *string `mandatory:"false" json:"vlanId"`
+
 	// The OCID of the subnet the VNIC is in.
+	// However, if the `PrivateIp` object is being used with a VLAN as part of
+	// the Oracle Cloud VMware Solution, the `subnetId` is null.
 	SubnetId *string `mandatory:"false" json:"subnetId"`
 
-	// The date and time the private IP was created, in the format defined by RFC3339.
+	// The date and time the private IP was created, in the format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"false" json:"timeCreated"`
 
 	// The OCID of the VNIC the private IP is assigned to. The VNIC and private IP
 	// must be in the same subnet.
+	// However, if the `PrivateIp` object is being used with a VLAN as part of
+	// the Oracle Cloud VMware Solution, the `vnicId` is null.
 	VnicId *string `mandatory:"false" json:"vnicId"`
 }
 

@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Identity and Access Management Service API
@@ -9,7 +10,7 @@
 package identity
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // User An individual employee or system that needs to manage or use your company's Oracle Cloud Infrastructure
@@ -17,7 +18,7 @@ import (
 // have one or more IAM Service credentials (ApiKey,
 // UIPassword, SwiftPassword and
 // AuthToken).
-// For more information, see User Credentials (https://docs.cloud.oracle.com/Content/API/Concepts/usercredentials.htm)). End users of your
+// For more information, see User Credentials (https://docs.cloud.oracle.com/Content/Identity/Concepts/usercredentials.htm)). End users of your
 // application are not typically IAM Service users. For conceptual information about users and other IAM Service
 // components, see Overview of the IAM Service (https://docs.cloud.oracle.com/Content/Identity/Concepts/overview.htm).
 // These users are created directly within the Oracle Cloud Infrastructure system, via the IAM service.
@@ -59,6 +60,9 @@ type User struct {
 	// The email address must be unique across all users in the tenancy.
 	Email *string `mandatory:"false" json:"email"`
 
+	// Whether the email address has been validated.
+	EmailVerified *bool `mandatory:"false" json:"emailVerified"`
+
 	// The OCID of the `IdentityProvider` this user belongs to.
 	IdentityProviderId *string `mandatory:"false" json:"identityProviderId"`
 
@@ -82,8 +86,27 @@ type User struct {
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
-	// Properties indicating how the user is allowed to authenticate.
 	Capabilities *UserCapabilities `mandatory:"false" json:"capabilities"`
+
+	// The date and time of when the user most recently logged in the
+	// format defined by RFC3339 (ex. `2016-08-25T21:10:29.600Z`).
+	// If there is no login history, this field is null.
+	// For illustrative purposes, suppose we have a user who has logged in
+	// at July 1st, 2020 at 1200 PST and logged out 30 minutes later.
+	// They then login again on July 2nd, 2020 at 1500 PST.
+	// Their previousSuccessfulLoginTime would be `2020-07-01:19:00.000Z`.
+	// Their lastSuccessfulLoginTime would be `2020-07-02:22:00.000Z`.
+	LastSuccessfulLoginTime *common.SDKTime `mandatory:"false" json:"lastSuccessfulLoginTime"`
+
+	// The date and time of when the user most recently logged in the
+	// format defined by RFC3339 (ex. `2016-08-25T21:10:29.600Z`).
+	// If there is no login history, this field is null.
+	// For illustrative purposes, suppose we have a user who has logged in
+	// at July 1st, 2020 at 1200 PST and logged out 30 minutes later.
+	// They then login again on July 2nd, 2020 at 1500 PST.
+	// Their previousSuccessfulLoginTime would be `2020-07-01:19:00.000Z`.
+	// Their lastSuccessfulLoginTime would be `2020-07-02:22:00.000Z`.
+	PreviousSuccessfulLoginTime *common.SDKTime `mandatory:"false" json:"previousSuccessfulLoginTime"`
 }
 
 func (m User) String() string {

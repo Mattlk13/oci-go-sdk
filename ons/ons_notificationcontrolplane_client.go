@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Notifications API
@@ -12,7 +13,8 @@ package ons
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -25,11 +27,30 @@ type NotificationControlPlaneClient struct {
 // NewNotificationControlPlaneClientWithConfigurationProvider Creates a new default NotificationControlPlane client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewNotificationControlPlaneClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client NotificationControlPlaneClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newNotificationControlPlaneClientFromBaseClient(baseClient, provider)
+}
+
+// NewNotificationControlPlaneClientWithOboToken Creates a new default NotificationControlPlane client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewNotificationControlPlaneClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client NotificationControlPlaneClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newNotificationControlPlaneClientFromBaseClient(baseClient, configProvider)
+}
+
+func newNotificationControlPlaneClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client NotificationControlPlaneClient, err error) {
 	client = NotificationControlPlaneClient{BaseClient: baseClient}
 	client.BasePath = "20181201"
 	err = client.setConfigurationProvider(configProvider)
@@ -38,7 +59,7 @@ func NewNotificationControlPlaneClientWithConfigurationProvider(configProvider c
 
 // SetRegion overrides the region of this client.
 func (client *NotificationControlPlaneClient) SetRegion(region string) {
-	client.Host = common.StringToRegion(region).EndpointForTemplate("notifications", "https://notification.{region}.oraclecloud.com")
+	client.Host = common.StringToRegion(region).EndpointForTemplate("notification", "https://notification.{region}.{secondLevelDomain}")
 }
 
 // SetConfigurationProvider sets the configuration provider including the region, returns an error if is not valid
@@ -63,9 +84,16 @@ func (client *NotificationControlPlaneClient) ConfigurationProvider() *common.Co
 // between compartments, see
 // Moving Resources to a Different Compartment (https://docs.cloud.oracle.com/iaas/Content/Identity/Tasks/managingcompartments.htm#moveRes).
 // Transactions Per Minute (TPM) per-tenancy limit for this operation: 60.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/ons/ChangeTopicCompartment.go.html to see an example of how to use ChangeTopicCompartment API.
 func (client NotificationControlPlaneClient) ChangeTopicCompartment(ctx context.Context, request ChangeTopicCompartmentRequest) (response ChangeTopicCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -77,7 +105,12 @@ func (client NotificationControlPlaneClient) ChangeTopicCompartment(ctx context.
 	ociResponse, err = common.Retry(ctx, request, client.changeTopicCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeTopicCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeTopicCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeTopicCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -90,8 +123,9 @@ func (client NotificationControlPlaneClient) ChangeTopicCompartment(ctx context.
 }
 
 // changeTopicCompartment implements the OCIOperation interface (enables retrying operations)
-func (client NotificationControlPlaneClient) changeTopicCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/topics/{topicId}/actions/changeCompartment")
+func (client NotificationControlPlaneClient) changeTopicCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/topics/{topicId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -119,9 +153,16 @@ func (client NotificationControlPlaneClient) changeTopicCompartment(ctx context.
 // retrieve a resource's OCID by using a List API operation on that resource type, or by viewing the resource in the
 // Console. For more information, see Resource Identifiers (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm).
 // Transactions Per Minute (TPM) per-tenancy limit for this operation: 60.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/ons/CreateTopic.go.html to see an example of how to use CreateTopic API.
 func (client NotificationControlPlaneClient) CreateTopic(ctx context.Context, request CreateTopicRequest) (response CreateTopicResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -133,7 +174,12 @@ func (client NotificationControlPlaneClient) CreateTopic(ctx context.Context, re
 	ociResponse, err = common.Retry(ctx, request, client.createTopic, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateTopicResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateTopicResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateTopicResponse{}
+			}
 		}
 		return
 	}
@@ -146,8 +192,9 @@ func (client NotificationControlPlaneClient) CreateTopic(ctx context.Context, re
 }
 
 // createTopic implements the OCIOperation interface (enables retrying operations)
-func (client NotificationControlPlaneClient) createTopic(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/topics")
+func (client NotificationControlPlaneClient) createTopic(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/topics", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -167,16 +214,28 @@ func (client NotificationControlPlaneClient) createTopic(ctx context.Context, re
 
 // DeleteTopic Deletes the specified topic.
 // Transactions Per Minute (TPM) per-tenancy limit for this operation: 60.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/ons/DeleteTopic.go.html to see an example of how to use DeleteTopic API.
 func (client NotificationControlPlaneClient) DeleteTopic(ctx context.Context, request DeleteTopicRequest) (response DeleteTopicResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteTopic, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteTopicResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteTopicResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteTopicResponse{}
+			}
 		}
 		return
 	}
@@ -189,8 +248,9 @@ func (client NotificationControlPlaneClient) DeleteTopic(ctx context.Context, re
 }
 
 // deleteTopic implements the OCIOperation interface (enables retrying operations)
-func (client NotificationControlPlaneClient) deleteTopic(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/topics/{topicId}")
+func (client NotificationControlPlaneClient) deleteTopic(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/topics/{topicId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -209,16 +269,28 @@ func (client NotificationControlPlaneClient) deleteTopic(ctx context.Context, re
 }
 
 // GetTopic Gets the specified topic's configuration information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/ons/GetTopic.go.html to see an example of how to use GetTopic API.
 func (client NotificationControlPlaneClient) GetTopic(ctx context.Context, request GetTopicRequest) (response GetTopicResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getTopic, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetTopicResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetTopicResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetTopicResponse{}
+			}
 		}
 		return
 	}
@@ -231,8 +303,9 @@ func (client NotificationControlPlaneClient) GetTopic(ctx context.Context, reque
 }
 
 // getTopic implements the OCIOperation interface (enables retrying operations)
-func (client NotificationControlPlaneClient) getTopic(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/topics/{topicId}")
+func (client NotificationControlPlaneClient) getTopic(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/topics/{topicId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -252,16 +325,28 @@ func (client NotificationControlPlaneClient) getTopic(ctx context.Context, reque
 
 // ListTopics Lists topics in the specified compartment.
 // Transactions Per Minute (TPM) per-tenancy limit for this operation: 120.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/ons/ListTopics.go.html to see an example of how to use ListTopics API.
 func (client NotificationControlPlaneClient) ListTopics(ctx context.Context, request ListTopicsRequest) (response ListTopicsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listTopics, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListTopicsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListTopicsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListTopicsResponse{}
+			}
 		}
 		return
 	}
@@ -274,8 +359,9 @@ func (client NotificationControlPlaneClient) ListTopics(ctx context.Context, req
 }
 
 // listTopics implements the OCIOperation interface (enables retrying operations)
-func (client NotificationControlPlaneClient) listTopics(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/topics")
+func (client NotificationControlPlaneClient) listTopics(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/topics", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -295,16 +381,28 @@ func (client NotificationControlPlaneClient) listTopics(ctx context.Context, req
 
 // UpdateTopic Updates the specified topic's configuration.
 // Transactions Per Minute (TPM) per-tenancy limit for this operation: 60.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/ons/UpdateTopic.go.html to see an example of how to use UpdateTopic API.
 func (client NotificationControlPlaneClient) UpdateTopic(ctx context.Context, request UpdateTopicRequest) (response UpdateTopicResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateTopic, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateTopicResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateTopicResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateTopicResponse{}
+			}
 		}
 		return
 	}
@@ -317,8 +415,9 @@ func (client NotificationControlPlaneClient) UpdateTopic(ctx context.Context, re
 }
 
 // updateTopic implements the OCIOperation interface (enables retrying operations)
-func (client NotificationControlPlaneClient) updateTopic(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/topics/{topicId}")
+func (client NotificationControlPlaneClient) updateTopic(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/topics/{topicId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

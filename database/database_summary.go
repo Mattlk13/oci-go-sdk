@@ -1,15 +1,16 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // DatabaseSummary An Oracle Database on a bare metal or virtual machine DB system. For more information, see Bare Metal and Virtual Machine DB Systems (https://docs.cloud.oracle.com/Content/Database/Concepts/overview.htm).
@@ -38,20 +39,29 @@ type DatabaseSummary struct {
 	// The national character set for the database.
 	NcharacterSet *string `mandatory:"false" json:"ncharacterSet"`
 
-	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the database home.
+	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the Database Home.
 	DbHomeId *string `mandatory:"false" json:"dbHomeId"`
 
-	// The name of the pluggable database. The name must begin with an alphabetic character and can contain a maximum of eight alphanumeric characters. Special characters are not permitted. Pluggable database should not be same as database name.
+	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the DB system.
+	DbSystemId *string `mandatory:"false" json:"dbSystemId"`
+
+	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the VM cluster.
+	VmClusterId *string `mandatory:"false" json:"vmClusterId"`
+
+	// The name of the pluggable database. The name must begin with an alphabetic character and can contain a maximum of thirty alphanumeric characters. Special characters are not permitted. Pluggable database should not be same as database name.
 	PdbName *string `mandatory:"false" json:"pdbName"`
 
 	// The database workload type.
 	DbWorkload *string `mandatory:"false" json:"dbWorkload"`
 
-	// Additional information about the current lifecycleState.
+	// Additional information about the current lifecycle state.
 	LifecycleDetails *string `mandatory:"false" json:"lifecycleDetails"`
 
 	// The date and time the database was created.
 	TimeCreated *common.SDKTime `mandatory:"false" json:"timeCreated"`
+
+	// The date and time when the latest database backup was created.
+	LastBackupTimestamp *common.SDKTime `mandatory:"false" json:"lastBackupTimestamp"`
 
 	DbBackupConfig *DbBackupConfig `mandatory:"false" json:"dbBackupConfig"`
 
@@ -66,6 +76,15 @@ type DatabaseSummary struct {
 
 	// The Connection strings used to connect to the Oracle Database.
 	ConnectionStrings *DatabaseConnectionStrings `mandatory:"false" json:"connectionStrings"`
+
+	// The OCID of the key container that is used as the master encryption key in database transparent data encryption (TDE) operations.
+	KmsKeyId *string `mandatory:"false" json:"kmsKeyId"`
+
+	// Point in time recovery timeStamp of the source database at which cloned database system is cloned from the source database system, as described in RFC 3339 (https://tools.ietf.org/rfc/rfc3339)
+	SourceDatabasePointInTimeRecoveryTimestamp *common.SDKTime `mandatory:"false" json:"sourceDatabasePointInTimeRecoveryTimestamp"`
+
+	// The database software image OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm)
+	DatabaseSoftwareImageId *string `mandatory:"false" json:"databaseSoftwareImageId"`
 }
 
 func (m DatabaseSummary) String() string {
@@ -81,6 +100,7 @@ const (
 	DatabaseSummaryLifecycleStateAvailable        DatabaseSummaryLifecycleStateEnum = "AVAILABLE"
 	DatabaseSummaryLifecycleStateUpdating         DatabaseSummaryLifecycleStateEnum = "UPDATING"
 	DatabaseSummaryLifecycleStateBackupInProgress DatabaseSummaryLifecycleStateEnum = "BACKUP_IN_PROGRESS"
+	DatabaseSummaryLifecycleStateUpgrading        DatabaseSummaryLifecycleStateEnum = "UPGRADING"
 	DatabaseSummaryLifecycleStateTerminating      DatabaseSummaryLifecycleStateEnum = "TERMINATING"
 	DatabaseSummaryLifecycleStateTerminated       DatabaseSummaryLifecycleStateEnum = "TERMINATED"
 	DatabaseSummaryLifecycleStateRestoreFailed    DatabaseSummaryLifecycleStateEnum = "RESTORE_FAILED"
@@ -92,6 +112,7 @@ var mappingDatabaseSummaryLifecycleState = map[string]DatabaseSummaryLifecycleSt
 	"AVAILABLE":          DatabaseSummaryLifecycleStateAvailable,
 	"UPDATING":           DatabaseSummaryLifecycleStateUpdating,
 	"BACKUP_IN_PROGRESS": DatabaseSummaryLifecycleStateBackupInProgress,
+	"UPGRADING":          DatabaseSummaryLifecycleStateUpgrading,
 	"TERMINATING":        DatabaseSummaryLifecycleStateTerminating,
 	"TERMINATED":         DatabaseSummaryLifecycleStateTerminated,
 	"RESTORE_FAILED":     DatabaseSummaryLifecycleStateRestoreFailed,

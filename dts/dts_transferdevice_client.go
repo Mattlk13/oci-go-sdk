@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Data Transfer Service API
@@ -11,7 +12,8 @@ package dts
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type TransferDeviceClient struct {
 // NewTransferDeviceClientWithConfigurationProvider Creates a new default TransferDevice client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewTransferDeviceClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client TransferDeviceClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newTransferDeviceClientFromBaseClient(baseClient, provider)
+}
+
+// NewTransferDeviceClientWithOboToken Creates a new default TransferDevice client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewTransferDeviceClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client TransferDeviceClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newTransferDeviceClientFromBaseClient(baseClient, configProvider)
+}
+
+func newTransferDeviceClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client TransferDeviceClient, err error) {
 	client = TransferDeviceClient{BaseClient: baseClient}
 	client.BasePath = "20171001"
 	err = client.setConfigurationProvider(configProvider)
@@ -37,7 +58,7 @@ func NewTransferDeviceClientWithConfigurationProvider(configProvider common.Conf
 
 // SetRegion overrides the region of this client.
 func (client *TransferDeviceClient) SetRegion(region string) {
-	client.Host = common.StringToRegion(region).EndpointForTemplate("dts", "https://datatransfer.{region}.{secondLevelDomain}")
+	client.Host = common.StringToRegion(region).EndpointForTemplate("dts", "https://datatransfer.{region}.oci.{secondLevelDomain}")
 }
 
 // SetConfigurationProvider sets the configuration provider including the region, returns an error if is not valid
@@ -59,9 +80,16 @@ func (client *TransferDeviceClient) ConfigurationProvider() *common.Configuratio
 }
 
 // CreateTransferDevice Create a new Transfer Device
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/CreateTransferDevice.go.html to see an example of how to use CreateTransferDevice API.
 func (client TransferDeviceClient) CreateTransferDevice(ctx context.Context, request CreateTransferDeviceRequest) (response CreateTransferDeviceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -73,7 +101,12 @@ func (client TransferDeviceClient) CreateTransferDevice(ctx context.Context, req
 	ociResponse, err = common.Retry(ctx, request, client.createTransferDevice, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateTransferDeviceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateTransferDeviceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateTransferDeviceResponse{}
+			}
 		}
 		return
 	}
@@ -86,8 +119,9 @@ func (client TransferDeviceClient) CreateTransferDevice(ctx context.Context, req
 }
 
 // createTransferDevice implements the OCIOperation interface (enables retrying operations)
-func (client TransferDeviceClient) createTransferDevice(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferJobs/{id}/transferDevices")
+func (client TransferDeviceClient) createTransferDevice(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferJobs/{id}/transferDevices", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -106,16 +140,28 @@ func (client TransferDeviceClient) createTransferDevice(ctx context.Context, req
 }
 
 // DeleteTransferDevice deletes a transfer Device
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/DeleteTransferDevice.go.html to see an example of how to use DeleteTransferDevice API.
 func (client TransferDeviceClient) DeleteTransferDevice(ctx context.Context, request DeleteTransferDeviceRequest) (response DeleteTransferDeviceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteTransferDevice, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteTransferDeviceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteTransferDeviceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteTransferDeviceResponse{}
+			}
 		}
 		return
 	}
@@ -128,8 +174,9 @@ func (client TransferDeviceClient) DeleteTransferDevice(ctx context.Context, req
 }
 
 // deleteTransferDevice implements the OCIOperation interface (enables retrying operations)
-func (client TransferDeviceClient) deleteTransferDevice(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/transferJobs/{id}/transferDevices/{transferDeviceLabel}")
+func (client TransferDeviceClient) deleteTransferDevice(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/transferJobs/{id}/transferDevices/{transferDeviceLabel}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -148,16 +195,28 @@ func (client TransferDeviceClient) deleteTransferDevice(ctx context.Context, req
 }
 
 // GetTransferDevice Describes a transfer package in detail
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/GetTransferDevice.go.html to see an example of how to use GetTransferDevice API.
 func (client TransferDeviceClient) GetTransferDevice(ctx context.Context, request GetTransferDeviceRequest) (response GetTransferDeviceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getTransferDevice, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetTransferDeviceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetTransferDeviceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetTransferDeviceResponse{}
+			}
 		}
 		return
 	}
@@ -170,8 +229,9 @@ func (client TransferDeviceClient) GetTransferDevice(ctx context.Context, reques
 }
 
 // getTransferDevice implements the OCIOperation interface (enables retrying operations)
-func (client TransferDeviceClient) getTransferDevice(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferDevices/{transferDeviceLabel}")
+func (client TransferDeviceClient) getTransferDevice(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferDevices/{transferDeviceLabel}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -190,16 +250,28 @@ func (client TransferDeviceClient) getTransferDevice(ctx context.Context, reques
 }
 
 // ListTransferDevices Lists Transfer Devices associated with a transferJob
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/ListTransferDevices.go.html to see an example of how to use ListTransferDevices API.
 func (client TransferDeviceClient) ListTransferDevices(ctx context.Context, request ListTransferDevicesRequest) (response ListTransferDevicesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listTransferDevices, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListTransferDevicesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListTransferDevicesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListTransferDevicesResponse{}
+			}
 		}
 		return
 	}
@@ -212,8 +284,9 @@ func (client TransferDeviceClient) ListTransferDevices(ctx context.Context, requ
 }
 
 // listTransferDevices implements the OCIOperation interface (enables retrying operations)
-func (client TransferDeviceClient) listTransferDevices(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferDevices")
+func (client TransferDeviceClient) listTransferDevices(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferJobs/{id}/transferDevices", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -232,16 +305,28 @@ func (client TransferDeviceClient) listTransferDevices(ctx context.Context, requ
 }
 
 // UpdateTransferDevice Updates a Transfer Device
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/UpdateTransferDevice.go.html to see an example of how to use UpdateTransferDevice API.
 func (client TransferDeviceClient) UpdateTransferDevice(ctx context.Context, request UpdateTransferDeviceRequest) (response UpdateTransferDeviceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateTransferDevice, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateTransferDeviceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateTransferDeviceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateTransferDeviceResponse{}
+			}
 		}
 		return
 	}
@@ -254,8 +339,9 @@ func (client TransferDeviceClient) UpdateTransferDevice(ctx context.Context, req
 }
 
 // updateTransferDevice implements the OCIOperation interface (enables retrying operations)
-func (client TransferDeviceClient) updateTransferDevice(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/transferJobs/{id}/transferDevices/{transferDeviceLabel}")
+func (client TransferDeviceClient) updateTransferDevice(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/transferJobs/{id}/transferDevices/{transferDeviceLabel}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

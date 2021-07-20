@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,14 +14,14 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // UpdateBootVolumeDetails The representation of UpdateBootVolumeDetails
 type UpdateBootVolumeDetails struct {
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
@@ -29,12 +30,27 @@ type UpdateBootVolumeDetails struct {
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
 	// The size to resize the volume to in GBs. Has to be larger than the current size.
 	SizeInGBs *int64 `mandatory:"false" json:"sizeInGBs"`
+
+	// The number of volume performance units (VPUs) that will be applied to this volume per GB,
+	// representing the Block Volume service's elastic performance options.
+	// See Block Volume Elastic Performance (https://docs.cloud.oracle.com/iaas/Content/Block/Concepts/blockvolumeelasticperformance.htm) for more information.
+	// Allowed values:
+	//   * `10`: Represents Balanced option.
+	//   * `20`: Represents Higher Performance option.
+	VpusPerGB *int64 `mandatory:"false" json:"vpusPerGB"`
+
+	// Specifies whether the auto-tune performance is enabled for this boot volume.
+	IsAutoTuneEnabled *bool `mandatory:"false" json:"isAutoTuneEnabled"`
+
+	// The list of boot volume replicas that this boot volume will be updated to have
+	// in the specified destination availability domains.
+	BootVolumeReplicas []BootVolumeReplicaDetails `mandatory:"false" json:"bootVolumeReplicas"`
 }
 
 func (m UpdateBootVolumeDetails) String() string {

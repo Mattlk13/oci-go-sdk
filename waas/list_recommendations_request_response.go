@@ -1,14 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package waas
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // ListRecommendationsRequest wrapper for the ListRecommendations operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/waas/ListRecommendations.go.html to see an example of how to use ListRecommendationsRequest.
 type ListRecommendationsRequest struct {
 
 	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the WAAS policy.
@@ -20,7 +25,7 @@ type ListRecommendationsRequest struct {
 	// A filter that matches recommended protection rules based on the selected action. If unspecified, rules with any action type are returned.
 	RecommendedAction ListRecommendationsRecommendedActionEnum `mandatory:"false" contributesTo:"query" name:"recommendedAction" omitEmpty:"true"`
 
-	// The maximum number of items to return in a paginated call. In unspecified, defaults to `10`.
+	// The maximum number of items to return in a paginated call. If unspecified, defaults to `10`.
 	Limit *int `mandatory:"false" contributesTo:"query" name:"limit"`
 
 	// The value of the `opc-next-page` response header from the previous paginated call.
@@ -36,8 +41,16 @@ func (request ListRecommendationsRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request ListRecommendationsRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request ListRecommendationsRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request ListRecommendationsRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.

@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Web Application Acceleration and Security Services API
@@ -9,10 +10,10 @@
 package waas
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// WafLog A list of Web Application Firewall log entries. Each entry is a JSON object, including a timestamp property and other fields varying based on log type. Logs record what rules and countermeasures are triggered by requests and are used as a basis to move request handling into block mode. For more information about WAF logs, see WAF Logs (https://docs.cloud.oracle.com/iaas/Content/WAF/Tasks/waflogs.htm).
+// WafLog A list of Web Application Firewall log entries. Each entry is a JSON object, including a timestamp property and other fields varying based on log type. Logs record what rules and countermeasures are triggered by requests and are used as a basis to move request handling into block mode. For more information about WAF logs, see Logs (https://docs.cloud.oracle.com/iaas/Content/WAF/Tasks/logs.htm).
 type WafLog struct {
 
 	// The action taken on the request, either `ALLOW`, `DETECT`, or `BLOCK`.
@@ -101,7 +102,7 @@ type WafLog struct {
 	// The date and time the Web Application Firewall processed the request and logged it.
 	Timestamp *common.SDKTime `mandatory:"false" json:"timestamp"`
 
-	// The type of log of the request. For more about log types, see WAF Logs (https://docs.cloud.oracle.com/iaas/Content/WAF/Tasks/waflogs.htm).
+	// The type of log of the request. For more about log types, see Logs (https://docs.cloud.oracle.com/iaas/Content/WAF/Tasks/logs.htm).
 	LogType *string `mandatory:"false" json:"logType"`
 
 	// The address of the origin server where the request was sent.

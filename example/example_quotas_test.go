@@ -1,7 +1,7 @@
-// Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
-// This is an example demonstrating how Quotas can be managed using the OCI Golang SDK
-
+// Example code for demonstrating how Quotas can be managed using the OCI Golang SDK
 // This example will perform the following operations sequentially-
 // - Create a Quota
 // - Get the created Quota
@@ -19,10 +19,10 @@ package example
 
 // Import necessary packages
 import (
-	"context"                             // To supply to the Quotas client while making requests
-	"fmt"                                 // To print to the console
-	"github.com/oracle/oci-go-sdk/common" // For common OCI types
-	"github.com/oracle/oci-go-sdk/limits" // For types and methods corresponding to Limits
+	"context"                                 // To supply to the Quotas client while making requests
+	"fmt"                                     // To print to the console
+	"github.com/oracle/oci-go-sdk/v45/common" // For common OCI types
+	"github.com/oracle/oci-go-sdk/v45/limits" // For types and methods corresponding to Limits
 )
 
 // Creates a new Quota with the details given in createQuotaDetails

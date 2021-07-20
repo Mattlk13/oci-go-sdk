@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,16 +14,16 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // BootVolumeBackup A point-in-time copy of a boot volume that can then be used to create
 // a new boot volume or recover a boot volume. For more information, see Overview
-// of Boot Volume Backups (https://docs.cloud.oracle.com/Content/Block/Concepts/bootvolumebackups.htm)
+// of Boot Volume Backups (https://docs.cloud.oracle.com/iaas/Content/Block/Concepts/bootvolumebackups.htm)
 // To use any of the API operations, you must be authorized in an IAM policy.
 // If you're not authorized, talk to an administrator. If you're an administrator
 // who needs to write policies to give users access, see Getting Started with
-// Policies (https://docs.cloud.oracle.com/Content/Identity/Concepts/policygetstarted.htm).
+// Policies (https://docs.cloud.oracle.com/iaas/Content/Identity/Concepts/policygetstarted.htm).
 // **Warning:** Oracle recommends that you avoid using any confidential information when you
 // supply string values using the API.
 type BootVolumeBackup struct {
@@ -41,14 +42,14 @@ type BootVolumeBackup struct {
 	LifecycleState BootVolumeBackupLifecycleStateEnum `mandatory:"true" json:"lifecycleState"`
 
 	// The date and time the boot volume backup was created. This is the time the actual point-in-time image
-	// of the volume data was taken. Format defined by RFC3339.
+	// of the volume data was taken. Format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 
 	// The OCID of the boot volume.
 	BootVolumeId *string `mandatory:"false" json:"bootVolumeId"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
@@ -57,33 +58,36 @@ type BootVolumeBackup struct {
 	SystemTags map[string]map[string]interface{} `mandatory:"false" json:"systemTags"`
 
 	// The date and time the volume backup will expire and be automatically deleted.
-	// Format defined by RFC3339. This parameter will always be present for backups that
+	// Format defined by RFC3339 (https://tools.ietf.org/html/rfc3339). This parameter will always be present for backups that
 	// were created automatically by a scheduled-backup policy. For manually created backups,
 	// it will be absent, signifying that there is no expiration time and the backup will
 	// last forever until manually deleted.
 	ExpirationTime *common.SDKTime `mandatory:"false" json:"expirationTime"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
 	// The image OCID used to create the boot volume the backup is taken from.
 	ImageId *string `mandatory:"false" json:"imageId"`
 
-	// The OCID of the KMS key which is the master encryption key for the boot volume backup.
+	// The OCID of the Key Management master encryption assigned to the boot volume backup.
 	// For more information about the Key Management service and encryption keys, see
-	// Overview of Key Management (https://docs.cloud.oracle.com/Content/KeyManagement/Concepts/keyoverview.htm) and
-	// Using Keys (https://docs.cloud.oracle.com/Content/KeyManagement/Tasks/usingkeys.htm).
+	// Overview of Key Management (https://docs.cloud.oracle.com/iaas/Content/KeyManagement/Concepts/keyoverview.htm) and
+	// Using Keys (https://docs.cloud.oracle.com/iaas/Content/KeyManagement/Tasks/usingkeys.htm).
 	KmsKeyId *string `mandatory:"false" json:"kmsKeyId"`
 
 	// The size of the boot volume, in GBs.
 	SizeInGBs *int64 `mandatory:"false" json:"sizeInGBs"`
 
+	// The OCID of the source boot volume backup.
+	SourceBootVolumeBackupId *string `mandatory:"false" json:"sourceBootVolumeBackupId"`
+
 	// Specifies whether the backup was created manually, or via scheduled backup policy.
 	SourceType BootVolumeBackupSourceTypeEnum `mandatory:"false" json:"sourceType,omitempty"`
 
-	// The date and time the request to create the boot volume backup was received. Format defined by RFC3339.
+	// The date and time the request to create the boot volume backup was received. Format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	TimeRequestReceived *common.SDKTime `mandatory:"false" json:"timeRequestReceived"`
 
 	// The type of a volume backup.

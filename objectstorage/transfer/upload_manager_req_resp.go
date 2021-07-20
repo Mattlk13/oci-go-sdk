@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2020, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 package transfer
 
@@ -8,8 +9,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/oracle/oci-go-sdk/common"
-	"github.com/oracle/oci-go-sdk/objectstorage"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/objectstorage"
 )
 
 // requestValidator validate user's input and assign default values if not defined
@@ -33,6 +34,7 @@ type UploadRequest struct {
 	ObjectName *string `mandatory:"true"`
 
 	// [Optional] Override the default part size of 128 MiB, value is in bytes.
+	// The max part size is 50GiB
 	PartSize *int64 `mandatory:"false"`
 
 	// [Optional] Whether or not this UploadManager supports performing mulitpart uploads. Defaults to True.
@@ -43,12 +45,13 @@ type UploadRequest struct {
 	AllowParrallelUploads *bool `mandatory:"false"`
 
 	// The number of go routines for uploading individual parts of a multipart upload.
-	// This setting is only used if allow_parallel_uploads is set to True. Defaults to 10.
-	// TODO: check with service team for upper bounds of the concurrent number of uploads
-	// and update the document here
+	// This setting is only used if allow_parallel_uploads is set to True. Defaults to 5.
+	// The upper bounds of the number is 10,000.
 	NumberOfGoroutines *int `mandatory:"false"`
 
 	// A configured object storage client to use for interacting with the Object Storage service.
+	// Default timeout is 60s which includes the time for reading the body.
+	// Default timeout doesn't work for big file size and big part size(once upload each part longer than 60s), need to manually update timeout to support big file upload.
 	ObjectStorageClient *objectstorage.ObjectStorageClient `mandatory:"false"`
 
 	// [Optional] The entity tag of the object to match.
@@ -81,8 +84,15 @@ type UploadRequest struct {
 	// represents information that the SDK will consume to drive retry behavior.
 	RequestMetadata common.RequestMetadata
 
+	// [Optional] The storage tier of the object to upload. If not specified, the storage tier is
+	// defaulted to 'Standard'
+	StorageTier objectstorage.PutObjectStorageTierEnum `mandatory:"false"`
+
 	// [Optional] Callback API that can be invoked during multiPartUploads
 	CallBack UploadCallBack `mandatory:"false"`
+
+	// [Optional] Whether or not this UploadManager supports performing multipart uploads md5 checksum verification. Defaults to False.
+	EnableMultipartChecksumVerification *bool `mandatory:"false"`
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.
@@ -167,7 +177,7 @@ const (
 // UploadResponse is the response from commitMultipart or the putObject API operation.
 type UploadResponse struct {
 
-	// Polymorphic reponse type indicates the response type
+	// Polymorphic response type indicates the response type
 	Type UploadResponseType
 
 	// response for putObject API response (single part upload), will be nil if the operation is multiPart upload

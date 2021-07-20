@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Announcements Service API
@@ -11,7 +12,8 @@ package announcementsservice
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type AnnouncementClient struct {
 // NewAnnouncementClientWithConfigurationProvider Creates a new default Announcement client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewAnnouncementClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client AnnouncementClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newAnnouncementClientFromBaseClient(baseClient, provider)
+}
+
+// NewAnnouncementClientWithOboToken Creates a new default Announcement client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewAnnouncementClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client AnnouncementClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newAnnouncementClientFromBaseClient(baseClient, configProvider)
+}
+
+func newAnnouncementClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client AnnouncementClient, err error) {
 	client = AnnouncementClient{BaseClient: baseClient}
 	client.BasePath = "20180904"
 	err = client.setConfigurationProvider(configProvider)
@@ -37,7 +58,7 @@ func NewAnnouncementClientWithConfigurationProvider(configProvider common.Config
 
 // SetRegion overrides the region of this client.
 func (client *AnnouncementClient) SetRegion(region string) {
-	client.Host = common.StringToRegion(region).Endpoint("announcements")
+	client.Host = common.StringToRegion(region).EndpointForTemplate("announcements", "https://announcements.{region}.{secondLevelDomain}")
 }
 
 // SetConfigurationProvider sets the configuration provider including the region, returns an error if is not valid
@@ -59,16 +80,28 @@ func (client *AnnouncementClient) ConfigurationProvider() *common.ConfigurationP
 }
 
 // GetAnnouncement Gets the details of a specific announcement.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/announcementsservice/GetAnnouncement.go.html to see an example of how to use GetAnnouncement API.
 func (client AnnouncementClient) GetAnnouncement(ctx context.Context, request GetAnnouncementRequest) (response GetAnnouncementResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAnnouncement, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAnnouncementResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAnnouncementResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAnnouncementResponse{}
+			}
 		}
 		return
 	}
@@ -81,8 +114,9 @@ func (client AnnouncementClient) GetAnnouncement(ctx context.Context, request Ge
 }
 
 // getAnnouncement implements the OCIOperation interface (enables retrying operations)
-func (client AnnouncementClient) getAnnouncement(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/announcements/{announcementId}")
+func (client AnnouncementClient) getAnnouncement(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/announcements/{announcementId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -101,16 +135,28 @@ func (client AnnouncementClient) getAnnouncement(ctx context.Context, request co
 }
 
 // GetAnnouncementUserStatus Gets information about whether a specific announcement was acknowledged by a user.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/announcementsservice/GetAnnouncementUserStatus.go.html to see an example of how to use GetAnnouncementUserStatus API.
 func (client AnnouncementClient) GetAnnouncementUserStatus(ctx context.Context, request GetAnnouncementUserStatusRequest) (response GetAnnouncementUserStatusResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAnnouncementUserStatus, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAnnouncementUserStatusResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAnnouncementUserStatusResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAnnouncementUserStatusResponse{}
+			}
 		}
 		return
 	}
@@ -123,8 +169,9 @@ func (client AnnouncementClient) GetAnnouncementUserStatus(ctx context.Context, 
 }
 
 // getAnnouncementUserStatus implements the OCIOperation interface (enables retrying operations)
-func (client AnnouncementClient) getAnnouncementUserStatus(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/announcements/{announcementId}/userStatus")
+func (client AnnouncementClient) getAnnouncementUserStatus(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/announcements/{announcementId}/userStatus", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -143,16 +190,28 @@ func (client AnnouncementClient) getAnnouncementUserStatus(ctx context.Context, 
 }
 
 // ListAnnouncements Gets a list of announcements for the current tenancy.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/announcementsservice/ListAnnouncements.go.html to see an example of how to use ListAnnouncements API.
 func (client AnnouncementClient) ListAnnouncements(ctx context.Context, request ListAnnouncementsRequest) (response ListAnnouncementsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAnnouncements, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAnnouncementsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAnnouncementsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAnnouncementsResponse{}
+			}
 		}
 		return
 	}
@@ -165,8 +224,9 @@ func (client AnnouncementClient) ListAnnouncements(ctx context.Context, request 
 }
 
 // listAnnouncements implements the OCIOperation interface (enables retrying operations)
-func (client AnnouncementClient) listAnnouncements(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/announcements")
+func (client AnnouncementClient) listAnnouncements(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/announcements", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -185,16 +245,28 @@ func (client AnnouncementClient) listAnnouncements(ctx context.Context, request 
 }
 
 // UpdateAnnouncementUserStatus Updates the status of the specified announcement with regard to whether it has been marked as read.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/announcementsservice/UpdateAnnouncementUserStatus.go.html to see an example of how to use UpdateAnnouncementUserStatus API.
 func (client AnnouncementClient) UpdateAnnouncementUserStatus(ctx context.Context, request UpdateAnnouncementUserStatusRequest) (response UpdateAnnouncementUserStatusResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateAnnouncementUserStatus, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateAnnouncementUserStatusResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAnnouncementUserStatusResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAnnouncementUserStatusResponse{}
+			}
 		}
 		return
 	}
@@ -207,8 +279,9 @@ func (client AnnouncementClient) UpdateAnnouncementUserStatus(ctx context.Contex
 }
 
 // updateAnnouncementUserStatus implements the OCIOperation interface (enables retrying operations)
-func (client AnnouncementClient) updateAnnouncementUserStatus(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/announcements/{announcementId}/userStatus")
+func (client AnnouncementClient) updateAnnouncementUserStatus(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/announcements/{announcementId}/userStatus", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

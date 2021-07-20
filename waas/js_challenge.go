@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Web Application Acceleration and Security Services API
@@ -9,10 +10,10 @@
 package waas
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// JsChallenge The JavaScript challenge settings. Javascript Challenge is the function to filter abnormal or malicious bots and allow access to real clients.
+// JsChallenge The JavaScript challenge settings. JavaScript Challenge is the function to filter abnormal or malicious bots and allow access to real clients.
 type JsChallenge struct {
 
 	// Enables or disables the JavaScript challenge Web Application Firewall feature.
@@ -31,6 +32,15 @@ type JsChallenge struct {
 	SetHttpHeader *Header `mandatory:"false" json:"setHttpHeader"`
 
 	ChallengeSettings *BlockChallengeSettings `mandatory:"false" json:"challengeSettings"`
+
+	// When enabled, redirect responses from the origin will also be challenged. This will change HTTP 301/302 responses from origin to HTTP 200 with an HTML body containing JavaScript page redirection.
+	AreRedirectsChallenged *bool `mandatory:"false" json:"areRedirectsChallenged"`
+
+	// When defined, the JavaScript Challenge would be applied only for the requests that matched all the listed conditions.
+	Criteria []AccessRuleCriteria `mandatory:"false" json:"criteria"`
+
+	// When enabled, the user is identified not only by the IP address but also by an unique additional hash, which prevents blocking visitors with shared IP addresses.
+	IsNatEnabled *bool `mandatory:"false" json:"isNatEnabled"`
 }
 
 func (m JsChallenge) String() string {

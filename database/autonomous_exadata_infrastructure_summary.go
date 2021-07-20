@@ -1,15 +1,16 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // AutonomousExadataInfrastructureSummary Infrastructure that enables the running of multiple Autonomous Databases within a dedicated DB system.
@@ -58,7 +59,9 @@ type AutonomousExadataInfrastructureSummary struct {
 
 	MaintenanceWindow *MaintenanceWindow `mandatory:"true" json:"maintenanceWindow"`
 
-	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that this DB system belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm).
+	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that this resource belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm).
+	// **NsgIds restrictions:**
+	// - Autonomous Databases with private access require at least 1 Network Security Group (NSG). The nsgIds array cannot be empty.
 	NsgIds []string `mandatory:"false" json:"nsgIds"`
 
 	// Additional information about the current lifecycle state of the Autonomous Exadata Infrastructure.
@@ -84,6 +87,12 @@ type AutonomousExadataInfrastructureSummary struct {
 	// Defined tags for this resource. Each key is predefined and scoped to a namespace.
 	// For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
+
+	// The FQDN of the DNS record for the SCAN IP addresses that are associated with the Autonomous Exadata Infrastructure.
+	ScanDnsName *string `mandatory:"false" json:"scanDnsName"`
+
+	// The OCID of the zone the Autonomous Exadata Infrastructure is associated with.
+	ZoneId *string `mandatory:"false" json:"zoneId"`
 }
 
 func (m AutonomousExadataInfrastructureSummary) String() string {

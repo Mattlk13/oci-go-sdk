@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -14,7 +15,7 @@ package core
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateInstanceConfigurationDetails Details for creating an instance configuration by providing a list of configuration settings.
@@ -27,16 +28,16 @@ type CreateInstanceConfigurationDetails struct {
 	InstanceDetails InstanceConfigurationInstanceDetails `mandatory:"true" json:"instanceDetails"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
-	// A user-friendly name for the instance configuration.  Does not have to be unique,
+	// A user-friendly name for the instance configuration. Does not have to be unique,
 	// and it's changeable. Avoid entering confidential information.
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 }
@@ -93,11 +94,16 @@ func (m *CreateInstanceConfigurationDetails) UnmarshalJSON(data []byte) (e error
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.DefinedTags = model.DefinedTags
+
 	m.DisplayName = model.DisplayName
+
 	m.FreeformTags = model.FreeformTags
+
 	m.CompartmentId = model.CompartmentId
-	nn, e := model.InstanceDetails.UnmarshalPolymorphicJSON(model.InstanceDetails.JsonData)
+
+	nn, e = model.InstanceDetails.UnmarshalPolymorphicJSON(model.InstanceDetails.JsonData)
 	if e != nil {
 		return
 	}
@@ -106,5 +112,6 @@ func (m *CreateInstanceConfigurationDetails) UnmarshalJSON(data []byte) (e error
 	} else {
 		m.InstanceDetails = nil
 	}
+
 	return
 }

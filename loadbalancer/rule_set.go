@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Load Balancing API
@@ -11,7 +12,7 @@ package loadbalancer
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // RuleSet A named set of rules associated with a load balancer. Rules are objects that represent actions to apply to a listener,
@@ -43,12 +44,14 @@ func (m *RuleSet) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.Name = model.Name
+
 	m.Items = make([]Rule, len(model.Items))
 	for i, n := range model.Items {
-		nn, err := n.UnmarshalPolymorphicJSON(n.JsonData)
-		if err != nil {
-			return err
+		nn, e = n.UnmarshalPolymorphicJSON(n.JsonData)
+		if e != nil {
+			return e
 		}
 		if nn != nil {
 			m.Items[i] = nn.(Rule)
@@ -56,5 +59,6 @@ func (m *RuleSet) UnmarshalJSON(data []byte) (e error) {
 			m.Items[i] = nil
 		}
 	}
+
 	return
 }

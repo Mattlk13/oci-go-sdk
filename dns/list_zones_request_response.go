@@ -1,18 +1,28 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package dns
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // ListZonesRequest wrapper for the ListZones operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dns/ListZones.go.html to see an example of how to use ListZonesRequest.
 type ListZonesRequest struct {
 
 	// The OCID of the compartment the resource belongs to.
 	CompartmentId *string `mandatory:"true" contributesTo:"query" name:"compartmentId"`
+
+	// Unique Oracle-assigned identifier for the request. If you need
+	// to contact Oracle about a particular request, please provide
+	// the request ID.
+	OpcRequestId *string `mandatory:"false" contributesTo:"header" name:"opc-request-id"`
 
 	// The maximum number of items to return in a page of the collection.
 	Limit *int64 `mandatory:"false" contributesTo:"query" name:"limit"`
@@ -49,9 +59,14 @@ type ListZonesRequest struct {
 	// The order to sort the resources.
 	SortOrder ListZonesSortOrderEnum `mandatory:"false" contributesTo:"query" name:"sortOrder" omitEmpty:"true"`
 
-	// Unique Oracle-assigned identifier for the request.
-	// If you need to contact Oracle about a particular request, please provide the request ID.
-	OpcRequestId *string `mandatory:"false" contributesTo:"header" name:"opc-request-id"`
+	// Specifies to operate only on resources that have a matching DNS scope.
+	Scope ListZonesScopeEnum `mandatory:"false" contributesTo:"query" name:"scope" omitEmpty:"true"`
+
+	// The OCID of the view the resource is associated with.
+	ViewId *string `mandatory:"false" contributesTo:"query" name:"viewId"`
+
+	// Search for zones that are associated with a TSIG key.
+	TsigKeyId *string `mandatory:"false" contributesTo:"query" name:"tsigKeyId"`
 
 	// Metadata about the request. This information will not be transmitted to the service, but
 	// represents information that the SDK will consume to drive retry behavior.
@@ -63,8 +78,16 @@ func (request ListZonesRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request ListZonesRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request ListZonesRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request ListZonesRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.
@@ -90,8 +113,7 @@ type ListZonesResponse struct {
 	OpcTotalItems *int `presentIn:"header" name:"opc-total-items"`
 
 	// Unique Oracle-assigned identifier for the request. If you need to
-	// contact Oracle about a particular request, please provide the request
-	// ID.
+	// contact Oracle about a particular request, please provide the request ID.
 	OpcRequestId *string `presentIn:"header" name:"opc-request-id"`
 }
 
@@ -137,6 +159,7 @@ const (
 	ListZonesLifecycleStateDeleted  ListZonesLifecycleStateEnum = "DELETED"
 	ListZonesLifecycleStateDeleting ListZonesLifecycleStateEnum = "DELETING"
 	ListZonesLifecycleStateFailed   ListZonesLifecycleStateEnum = "FAILED"
+	ListZonesLifecycleStateUpdating ListZonesLifecycleStateEnum = "UPDATING"
 )
 
 var mappingListZonesLifecycleState = map[string]ListZonesLifecycleStateEnum{
@@ -145,6 +168,7 @@ var mappingListZonesLifecycleState = map[string]ListZonesLifecycleStateEnum{
 	"DELETED":  ListZonesLifecycleStateDeleted,
 	"DELETING": ListZonesLifecycleStateDeleting,
 	"FAILED":   ListZonesLifecycleStateFailed,
+	"UPDATING": ListZonesLifecycleStateUpdating,
 }
 
 // GetListZonesLifecycleStateEnumValues Enumerates the set of values for ListZonesLifecycleStateEnum
@@ -199,6 +223,29 @@ var mappingListZonesSortOrder = map[string]ListZonesSortOrderEnum{
 func GetListZonesSortOrderEnumValues() []ListZonesSortOrderEnum {
 	values := make([]ListZonesSortOrderEnum, 0)
 	for _, v := range mappingListZonesSortOrder {
+		values = append(values, v)
+	}
+	return values
+}
+
+// ListZonesScopeEnum Enum with underlying type: string
+type ListZonesScopeEnum string
+
+// Set of constants representing the allowable values for ListZonesScopeEnum
+const (
+	ListZonesScopeGlobal  ListZonesScopeEnum = "GLOBAL"
+	ListZonesScopePrivate ListZonesScopeEnum = "PRIVATE"
+)
+
+var mappingListZonesScope = map[string]ListZonesScopeEnum{
+	"GLOBAL":  ListZonesScopeGlobal,
+	"PRIVATE": ListZonesScopePrivate,
+}
+
+// GetListZonesScopeEnumValues Enumerates the set of values for ListZonesScopeEnum
+func GetListZonesScopeEnumValues() []ListZonesScopeEnum {
+	values := make([]ListZonesScopeEnum, 0)
+	for _, v := range mappingListZonesScope {
 		values = append(values, v)
 	}
 	return values

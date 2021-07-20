@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Streaming Service API
@@ -11,7 +12,8 @@ package streaming
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -22,22 +24,37 @@ type StreamClient struct {
 }
 
 // NewStreamClientWithConfigurationProvider Creates a new default Stream client with the given configuration provider.
-// the configuration provider will be used for the default signer as well as reading the region
-func NewStreamClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client StreamClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+// the configuration provider will be used for the default signer
+func NewStreamClientWithConfigurationProvider(configProvider common.ConfigurationProvider, endpoint string) (client StreamClient, err error) {
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
 	}
-
-	client = StreamClient{BaseClient: baseClient}
-	client.BasePath = "20180418"
-	err = client.setConfigurationProvider(configProvider)
-	return
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newStreamClientFromBaseClient(baseClient, provider, endpoint)
 }
 
-// SetRegion overrides the region of this client.
-func (client *StreamClient) SetRegion(region string) {
-	client.Host = common.StringToRegion(region).EndpointForTemplate("streams", "https://streaming.{region}.oci.{secondLevelDomain}")
+// NewStreamClientWithOboToken Creates a new default Stream client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//
+func NewStreamClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string, endpoint string) (client StreamClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
+	}
+
+	return newStreamClientFromBaseClient(baseClient, configProvider, endpoint)
+}
+
+func newStreamClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider, endpoint string) (client StreamClient, err error) {
+	client = StreamClient{BaseClient: baseClient}
+	client.BasePath = "20180418"
+	client.Host = endpoint
+	err = client.setConfigurationProvider(configProvider)
+	return
 }
 
 // SetConfigurationProvider sets the configuration provider including the region, returns an error if is not valid
@@ -46,9 +63,6 @@ func (client *StreamClient) setConfigurationProvider(configProvider common.Confi
 		return err
 	}
 
-	// Error has been checked already
-	region, _ := configProvider.Region()
-	client.SetRegion(region)
 	client.config = &configProvider
 	return nil
 }
@@ -60,16 +74,28 @@ func (client *StreamClient) ConfigurationProvider() *common.ConfigurationProvide
 
 // ConsumerCommit Provides a mechanism to manually commit offsets, if not using commit-on-get consumer semantics.
 // This commits offsets assicated with the provided cursor, extends the timeout on each of the affected partitions, and returns an updated cursor.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/streaming/ConsumerCommit.go.html to see an example of how to use ConsumerCommit API.
 func (client StreamClient) ConsumerCommit(ctx context.Context, request ConsumerCommitRequest) (response ConsumerCommitResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.consumerCommit, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ConsumerCommitResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ConsumerCommitResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ConsumerCommitResponse{}
+			}
 		}
 		return
 	}
@@ -82,8 +108,9 @@ func (client StreamClient) ConsumerCommit(ctx context.Context, request ConsumerC
 }
 
 // consumerCommit implements the OCIOperation interface (enables retrying operations)
-func (client StreamClient) consumerCommit(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/streams/{streamId}/commit")
+func (client StreamClient) consumerCommit(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/streams/{streamId}/commit", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -102,16 +129,28 @@ func (client StreamClient) consumerCommit(ctx context.Context, request common.OC
 }
 
 // ConsumerHeartbeat Allows long-running processes to extend the timeout on partitions reserved by a consumer instance.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/streaming/ConsumerHeartbeat.go.html to see an example of how to use ConsumerHeartbeat API.
 func (client StreamClient) ConsumerHeartbeat(ctx context.Context, request ConsumerHeartbeatRequest) (response ConsumerHeartbeatResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.consumerHeartbeat, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ConsumerHeartbeatResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ConsumerHeartbeatResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ConsumerHeartbeatResponse{}
+			}
 		}
 		return
 	}
@@ -124,8 +163,9 @@ func (client StreamClient) ConsumerHeartbeat(ctx context.Context, request Consum
 }
 
 // consumerHeartbeat implements the OCIOperation interface (enables retrying operations)
-func (client StreamClient) consumerHeartbeat(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/streams/{streamId}/heartbeat")
+func (client StreamClient) consumerHeartbeat(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/streams/{streamId}/heartbeat", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -148,16 +188,28 @@ func (client StreamClient) consumerHeartbeat(ctx context.Context, request common
 // inside the retention period boundary, using the trim horizon effectively lets you consume all messages in the stream. A cursor based
 // on the most recent message allows consumption of only messages that are added to the stream after you create the cursor. Cursors expire
 // five minutes after you receive them from the service.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/streaming/CreateCursor.go.html to see an example of how to use CreateCursor API.
 func (client StreamClient) CreateCursor(ctx context.Context, request CreateCursorRequest) (response CreateCursorResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.createCursor, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateCursorResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateCursorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateCursorResponse{}
+			}
 		}
 		return
 	}
@@ -170,8 +222,9 @@ func (client StreamClient) CreateCursor(ctx context.Context, request CreateCurso
 }
 
 // createCursor implements the OCIOperation interface (enables retrying operations)
-func (client StreamClient) createCursor(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/streams/{streamId}/cursors")
+func (client StreamClient) createCursor(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/streams/{streamId}/cursors", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -190,16 +243,28 @@ func (client StreamClient) createCursor(ctx context.Context, request common.OCIR
 }
 
 // CreateGroupCursor Creates a group-cursor.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/streaming/CreateGroupCursor.go.html to see an example of how to use CreateGroupCursor API.
 func (client StreamClient) CreateGroupCursor(ctx context.Context, request CreateGroupCursorRequest) (response CreateGroupCursorResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.createGroupCursor, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateGroupCursorResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateGroupCursorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateGroupCursorResponse{}
+			}
 		}
 		return
 	}
@@ -212,8 +277,9 @@ func (client StreamClient) CreateGroupCursor(ctx context.Context, request Create
 }
 
 // createGroupCursor implements the OCIOperation interface (enables retrying operations)
-func (client StreamClient) createGroupCursor(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/streams/{streamId}/groupCursors")
+func (client StreamClient) createGroupCursor(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/streams/{streamId}/groupCursors", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -232,16 +298,28 @@ func (client StreamClient) createGroupCursor(ctx context.Context, request common
 }
 
 // GetGroup Returns the current state of a consumer group.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/streaming/GetGroup.go.html to see an example of how to use GetGroup API.
 func (client StreamClient) GetGroup(ctx context.Context, request GetGroupRequest) (response GetGroupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getGroup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetGroupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetGroupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetGroupResponse{}
+			}
 		}
 		return
 	}
@@ -254,8 +332,9 @@ func (client StreamClient) GetGroup(ctx context.Context, request GetGroupRequest
 }
 
 // getGroup implements the OCIOperation interface (enables retrying operations)
-func (client StreamClient) getGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/streams/{streamId}/groups/{groupName}")
+func (client StreamClient) getGroup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/streams/{streamId}/groups/{groupName}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -276,16 +355,28 @@ func (client StreamClient) getGroup(ctx context.Context, request common.OCIReque
 // GetMessages Returns messages from the specified stream using the specified cursor as the starting point for consumption. By default, the number of messages returned is undefined, but the service returns as many as possible.
 // To get messages, you must first obtain a cursor using the CreateCursor operation.
 // In the response, retrieve the value of the 'opc-next-cursor' header to pass as a parameter to get the next batch of messages in the stream.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/streaming/GetMessages.go.html to see an example of how to use GetMessages API.
 func (client StreamClient) GetMessages(ctx context.Context, request GetMessagesRequest) (response GetMessagesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getMessages, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetMessagesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetMessagesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetMessagesResponse{}
+			}
 		}
 		return
 	}
@@ -298,8 +389,9 @@ func (client StreamClient) GetMessages(ctx context.Context, request GetMessagesR
 }
 
 // getMessages implements the OCIOperation interface (enables retrying operations)
-func (client StreamClient) getMessages(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/streams/{streamId}/messages")
+func (client StreamClient) getMessages(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/streams/{streamId}/messages", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -321,16 +413,28 @@ func (client StreamClient) getMessages(ctx context.Context, request common.OCIRe
 // The service calculates the partition ID from the message key and stores messages that share a key on the same partition.
 // If a message does not contain a key or if the key is null, the service generates a message key for you.
 // The partition ID cannot be passed as a parameter.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/streaming/PutMessages.go.html to see an example of how to use PutMessages API.
 func (client StreamClient) PutMessages(ctx context.Context, request PutMessagesRequest) (response PutMessagesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.putMessages, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = PutMessagesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = PutMessagesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = PutMessagesResponse{}
+			}
 		}
 		return
 	}
@@ -343,8 +447,9 @@ func (client StreamClient) PutMessages(ctx context.Context, request PutMessagesR
 }
 
 // putMessages implements the OCIOperation interface (enables retrying operations)
-func (client StreamClient) putMessages(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/streams/{streamId}/messages")
+func (client StreamClient) putMessages(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/streams/{streamId}/messages", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -373,16 +478,28 @@ func (client StreamClient) putMessages(ctx context.Context, request common.OCIRe
 }
 
 // UpdateGroup Forcefully changes the current location of a group as a whole; reseting processing location of all consumers to a particular location in the stream.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/streaming/UpdateGroup.go.html to see an example of how to use UpdateGroup API.
 func (client StreamClient) UpdateGroup(ctx context.Context, request UpdateGroupRequest) (response UpdateGroupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateGroup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateGroupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateGroupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateGroupResponse{}
+			}
 		}
 		return
 	}
@@ -395,8 +512,9 @@ func (client StreamClient) UpdateGroup(ctx context.Context, request UpdateGroupR
 }
 
 // updateGroup implements the OCIOperation interface (enables retrying operations)
-func (client StreamClient) updateGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/streams/{streamId}/groups/{groupName}")
+func (client StreamClient) updateGroup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/streams/{streamId}/groups/{groupName}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

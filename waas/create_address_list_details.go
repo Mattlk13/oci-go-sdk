@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Web Application Acceleration and Security Services API
@@ -9,7 +10,7 @@
 package waas
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateAddressListDetails The data used to create a new address list of IP addresses and CIDR notations.
@@ -18,7 +19,7 @@ type CreateAddressListDetails struct {
 	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the compartment in which to create the address list.
 	CompartmentId *string `mandatory:"true" json:"compartmentId"`
 
-	// A unique user-friendly name for the address list.
+	// A user-friendly name for the address list.
 	DisplayName *string `mandatory:"true" json:"displayName"`
 
 	// A list of IP addresses or CIDR notations.

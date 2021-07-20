@@ -1,21 +1,22 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
-// File Storage Service API
+// File Storage API
 //
-// The API for the File Storage Service.
+// API for the File Storage service. Use this API to manage file systems, mount targets, and snapshots. For more information, see Overview of File Storage (https://docs.cloud.oracle.com/iaas/Content/File/Concepts/filestorageoverview.htm).
 //
 
 package filestorage
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // MountTargetSummary Summary information for the specified mount target.
 type MountTargetSummary struct {
 
-	// The OCID of the compartment that contains the mount target.
+	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the compartment that contains the mount target.
 	CompartmentId *string `mandatory:"true" json:"compartmentId"`
 
 	// A user-friendly name. It does not have to be unique, and it is changeable.
@@ -23,7 +24,7 @@ type MountTargetSummary struct {
 	// Example: `My mount target`
 	DisplayName *string `mandatory:"true" json:"displayName"`
 
-	// The OCID of the mount target.
+	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the mount target.
 	Id *string `mandatory:"true" json:"id"`
 
 	// The current state of the mount target.
@@ -32,7 +33,7 @@ type MountTargetSummary struct {
 	// The OCIDs of the private IP addresses associated with this mount target.
 	PrivateIpIds []string `mandatory:"true" json:"privateIpIds"`
 
-	// The OCID of the subnet the mount target is in.
+	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the subnet the mount target is in.
 	SubnetId *string `mandatory:"true" json:"subnetId"`
 
 	// The date and time the mount target was created, expressed
@@ -45,10 +46,16 @@ type MountTargetSummary struct {
 	// Example: `Uocm:PHX-AD-1`
 	AvailabilityDomain *string `mandatory:"false" json:"availabilityDomain"`
 
-	// The OCID of the associated export set. Controls what file
+	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the associated export set. Controls what file
 	// systems will be exported using Network File System (NFS) protocol on
 	// this mount target.
 	ExportSetId *string `mandatory:"false" json:"exportSetId"`
+
+	// A list of Network Security Group OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) associated with this mount target.
+	// A maximum of 5 is allowed.
+	// Setting this to an empty array after the list is created removes the mount target from all NSGs.
+	// For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm).
+	NsgIds []string `mandatory:"false" json:"nsgIds"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair
 	//  with no predefined name, type, or namespace.

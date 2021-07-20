@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2020, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 // Package transfer simplifies interaction with the Object Storage service by abstracting away the method used
 // to upload objects.  Depending on the configuration parameters, UploadManager may choose to do a single
@@ -11,14 +12,17 @@
 package transfer
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/objectstorage"
+	"io"
 	"math"
+	"net/http"
 	"os"
 	"strings"
 	"time"
-
-	"github.com/oracle/oci-go-sdk/common"
 )
 
 // UploadManager is the interface that groups the upload methods
@@ -70,10 +74,10 @@ func (uploadManager *UploadManager) UploadFile(ctx context.Context, request Uplo
 
 	fileSize := fi.Size()
 
-	// parrallel upload disabled by user or the file size smaller than or equal to partSize
+	// parallel upload disabled by user or the file size smaller than or equal to partSize
 	// use UploadFilePutObject
 	if !*request.AllowMultipartUploads ||
-		int64(fileSize) <= *request.PartSize {
+		fileSize <= *request.PartSize {
 		response, err = uploadManager.FileUploader.UploadFilePutObject(ctx, request)
 		return
 	}
@@ -109,9 +113,55 @@ func (uploadManager *UploadManager) UploadStream(ctx context.Context, request Up
 		err = errorInvalidStreamUploader
 		return
 	}
+	//check if the stream is empty
+	if isZeroLength(request.StreamReader) {
+		return uploadEmptyStream(ctx, request)
+	}
 
 	response, err = uploadManager.StreamUploader.UploadStream(ctx, request)
 	return
+}
+
+func isZeroLength(streamReader io.Reader) bool {
+	switch v := streamReader.(type) {
+	case *bytes.Buffer:
+		return v.Len() == 0
+	case *bytes.Reader:
+		return v.Len() == 0
+	case *strings.Reader:
+		return v.Len() == 0
+	case *os.File:
+		fi, err := v.Stat()
+		if err != nil {
+			return false
+		}
+		return fi.Size() == 0
+	default:
+		return false
+	}
+	return false
+}
+
+func uploadEmptyStream(ctx context.Context, request UploadStreamRequest) (response UploadResponse, err error) {
+	putObjReq := objectstorage.PutObjectRequest{
+		NamespaceName:      request.UploadRequest.NamespaceName,
+		BucketName:         request.UploadRequest.BucketName,
+		ObjectName:         request.UploadRequest.ObjectName,
+		ContentLength:      new(int64),
+		PutObjectBody:      http.NoBody,
+		OpcMeta:            request.UploadRequest.Metadata,
+		IfMatch:            request.UploadRequest.IfMatch,
+		IfNoneMatch:        request.UploadRequest.IfNoneMatch,
+		ContentType:        request.UploadRequest.ContentType,
+		ContentLanguage:    request.UploadRequest.ContentLanguage,
+		ContentEncoding:    request.UploadRequest.ContentEncoding,
+		ContentMD5:         request.UploadRequest.ContentMD5,
+		OpcClientRequestId: request.UploadRequest.OpcClientRequestID,
+		RequestMetadata:    request.UploadRequest.RequestMetadata,
+	}
+	putObjResp, err := request.UploadRequest.ObjectStorageClient.PutObject(ctx, putObjReq)
+	spUploadResp := SinglepartUploadResponse{putObjResp}
+	return UploadResponse{SinglepartUpload, &spUploadResp, nil}, err
 }
 
 func getUploadManagerRetryPolicy() *common.RetryPolicy {

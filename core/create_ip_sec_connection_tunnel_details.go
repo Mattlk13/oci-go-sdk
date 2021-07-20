@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,7 +14,7 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateIpSecConnectionTunnelDetails The representation of CreateIpSecConnectionTunnelDetails
@@ -33,15 +34,11 @@ type CreateIpSecConnectionTunnelDetails struct {
 	// spaces are allowed. If you don't provide a value,
 	// Oracle generates a value for you. You can specify your own shared secret later if
 	// you like with UpdateIPSecConnectionTunnelSharedSecret.
-	// Example: `EXAMPLEToUis6j1cp8GdVQxcmdfMO0yXMLilZTbYCMDGu4V8o`
 	SharedSecret *string `mandatory:"false" json:"sharedSecret"`
 
-	// Information for establishing a BGP session for the IPSec tunnel. Required if the tunnel uses
-	// BGP dynamic routing.
-	// If the tunnel instead uses static routing, you may optionally provide
-	// this object and set an IP address for one or both ends of the IPSec tunnel for the purposes
-	// of troubleshooting or monitoring the tunnel.
 	BgpSessionConfig *CreateIpSecTunnelBgpSessionDetails `mandatory:"false" json:"bgpSessionConfig"`
+
+	EncryptionDomainConfig *CreateIpSecTunnelEncryptionDomainDetails `mandatory:"false" json:"encryptionDomainConfig"`
 }
 
 func (m CreateIpSecConnectionTunnelDetails) String() string {
@@ -55,11 +52,13 @@ type CreateIpSecConnectionTunnelDetailsRoutingEnum string
 const (
 	CreateIpSecConnectionTunnelDetailsRoutingBgp    CreateIpSecConnectionTunnelDetailsRoutingEnum = "BGP"
 	CreateIpSecConnectionTunnelDetailsRoutingStatic CreateIpSecConnectionTunnelDetailsRoutingEnum = "STATIC"
+	CreateIpSecConnectionTunnelDetailsRoutingPolicy CreateIpSecConnectionTunnelDetailsRoutingEnum = "POLICY"
 )
 
 var mappingCreateIpSecConnectionTunnelDetailsRouting = map[string]CreateIpSecConnectionTunnelDetailsRoutingEnum{
 	"BGP":    CreateIpSecConnectionTunnelDetailsRoutingBgp,
 	"STATIC": CreateIpSecConnectionTunnelDetailsRoutingStatic,
+	"POLICY": CreateIpSecConnectionTunnelDetailsRoutingPolicy,
 }
 
 // GetCreateIpSecConnectionTunnelDetailsRoutingEnumValues Enumerates the set of values for CreateIpSecConnectionTunnelDetailsRoutingEnum

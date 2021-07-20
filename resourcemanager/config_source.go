@@ -1,23 +1,28 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Resource Manager API
 //
-// API for the Resource Manager service. Use this API to install, configure, and manage resources via the "infrastructure-as-code" model. For more information, see Overview of Resource Manager (https://docs.cloud.oracle.com/iaas/Content/ResourceManager/Concepts/resourcemanager.htm).
+// API for the Resource Manager service.
+// Use this API to install, configure, and manage resources via the "infrastructure-as-code" model.
+// For more information, see
+// Overview of Resource Manager (https://docs.cloud.oracle.com/iaas/Content/ResourceManager/Concepts/resourcemanager.htm).
 //
 
 package resourcemanager
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// ConfigSource Location of the Terraform configuration.
+// ConfigSource Information about the Terraform configuration.
 type ConfigSource interface {
 
-	// File path to the directory from which Terraform runs.
-	// If not specified, we use the root directory.
+	// File path to the directory to use for running Terraform.
+	// If not specified, the root directory is used.
+	// This parameter is ignored for the `configSourceType` value of `COMPARTMENT_CONFIG_SOURCE`.
 	GetWorkingDirectory() *string
 }
 
@@ -53,6 +58,18 @@ func (m *configsource) UnmarshalPolymorphicJSON(data []byte) (interface{}, error
 
 	var err error
 	switch m.ConfigSourceType {
+	case "GIT_CONFIG_SOURCE":
+		mm := GitConfigSource{}
+		err = json.Unmarshal(data, &mm)
+		return mm, err
+	case "OBJECT_STORAGE_CONFIG_SOURCE":
+		mm := ObjectStorageConfigSource{}
+		err = json.Unmarshal(data, &mm)
+		return mm, err
+	case "COMPARTMENT_CONFIG_SOURCE":
+		mm := CompartmentConfigSource{}
+		err = json.Unmarshal(data, &mm)
+		return mm, err
 	case "ZIP_UPLOAD":
 		mm := ZipUploadConfigSource{}
 		err = json.Unmarshal(data, &mm)
@@ -76,11 +93,17 @@ type ConfigSourceConfigSourceTypeEnum string
 
 // Set of constants representing the allowable values for ConfigSourceConfigSourceTypeEnum
 const (
-	ConfigSourceConfigSourceTypeZipUpload ConfigSourceConfigSourceTypeEnum = "ZIP_UPLOAD"
+	ConfigSourceConfigSourceTypeZipUpload                 ConfigSourceConfigSourceTypeEnum = "ZIP_UPLOAD"
+	ConfigSourceConfigSourceTypeGitConfigSource           ConfigSourceConfigSourceTypeEnum = "GIT_CONFIG_SOURCE"
+	ConfigSourceConfigSourceTypeCompartmentConfigSource   ConfigSourceConfigSourceTypeEnum = "COMPARTMENT_CONFIG_SOURCE"
+	ConfigSourceConfigSourceTypeObjectStorageConfigSource ConfigSourceConfigSourceTypeEnum = "OBJECT_STORAGE_CONFIG_SOURCE"
 )
 
 var mappingConfigSourceConfigSourceType = map[string]ConfigSourceConfigSourceTypeEnum{
-	"ZIP_UPLOAD": ConfigSourceConfigSourceTypeZipUpload,
+	"ZIP_UPLOAD":                   ConfigSourceConfigSourceTypeZipUpload,
+	"GIT_CONFIG_SOURCE":            ConfigSourceConfigSourceTypeGitConfigSource,
+	"COMPARTMENT_CONFIG_SOURCE":    ConfigSourceConfigSourceTypeCompartmentConfigSource,
+	"OBJECT_STORAGE_CONFIG_SOURCE": ConfigSourceConfigSourceTypeObjectStorageConfigSource,
 }
 
 // GetConfigSourceConfigSourceTypeEnumValues Enumerates the set of values for ConfigSourceConfigSourceTypeEnum

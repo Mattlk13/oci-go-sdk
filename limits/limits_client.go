@@ -1,9 +1,10 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
-// Service limits APIs
+// Service Limits APIs
 //
-// APIs that interact with the resource limits of a specific resource type
+// APIs that interact with the resource limits of a specific resource type.
 //
 
 package limits
@@ -11,7 +12,8 @@ package limits
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type LimitsClient struct {
 // NewLimitsClientWithConfigurationProvider Creates a new default Limits client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewLimitsClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client LimitsClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newLimitsClientFromBaseClient(baseClient, provider)
+}
+
+// NewLimitsClientWithOboToken Creates a new default Limits client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewLimitsClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client LimitsClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newLimitsClientFromBaseClient(baseClient, configProvider)
+}
+
+func newLimitsClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client LimitsClient, err error) {
 	client = LimitsClient{BaseClient: baseClient}
 	client.BasePath = ""
 	err = client.setConfigurationProvider(configProvider)
@@ -59,19 +80,31 @@ func (client *LimitsClient) ConfigurationProvider() *common.ConfigurationProvide
 }
 
 // GetResourceAvailability For a given compartmentId, resource limit name, and scope, returns the following:
-//   - the number of available resources associated with the given limit
-//   - the usage in the selected compartment for the given limit
-//   Note: not all resource limits support this API. If the value is not available, the API will return 404.
+//   * The number of available resources associated with the given limit.
+//   * The usage in the selected compartment for the given limit.
+//   Note that not all resource limits support this API. If the value is not available, the API returns a 404 response.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/limits/GetResourceAvailability.go.html to see an example of how to use GetResourceAvailability API.
 func (client LimitsClient) GetResourceAvailability(ctx context.Context, request GetResourceAvailabilityRequest) (response GetResourceAvailabilityResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getResourceAvailability, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetResourceAvailabilityResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetResourceAvailabilityResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetResourceAvailabilityResponse{}
+			}
 		}
 		return
 	}
@@ -84,8 +117,9 @@ func (client LimitsClient) GetResourceAvailability(ctx context.Context, request 
 }
 
 // getResourceAvailability implements the OCIOperation interface (enables retrying operations)
-func (client LimitsClient) getResourceAvailability(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/20190729/services/{serviceName}/limits/{limitName}/resourceAvailability")
+func (client LimitsClient) getResourceAvailability(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/20190729/services/{serviceName}/limits/{limitName}/resourceAvailability", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -106,16 +140,28 @@ func (client LimitsClient) getResourceAvailability(ctx context.Context, request 
 // ListLimitDefinitions Includes a list of resource limits that are currently supported.
 // If the 'areQuotasSupported' property is true, you can create quota policies on top of this limit at the
 // compartment level.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/limits/ListLimitDefinitions.go.html to see an example of how to use ListLimitDefinitions API.
 func (client LimitsClient) ListLimitDefinitions(ctx context.Context, request ListLimitDefinitionsRequest) (response ListLimitDefinitionsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listLimitDefinitions, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListLimitDefinitionsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListLimitDefinitionsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListLimitDefinitionsResponse{}
+			}
 		}
 		return
 	}
@@ -128,8 +174,9 @@ func (client LimitsClient) ListLimitDefinitions(ctx context.Context, request Lis
 }
 
 // listLimitDefinitions implements the OCIOperation interface (enables retrying operations)
-func (client LimitsClient) listLimitDefinitions(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/20190729/limitDefinitions")
+func (client LimitsClient) listLimitDefinitions(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/20190729/limitDefinitions", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -148,16 +195,28 @@ func (client LimitsClient) listLimitDefinitions(ctx context.Context, request com
 }
 
 // ListLimitValues Includes a full list of resource limits belonging to a given service.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/limits/ListLimitValues.go.html to see an example of how to use ListLimitValues API.
 func (client LimitsClient) ListLimitValues(ctx context.Context, request ListLimitValuesRequest) (response ListLimitValuesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listLimitValues, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListLimitValuesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListLimitValuesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListLimitValuesResponse{}
+			}
 		}
 		return
 	}
@@ -170,8 +229,9 @@ func (client LimitsClient) ListLimitValues(ctx context.Context, request ListLimi
 }
 
 // listLimitValues implements the OCIOperation interface (enables retrying operations)
-func (client LimitsClient) listLimitValues(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/20190729/limitValues")
+func (client LimitsClient) listLimitValues(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/20190729/limitValues", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -190,17 +250,29 @@ func (client LimitsClient) listLimitValues(ctx context.Context, request common.O
 }
 
 // ListServices Returns the list of supported services.
-// This will include the programmatic service name, along with the friendly service name.
+// This includes the programmatic service name, along with the friendly service name.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/limits/ListServices.go.html to see an example of how to use ListServices API.
 func (client LimitsClient) ListServices(ctx context.Context, request ListServicesRequest) (response ListServicesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listServices, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListServicesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListServicesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListServicesResponse{}
+			}
 		}
 		return
 	}
@@ -213,8 +285,9 @@ func (client LimitsClient) ListServices(ctx context.Context, request ListService
 }
 
 // listServices implements the OCIOperation interface (enables retrying operations)
-func (client LimitsClient) listServices(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/20190729/services")
+func (client LimitsClient) listServices(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/20190729/services", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

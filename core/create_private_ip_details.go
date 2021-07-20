@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,18 +14,14 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreatePrivateIpDetails The representation of CreatePrivateIpDetails
 type CreatePrivateIpDetails struct {
 
-	// The OCID of the VNIC to assign the private IP to. The VNIC and private IP
-	// must be in the same subnet.
-	VnicId *string `mandatory:"true" json:"vnicId"`
-
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
@@ -33,7 +30,7 @@ type CreatePrivateIpDetails struct {
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
@@ -44,7 +41,7 @@ type CreatePrivateIpDetails struct {
 	// RFC 952 (https://tools.ietf.org/html/rfc952) and
 	// RFC 1123 (https://tools.ietf.org/html/rfc1123).
 	// For more information, see
-	// DNS in Your Virtual Cloud Network (https://docs.cloud.oracle.com/Content/Network/Concepts/dns.htm).
+	// DNS in Your Virtual Cloud Network (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/dns.htm).
 	// Example: `bminstance-1`
 	HostnameLabel *string `mandatory:"false" json:"hostnameLabel"`
 
@@ -53,6 +50,15 @@ type CreatePrivateIpDetails struct {
 	// assigns a private IP address from the subnet.
 	// Example: `10.0.3.3`
 	IpAddress *string `mandatory:"false" json:"ipAddress"`
+
+	// The OCID of the VNIC to assign the private IP to. The VNIC and private IP
+	// must be in the same subnet.
+	VnicId *string `mandatory:"false" json:"vnicId"`
+
+	// Use this attribute only with the Oracle Cloud VMware Solution.
+	// The OCID of the VLAN from which the private IP is to be drawn. The IP address,
+	// *if supplied*, must be valid for the given VLAN. See Vlan.
+	VlanId *string `mandatory:"false" json:"vlanId"`
 }
 
 func (m CreatePrivateIpDetails) String() string {

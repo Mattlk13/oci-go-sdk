@@ -1,16 +1,17 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // LaunchDbSystemFromBackupDetails Used for creating a new DB system from a database backup.
@@ -85,10 +86,12 @@ type LaunchDbSystemFromBackupDetails struct {
 	// **Subnet Restrictions:** See the subnet restrictions information for **subnetId**.
 	BackupSubnetId *string `mandatory:"false" json:"backupSubnetId"`
 
-	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that this DB system belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm).
+	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that this resource belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm).
+	// **NsgIds restrictions:**
+	// - Autonomous Databases with private access require at least 1 Network Security Group (NSG). The nsgIds array cannot be empty.
 	NsgIds []string `mandatory:"false" json:"nsgIds"`
 
-	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that the backup network of this DB system belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm). Applicable only to Exadata DB systems.
+	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that the backup network of this DB system belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm). Applicable only to Exadata systems.
 	BackupNetworkNsgIds []string `mandatory:"false" json:"backupNetworkNsgIds"`
 
 	// The time zone to use for the DB system. For details, see DB System Time Zones (https://docs.cloud.oracle.com/Content/Database/References/timezones.htm).
@@ -104,7 +107,7 @@ type LaunchDbSystemFromBackupDetails struct {
 	// (do not provide one). Otherwise, provide a valid DNS domain name. Hyphens (-) are not permitted.
 	Domain *string `mandatory:"false" json:"domain"`
 
-	// The cluster name for Exadata and 2-node RAC virtual machine DB systems. The cluster name must begin with an an alphabetic character, and may contain hyphens (-). Underscores (_) are not permitted. The cluster name can be no longer than 11 characters and is not case sensitive.
+	// The cluster name for Exadata and 2-node RAC virtual machine DB systems. The cluster name must begin with an alphabetic character, and may contain hyphens (-). Underscores (_) are not permitted. The cluster name can be no longer than 11 characters and is not case sensitive.
 	ClusterName *string `mandatory:"false" json:"clusterName"`
 
 	// The percentage assigned to DATA storage (user data and database files).
@@ -115,7 +118,13 @@ type LaunchDbSystemFromBackupDetails struct {
 	// Size (in GB) of the initial data volume that will be created and attached to a virtual machine DB system. You can scale up storage after provisioning, as needed. Note that the total storage size attached will be more than the amount you specify to allow for REDO/RECO space and software volume.
 	InitialDataStorageSizeInGB *int `mandatory:"false" json:"initialDataStorageSizeInGB"`
 
-	// The number of nodes to launch for a 2-node RAC virtual machine DB system.
+	// The OCID of the key container that is used as the master encryption key in database transparent data encryption (TDE) operations.
+	KmsKeyId *string `mandatory:"false" json:"kmsKeyId"`
+
+	// The OCID of the key container version that is used in database transparent data encryption (TDE) operations KMS Key can have multiple key versions. If none is specified, the current key version (latest) of the Key Id is used for the operation.
+	KmsKeyVersionId *string `mandatory:"false" json:"kmsKeyVersionId"`
+
+	// The number of nodes to launch for a 2-node RAC virtual machine DB system. Specify either 1 or 2.
 	NodeCount *int `mandatory:"false" json:"nodeCount"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no predefined name, type, or namespace.
@@ -126,6 +135,10 @@ type LaunchDbSystemFromBackupDetails struct {
 	// Defined tags for this resource. Each key is predefined and scoped to a namespace.
 	// For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
+
+	// A private IP address of your choice. Must be an available IP address within the subnet's CIDR.
+	// If you don't specify a value, Oracle automatically assigns a private IP address from the subnet.
+	PrivateIp *string `mandatory:"false" json:"privateIp"`
 
 	// The Oracle Database Edition that applies to all the databases on the DB system.
 	// Exadata DB systems and 2-node RAC DB systems require ENTERPRISE_EDITION_EXTREME_PERFORMANCE.
@@ -235,6 +248,16 @@ func (m LaunchDbSystemFromBackupDetails) GetInitialDataStorageSizeInGB() *int {
 	return m.InitialDataStorageSizeInGB
 }
 
+//GetKmsKeyId returns KmsKeyId
+func (m LaunchDbSystemFromBackupDetails) GetKmsKeyId() *string {
+	return m.KmsKeyId
+}
+
+//GetKmsKeyVersionId returns KmsKeyVersionId
+func (m LaunchDbSystemFromBackupDetails) GetKmsKeyVersionId() *string {
+	return m.KmsKeyVersionId
+}
+
 //GetNodeCount returns NodeCount
 func (m LaunchDbSystemFromBackupDetails) GetNodeCount() *int {
 	return m.NodeCount
@@ -248,6 +271,11 @@ func (m LaunchDbSystemFromBackupDetails) GetFreeformTags() map[string]string {
 //GetDefinedTags returns DefinedTags
 func (m LaunchDbSystemFromBackupDetails) GetDefinedTags() map[string]map[string]interface{} {
 	return m.DefinedTags
+}
+
+//GetPrivateIp returns PrivateIp
+func (m LaunchDbSystemFromBackupDetails) GetPrivateIp() *string {
+	return m.PrivateIp
 }
 
 func (m LaunchDbSystemFromBackupDetails) String() string {

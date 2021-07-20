@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Load Balancing API
@@ -10,7 +11,7 @@
 package loadbalancer
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // IpAddress A load balancer IP address.
@@ -24,6 +25,8 @@ type IpAddress struct {
 	// If "true", the IP address is public and accessible from the internet.
 	// If "false", the IP address is private and accessible only from within the associated VCN.
 	IsPublic *bool `mandatory:"false" json:"isPublic"`
+
+	ReservedIp *ReservedIp `mandatory:"false" json:"reservedIp"`
 }
 
 func (m IpAddress) String() string {

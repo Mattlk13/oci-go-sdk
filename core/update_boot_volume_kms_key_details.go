@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,15 +14,15 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // UpdateBootVolumeKmsKeyDetails The representation of UpdateBootVolumeKmsKeyDetails
 type UpdateBootVolumeKmsKeyDetails struct {
 
-	// The OCID of the new KMS key which will be used to protect the specified volume.
-	// This key has to be a valid KMS key OCID, and the user must have key delegation policy to allow them to access this key.
-	// Even if the new KMS key is the same as the previous KMS key ID, the Block Volume service will use it to regenerate a new volume encryption key.
+	// The OCID of the new Key Management key to assign to protect the specified volume.
+	// This key has to be a valid Key Management key, and policies must exist to allow the user and the Block Volume service to access this key.
+	// If you specify the same OCID as the previous key's OCID, the Block Volume service will use it to regenerate a volume encryption key.
 	KmsKeyId *string `mandatory:"false" json:"kmsKeyId"`
 }
 

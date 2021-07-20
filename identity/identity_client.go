@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Identity and Access Management Service API
@@ -11,7 +12,8 @@ package identity
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type IdentityClient struct {
 // NewIdentityClientWithConfigurationProvider Creates a new default Identity client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewIdentityClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client IdentityClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newIdentityClientFromBaseClient(baseClient, provider)
+}
+
+// NewIdentityClientWithOboToken Creates a new default Identity client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewIdentityClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client IdentityClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newIdentityClientFromBaseClient(baseClient, configProvider)
+}
+
+func newIdentityClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client IdentityClient, err error) {
 	client = IdentityClient{BaseClient: baseClient}
 	client.BasePath = "20160918"
 	err = client.setConfigurationProvider(configProvider)
@@ -59,9 +80,16 @@ func (client *IdentityClient) ConfigurationProvider() *common.ConfigurationProvi
 }
 
 // ActivateMfaTotpDevice Activates the specified MFA TOTP device for the user. Activation requires manual interaction with the Console.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ActivateMfaTotpDevice.go.html to see an example of how to use ActivateMfaTotpDevice API.
 func (client IdentityClient) ActivateMfaTotpDevice(ctx context.Context, request ActivateMfaTotpDeviceRequest) (response ActivateMfaTotpDeviceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -73,7 +101,12 @@ func (client IdentityClient) ActivateMfaTotpDevice(ctx context.Context, request 
 	ociResponse, err = common.Retry(ctx, request, client.activateMfaTotpDevice, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ActivateMfaTotpDeviceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ActivateMfaTotpDeviceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ActivateMfaTotpDeviceResponse{}
+			}
 		}
 		return
 	}
@@ -86,8 +119,9 @@ func (client IdentityClient) ActivateMfaTotpDevice(ctx context.Context, request 
 }
 
 // activateMfaTotpDevice implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) activateMfaTotpDevice(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/mfaTotpDevices/{mfaTotpDeviceId}/actions/activate")
+func (client IdentityClient) activateMfaTotpDevice(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/mfaTotpDevices/{mfaTotpDeviceId}/actions/activate", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -108,9 +142,16 @@ func (client IdentityClient) activateMfaTotpDevice(ctx context.Context, request 
 // AddUserToGroup Adds the specified user to the specified group and returns a `UserGroupMembership` object with its own OCID.
 // After you send your request, the new object's `lifecycleState` will temporarily be CREATING. Before using the
 // object, first make sure its `lifecycleState` has changed to ACTIVE.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/AddUserToGroup.go.html to see an example of how to use AddUserToGroup API.
 func (client IdentityClient) AddUserToGroup(ctx context.Context, request AddUserToGroupRequest) (response AddUserToGroupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -122,7 +163,12 @@ func (client IdentityClient) AddUserToGroup(ctx context.Context, request AddUser
 	ociResponse, err = common.Retry(ctx, request, client.addUserToGroup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = AddUserToGroupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = AddUserToGroupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = AddUserToGroupResponse{}
+			}
 		}
 		return
 	}
@@ -135,8 +181,9 @@ func (client IdentityClient) AddUserToGroup(ctx context.Context, request AddUser
 }
 
 // addUserToGroup implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) addUserToGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/userGroupMemberships/")
+func (client IdentityClient) addUserToGroup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/userGroupMemberships", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -158,16 +205,28 @@ func (client IdentityClient) addUserToGroup(ctx context.Context, request common.
 // the tags to apply. Tag defaults from parent compartments do not override tag defaults
 // referencing the same tag in a compartment lower down the hierarchy. This set of tag defaults
 // includes all tag defaults from the current compartment back to the root compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/AssembleEffectiveTagSet.go.html to see an example of how to use AssembleEffectiveTagSet API.
 func (client IdentityClient) AssembleEffectiveTagSet(ctx context.Context, request AssembleEffectiveTagSetRequest) (response AssembleEffectiveTagSetResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.assembleEffectiveTagSet, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = AssembleEffectiveTagSetResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = AssembleEffectiveTagSetResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = AssembleEffectiveTagSetResponse{}
+			}
 		}
 		return
 	}
@@ -180,8 +239,9 @@ func (client IdentityClient) AssembleEffectiveTagSet(ctx context.Context, reques
 }
 
 // assembleEffectiveTagSet implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) assembleEffectiveTagSet(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagDefaults/actions/assembleEffectiveTagSet")
+func (client IdentityClient) assembleEffectiveTagSet(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagDefaults/actions/assembleEffectiveTagSet", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -199,13 +259,365 @@ func (client IdentityClient) assembleEffectiveTagSet(ctx context.Context, reques
 	return response, err
 }
 
+// BulkDeleteResources Deletes multiple resources in the compartment. All resources must be in the same compartment. You must have the appropriate
+// permissions to delete the resources in the request. This API can only be invoked from the tenancy's
+// home region (https://docs.cloud.oracle.com/Content/Identity/Tasks/managingregions.htm#Home). This operation creates a
+// WorkRequest. Use the GetWorkRequest
+// API to monitor the status of the bulk action.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/BulkDeleteResources.go.html to see an example of how to use BulkDeleteResources API.
+func (client IdentityClient) BulkDeleteResources(ctx context.Context, request BulkDeleteResourcesRequest) (response BulkDeleteResourcesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.bulkDeleteResources, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = BulkDeleteResourcesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = BulkDeleteResourcesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(BulkDeleteResourcesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into BulkDeleteResourcesResponse")
+	}
+	return
+}
+
+// bulkDeleteResources implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) bulkDeleteResources(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/compartments/{compartmentId}/actions/bulkDeleteResources", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response BulkDeleteResourcesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// BulkDeleteTags Deletes the specified tag key definitions. This operation triggers a process that removes the
+// tags from all resources in your tenancy. The tag key definitions must be within the same tag namespace.
+// The following actions happen immediately:
+//
+//   * If the tag is a cost-tracking tag, the tag no longer counts against your
+//   10 cost-tracking tags limit, even if you do not disable the tag before running this operation.
+//   * If the tag is used with dynamic groups, the rules that contain the tag are no longer
+//   evaluated against the tag.
+// After you start this operation, the state of the tag changes to DELETING, and tag removal
+// from resources begins. This process can take up to 48 hours depending on the number of resources that
+// are tagged and the regions in which those resources reside.
+// When all tags have been removed, the state changes to DELETED. You cannot restore a deleted tag. After the tag state
+// changes to DELETED, you can use the same tag name again.
+// After you start this operation, you cannot start either the DeleteTag or the CascadeDeleteTagNamespace operation until this process completes.
+// In order to delete tags, you must first retire the tags. Use UpdateTag
+// to retire a tag.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/BulkDeleteTags.go.html to see an example of how to use BulkDeleteTags API.
+func (client IdentityClient) BulkDeleteTags(ctx context.Context, request BulkDeleteTagsRequest) (response BulkDeleteTagsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.bulkDeleteTags, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = BulkDeleteTagsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = BulkDeleteTagsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(BulkDeleteTagsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into BulkDeleteTagsResponse")
+	}
+	return
+}
+
+// bulkDeleteTags implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) bulkDeleteTags(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tags/actions/bulkDelete", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response BulkDeleteTagsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// BulkEditTags Edits the specified list of tag key definitions for the selected resources.
+// This operation triggers a process that edits the tags on all selected resources. The possible actions are:
+//   * Add a defined tag when the tag does not already exist on the resource.
+//   * Update the value for a defined tag when the tag is present on the resource.
+//   * Add a defined tag when it does not already exist on the resource or update the value for a defined tag when the tag is present on the resource.
+//   * Remove a defined tag from a resource. The tag is removed from the resource regardless of the tag value.
+// See BulkEditOperationDetails for more information.
+// The edits can include a combination of operations and tag sets.
+// However, multiple operations cannot apply to one key definition in the same request.
+// For example, if one request adds `tag set-1` to a resource and sets a tag value to `tag set-2`,
+// `tag set-1` and `tag set-2` cannot have any common tag definitions.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/BulkEditTags.go.html to see an example of how to use BulkEditTags API.
+func (client IdentityClient) BulkEditTags(ctx context.Context, request BulkEditTagsRequest) (response BulkEditTagsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.bulkEditTags, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = BulkEditTagsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = BulkEditTagsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(BulkEditTagsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into BulkEditTagsResponse")
+	}
+	return
+}
+
+// bulkEditTags implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) bulkEditTags(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tags/actions/bulkEdit", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response BulkEditTagsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// BulkMoveResources Moves multiple resources from one compartment to another. All resources must be in the same compartment.
+// This API can only be invoked from the tenancy's home region (https://docs.cloud.oracle.com/Content/Identity/Tasks/managingregions.htm#Home).
+// To move resources, you must have the appropriate permissions to move the resource in both the source and target
+// compartments. This operation creates a WorkRequest.
+// Use the GetWorkRequest API to monitor the status of the bulk action.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/BulkMoveResources.go.html to see an example of how to use BulkMoveResources API.
+func (client IdentityClient) BulkMoveResources(ctx context.Context, request BulkMoveResourcesRequest) (response BulkMoveResourcesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.bulkMoveResources, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = BulkMoveResourcesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = BulkMoveResourcesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(BulkMoveResourcesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into BulkMoveResourcesResponse")
+	}
+	return
+}
+
+// bulkMoveResources implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) bulkMoveResources(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/compartments/{compartmentId}/actions/bulkMoveResources", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response BulkMoveResourcesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CascadeDeleteTagNamespace Deletes the specified tag namespace. This operation triggers a process that removes all of the tags
+// defined in the specified tag namespace from all resources in your tenancy and then deletes the tag namespace.
+// After you start the delete operation:
+//   * New tag key definitions cannot be created under the namespace.
+//   * The state of the tag namespace changes to DELETING.
+//   * Tag removal from the resources begins.
+// This process can take up to 48 hours depending on the number of tag definitions in the namespace, the number of resources
+// that are tagged, and the locations of the regions in which those resources reside.
+// After all tags are removed, the state changes to DELETED. You cannot restore a deleted tag namespace. After the deleted tag namespace
+// changes its state to DELETED, you can use the name of the deleted tag namespace again.
+// After you start this operation, you cannot start either the DeleteTag or the BulkDeleteTags operation until this process completes.
+// To delete a tag namespace, you must first retire it. Use UpdateTagNamespace
+// to retire a tag namespace.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CascadeDeleteTagNamespace.go.html to see an example of how to use CascadeDeleteTagNamespace API.
+func (client IdentityClient) CascadeDeleteTagNamespace(ctx context.Context, request CascadeDeleteTagNamespaceRequest) (response CascadeDeleteTagNamespaceResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.cascadeDeleteTagNamespace, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CascadeDeleteTagNamespaceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CascadeDeleteTagNamespaceResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CascadeDeleteTagNamespaceResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CascadeDeleteTagNamespaceResponse")
+	}
+	return
+}
+
+// cascadeDeleteTagNamespace implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) cascadeDeleteTagNamespace(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tagNamespaces/{tagNamespaceId}/actions/cascadeDelete", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CascadeDeleteTagNamespaceResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // ChangeTagNamespaceCompartment Moves the specified tag namespace to the specified compartment within the same tenancy.
 // To move the tag namespace, you must have the manage tag-namespaces permission on both compartments.
 // For more information about IAM policies, see Details for IAM (https://docs.cloud.oracle.com/Content/Identity/Reference/iampolicyreference.htm).
 // Moving a tag namespace moves all the tag key definitions contained in the tag namespace.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ChangeTagNamespaceCompartment.go.html to see an example of how to use ChangeTagNamespaceCompartment API.
 func (client IdentityClient) ChangeTagNamespaceCompartment(ctx context.Context, request ChangeTagNamespaceCompartmentRequest) (response ChangeTagNamespaceCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -217,7 +629,12 @@ func (client IdentityClient) ChangeTagNamespaceCompartment(ctx context.Context, 
 	ociResponse, err = common.Retry(ctx, request, client.changeTagNamespaceCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeTagNamespaceCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeTagNamespaceCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeTagNamespaceCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -230,8 +647,9 @@ func (client IdentityClient) ChangeTagNamespaceCompartment(ctx context.Context, 
 }
 
 // changeTagNamespaceCompartment implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) changeTagNamespaceCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tagNamespaces/{tagNamespaceId}/actions/changeCompartment")
+func (client IdentityClient) changeTagNamespaceCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tagNamespaces/{tagNamespaceId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -257,9 +675,16 @@ func (client IdentityClient) changeTagNamespaceCompartment(ctx context.Context, 
 // Every user has permission to create an auth token for *their own user ID*. An administrator in your organization
 // does not need to write a policy to give users this ability. To compare, administrators who have permission to the
 // tenancy can use this operation to create an auth token for any user, including themselves.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateAuthToken.go.html to see an example of how to use CreateAuthToken API.
 func (client IdentityClient) CreateAuthToken(ctx context.Context, request CreateAuthTokenRequest) (response CreateAuthTokenResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -271,7 +696,12 @@ func (client IdentityClient) CreateAuthToken(ctx context.Context, request Create
 	ociResponse, err = common.Retry(ctx, request, client.createAuthToken, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateAuthTokenResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateAuthTokenResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateAuthTokenResponse{}
+			}
 		}
 		return
 	}
@@ -284,8 +714,9 @@ func (client IdentityClient) CreateAuthToken(ctx context.Context, request Create
 }
 
 // createAuthToken implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createAuthToken(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/authTokens/")
+func (client IdentityClient) createAuthToken(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/authTokens", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -317,9 +748,16 @@ func (client IdentityClient) createAuthToken(ctx context.Context, request common
 // UpdateCompartment.
 // After you send your request, the new object's `lifecycleState` will temporarily be CREATING. Before using the
 // object, first make sure its `lifecycleState` has changed to ACTIVE.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateCompartment.go.html to see an example of how to use CreateCompartment API.
 func (client IdentityClient) CreateCompartment(ctx context.Context, request CreateCompartmentRequest) (response CreateCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -331,7 +769,12 @@ func (client IdentityClient) CreateCompartment(ctx context.Context, request Crea
 	ociResponse, err = common.Retry(ctx, request, client.createCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -344,8 +787,9 @@ func (client IdentityClient) CreateCompartment(ctx context.Context, request Crea
 }
 
 // createCompartment implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/compartments/")
+func (client IdentityClient) createCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/compartments", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -364,7 +808,7 @@ func (client IdentityClient) createCompartment(ctx context.Context, request comm
 }
 
 // CreateCustomerSecretKey Creates a new secret key for the specified user. Secret keys are used for authentication with the Object Storage Service's Amazon S3
-// compatible API. For information, see
+// compatible API. The secret key consists of an Access Key/Secret Key pair. For information, see
 // Managing User Credentials (https://docs.cloud.oracle.com/Content/Identity/Tasks/managingcredentials.htm).
 // You must specify a *description* for the secret key (although it can be an empty string). It does not
 // have to be unique, and you can change it anytime with
@@ -372,9 +816,16 @@ func (client IdentityClient) createCompartment(ctx context.Context, request comm
 // Every user has permission to create a secret key for *their own user ID*. An administrator in your organization
 // does not need to write a policy to give users this ability. To compare, administrators who have permission to the
 // tenancy can use this operation to create a secret key for any user, including themselves.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateCustomerSecretKey.go.html to see an example of how to use CreateCustomerSecretKey API.
 func (client IdentityClient) CreateCustomerSecretKey(ctx context.Context, request CreateCustomerSecretKeyRequest) (response CreateCustomerSecretKeyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -386,7 +837,12 @@ func (client IdentityClient) CreateCustomerSecretKey(ctx context.Context, reques
 	ociResponse, err = common.Retry(ctx, request, client.createCustomerSecretKey, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateCustomerSecretKeyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateCustomerSecretKeyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateCustomerSecretKeyResponse{}
+			}
 		}
 		return
 	}
@@ -399,8 +855,9 @@ func (client IdentityClient) CreateCustomerSecretKey(ctx context.Context, reques
 }
 
 // createCustomerSecretKey implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createCustomerSecretKey(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/customerSecretKeys/")
+func (client IdentityClient) createCustomerSecretKey(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/customerSecretKeys", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -432,9 +889,16 @@ func (client IdentityClient) createCustomerSecretKey(ctx context.Context, reques
 // have to be unique, and you can change it anytime with UpdateDynamicGroup.
 // After you send your request, the new object's `lifecycleState` will temporarily be CREATING. Before using the
 // object, first make sure its `lifecycleState` has changed to ACTIVE.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateDynamicGroup.go.html to see an example of how to use CreateDynamicGroup API.
 func (client IdentityClient) CreateDynamicGroup(ctx context.Context, request CreateDynamicGroupRequest) (response CreateDynamicGroupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -446,7 +910,12 @@ func (client IdentityClient) CreateDynamicGroup(ctx context.Context, request Cre
 	ociResponse, err = common.Retry(ctx, request, client.createDynamicGroup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateDynamicGroupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateDynamicGroupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateDynamicGroupResponse{}
+			}
 		}
 		return
 	}
@@ -459,8 +928,9 @@ func (client IdentityClient) CreateDynamicGroup(ctx context.Context, request Cre
 }
 
 // createDynamicGroup implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createDynamicGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dynamicGroups/")
+func (client IdentityClient) createDynamicGroup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dynamicGroups", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -494,9 +964,16 @@ func (client IdentityClient) createDynamicGroup(ctx context.Context, request com
 // After creating the group, you need to put users in it and write policies for it.
 // See AddUserToGroup and
 // CreatePolicy.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateGroup.go.html to see an example of how to use CreateGroup API.
 func (client IdentityClient) CreateGroup(ctx context.Context, request CreateGroupRequest) (response CreateGroupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -508,7 +985,12 @@ func (client IdentityClient) CreateGroup(ctx context.Context, request CreateGrou
 	ociResponse, err = common.Retry(ctx, request, client.createGroup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateGroupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateGroupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateGroupResponse{}
+			}
 		}
 		return
 	}
@@ -521,8 +1003,9 @@ func (client IdentityClient) CreateGroup(ctx context.Context, request CreateGrou
 }
 
 // createGroup implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/groups/")
+func (client IdentityClient) createGroup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/groups", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -554,9 +1037,16 @@ func (client IdentityClient) createGroup(ctx context.Context, request common.OCI
 // After you send your request, the new object's `lifecycleState` will temporarily
 // be CREATING. Before using the object, first make sure its `lifecycleState` has
 // changed to ACTIVE.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateIdentityProvider.go.html to see an example of how to use CreateIdentityProvider API.
 func (client IdentityClient) CreateIdentityProvider(ctx context.Context, request CreateIdentityProviderRequest) (response CreateIdentityProviderResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -568,7 +1058,12 @@ func (client IdentityClient) CreateIdentityProvider(ctx context.Context, request
 	ociResponse, err = common.Retry(ctx, request, client.createIdentityProvider, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateIdentityProviderResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateIdentityProviderResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateIdentityProviderResponse{}
+			}
 		}
 		return
 	}
@@ -581,8 +1076,9 @@ func (client IdentityClient) CreateIdentityProvider(ctx context.Context, request
 }
 
 // createIdentityProvider implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createIdentityProvider(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/identityProviders/")
+func (client IdentityClient) createIdentityProvider(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/identityProviders", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -602,9 +1098,16 @@ func (client IdentityClient) createIdentityProvider(ctx context.Context, request
 
 // CreateIdpGroupMapping Creates a single mapping between an IdP group and an IAM Service
 // Group.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateIdpGroupMapping.go.html to see an example of how to use CreateIdpGroupMapping API.
 func (client IdentityClient) CreateIdpGroupMapping(ctx context.Context, request CreateIdpGroupMappingRequest) (response CreateIdpGroupMappingResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -616,7 +1119,12 @@ func (client IdentityClient) CreateIdpGroupMapping(ctx context.Context, request 
 	ociResponse, err = common.Retry(ctx, request, client.createIdpGroupMapping, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateIdpGroupMappingResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateIdpGroupMappingResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateIdpGroupMappingResponse{}
+			}
 		}
 		return
 	}
@@ -629,8 +1137,9 @@ func (client IdentityClient) CreateIdpGroupMapping(ctx context.Context, request 
 }
 
 // createIdpGroupMapping implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createIdpGroupMapping(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/identityProviders/{identityProviderId}/groupMappings/")
+func (client IdentityClient) createIdpGroupMapping(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/identityProviders/{identityProviderId}/groupMappings", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -649,9 +1158,16 @@ func (client IdentityClient) createIdpGroupMapping(ctx context.Context, request 
 }
 
 // CreateMfaTotpDevice Creates a new MFA TOTP device for the user. A user can have one MFA TOTP device.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateMfaTotpDevice.go.html to see an example of how to use CreateMfaTotpDevice API.
 func (client IdentityClient) CreateMfaTotpDevice(ctx context.Context, request CreateMfaTotpDeviceRequest) (response CreateMfaTotpDeviceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -663,7 +1179,12 @@ func (client IdentityClient) CreateMfaTotpDevice(ctx context.Context, request Cr
 	ociResponse, err = common.Retry(ctx, request, client.createMfaTotpDevice, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateMfaTotpDeviceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateMfaTotpDeviceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateMfaTotpDeviceResponse{}
+			}
 		}
 		return
 	}
@@ -676,13 +1197,149 @@ func (client IdentityClient) CreateMfaTotpDevice(ctx context.Context, request Cr
 }
 
 // createMfaTotpDevice implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createMfaTotpDevice(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/mfaTotpDevices")
+func (client IdentityClient) createMfaTotpDevice(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/mfaTotpDevices", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
 
 	var response CreateMfaTotpDeviceResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateNetworkSource Creates a new network source in your tenancy.
+// You must specify your tenancy's OCID as the compartment ID in the request object (remember that the tenancy
+// is simply the root compartment). Notice that IAM resources (users, groups, compartments, and some policies)
+// reside within the tenancy itself, unlike cloud resources such as compute instances, which typically
+// reside within compartments inside the tenancy. For information about OCIDs, see
+// Resource Identifiers (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm).
+// You must also specify a *name* for the network source, which must be unique across all network sources in your
+// tenancy, and cannot be changed.
+// You can use this name or the OCID when writing policies that apply to the network source. For more information
+// about policies, see How Policies Work (https://docs.cloud.oracle.com/Content/Identity/Concepts/policies.htm).
+// You must also specify a *description* for the network source (although it can be an empty string). It does not
+// have to be unique, and you can change it anytime with UpdateNetworkSource.
+// After you send your request, the new object's `lifecycleState` will temporarily be CREATING. Before using the
+// object, first make sure its `lifecycleState` has changed to ACTIVE.
+// After your network resource is created, you can use it in policy to restrict access to only requests made from an allowed
+// IP address specified in your network source. For more information, see Managing Network Sources (https://docs.cloud.oracle.com/Content/Identity/Tasks/managingnetworksources.htm).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateNetworkSource.go.html to see an example of how to use CreateNetworkSource API.
+func (client IdentityClient) CreateNetworkSource(ctx context.Context, request CreateNetworkSourceRequest) (response CreateNetworkSourceResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createNetworkSource, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateNetworkSourceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateNetworkSourceResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateNetworkSourceResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateNetworkSourceResponse")
+	}
+	return
+}
+
+// createNetworkSource implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) createNetworkSource(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/networkSources", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateNetworkSourceResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateOAuthClientCredential Creates Oauth token for the user
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateOAuthClientCredential.go.html to see an example of how to use CreateOAuthClientCredential API.
+func (client IdentityClient) CreateOAuthClientCredential(ctx context.Context, request CreateOAuthClientCredentialRequest) (response CreateOAuthClientCredentialResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createOAuthClientCredential, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateOAuthClientCredentialResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateOAuthClientCredentialResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateOAuthClientCredentialResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateOAuthClientCredentialResponse")
+	}
+	return
+}
+
+// createOAuthClientCredential implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) createOAuthClientCredential(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/oauth2ClientCredentials", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateOAuthClientCredentialResponse
 	var httpResponse *http.Response
 	httpResponse, err = client.Call(ctx, &httpRequest)
 	defer common.CloseBodyIfValid(httpResponse)
@@ -704,9 +1361,16 @@ func (client IdentityClient) createMfaTotpDevice(ctx context.Context, request co
 // user.
 // **Note:** The user's Console login is the unique name you specified when you created the user
 // (see CreateUser).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateOrResetUIPassword.go.html to see an example of how to use CreateOrResetUIPassword API.
 func (client IdentityClient) CreateOrResetUIPassword(ctx context.Context, request CreateOrResetUIPasswordRequest) (response CreateOrResetUIPasswordResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -718,7 +1382,12 @@ func (client IdentityClient) CreateOrResetUIPassword(ctx context.Context, reques
 	ociResponse, err = common.Retry(ctx, request, client.createOrResetUIPassword, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateOrResetUIPasswordResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateOrResetUIPasswordResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateOrResetUIPasswordResponse{}
+			}
 		}
 		return
 	}
@@ -731,8 +1400,9 @@ func (client IdentityClient) CreateOrResetUIPassword(ctx context.Context, reques
 }
 
 // createOrResetUIPassword implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createOrResetUIPassword(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/uiPassword")
+func (client IdentityClient) createOrResetUIPassword(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/uiPassword", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -762,9 +1432,16 @@ func (client IdentityClient) createOrResetUIPassword(ctx context.Context, reques
 // After you send your request, the new object's `lifecycleState` will temporarily be CREATING. Before using the
 // object, first make sure its `lifecycleState` has changed to ACTIVE.
 // New policies take effect typically within 10 seconds.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreatePolicy.go.html to see an example of how to use CreatePolicy API.
 func (client IdentityClient) CreatePolicy(ctx context.Context, request CreatePolicyRequest) (response CreatePolicyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -776,7 +1453,12 @@ func (client IdentityClient) CreatePolicy(ctx context.Context, request CreatePol
 	ociResponse, err = common.Retry(ctx, request, client.createPolicy, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreatePolicyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreatePolicyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreatePolicyResponse{}
+			}
 		}
 		return
 	}
@@ -789,8 +1471,9 @@ func (client IdentityClient) CreatePolicy(ctx context.Context, request CreatePol
 }
 
 // createPolicy implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createPolicy(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/policies/")
+func (client IdentityClient) createPolicy(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/policies", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -809,9 +1492,16 @@ func (client IdentityClient) createPolicy(ctx context.Context, request common.OC
 }
 
 // CreateRegionSubscription Creates a subscription to a region for a tenancy.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateRegionSubscription.go.html to see an example of how to use CreateRegionSubscription API.
 func (client IdentityClient) CreateRegionSubscription(ctx context.Context, request CreateRegionSubscriptionRequest) (response CreateRegionSubscriptionResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -823,7 +1513,12 @@ func (client IdentityClient) CreateRegionSubscription(ctx context.Context, reque
 	ociResponse, err = common.Retry(ctx, request, client.createRegionSubscription, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateRegionSubscriptionResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateRegionSubscriptionResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateRegionSubscriptionResponse{}
+			}
 		}
 		return
 	}
@@ -836,8 +1531,9 @@ func (client IdentityClient) CreateRegionSubscription(ctx context.Context, reque
 }
 
 // createRegionSubscription implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createRegionSubscription(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tenancies/{tenancyId}/regionSubscriptions")
+func (client IdentityClient) createRegionSubscription(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tenancies/{tenancyId}/regionSubscriptions", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -859,9 +1555,16 @@ func (client IdentityClient) createRegionSubscription(ctx context.Context, reque
 // You must specify a *description* for the SMTP credential (although it can be an empty string). It does not
 // have to be unique, and you can change it anytime with
 // UpdateSmtpCredential.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateSmtpCredential.go.html to see an example of how to use CreateSmtpCredential API.
 func (client IdentityClient) CreateSmtpCredential(ctx context.Context, request CreateSmtpCredentialRequest) (response CreateSmtpCredentialResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -873,7 +1576,12 @@ func (client IdentityClient) CreateSmtpCredential(ctx context.Context, request C
 	ociResponse, err = common.Retry(ctx, request, client.createSmtpCredential, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateSmtpCredentialResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateSmtpCredentialResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateSmtpCredentialResponse{}
+			}
 		}
 		return
 	}
@@ -886,8 +1594,9 @@ func (client IdentityClient) CreateSmtpCredential(ctx context.Context, request C
 }
 
 // createSmtpCredential implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createSmtpCredential(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/smtpCredentials/")
+func (client IdentityClient) createSmtpCredential(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/smtpCredentials", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -914,9 +1623,16 @@ func (client IdentityClient) createSmtpCredential(ctx context.Context, request c
 // Every user has permission to create a Swift password for *their own user ID*. An administrator in your organization
 // does not need to write a policy to give users this ability. To compare, administrators who have permission to the
 // tenancy can use this operation to create a Swift password for any user, including themselves.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateSwiftPassword.go.html to see an example of how to use CreateSwiftPassword API.
 func (client IdentityClient) CreateSwiftPassword(ctx context.Context, request CreateSwiftPasswordRequest) (response CreateSwiftPasswordResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -928,7 +1644,12 @@ func (client IdentityClient) CreateSwiftPassword(ctx context.Context, request Cr
 	ociResponse, err = common.Retry(ctx, request, client.createSwiftPassword, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateSwiftPasswordResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateSwiftPasswordResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateSwiftPasswordResponse{}
+			}
 		}
 		return
 	}
@@ -941,8 +1662,9 @@ func (client IdentityClient) CreateSwiftPassword(ctx context.Context, request Cr
 }
 
 // createSwiftPassword implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createSwiftPassword(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/swiftPasswords/")
+func (client IdentityClient) createSwiftPassword(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/swiftPasswords", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -961,20 +1683,32 @@ func (client IdentityClient) createSwiftPassword(ctx context.Context, request co
 }
 
 // CreateTag Creates a new tag in the specified tag namespace.
-// You must specify either the OCID or the name of the tag namespace that will contain this tag definition.
-// You must also specify a *name* for the tag, which must be unique across all tags in the tag namespace
+// The tag requires either the OCID or the name of the tag namespace that will contain this
+// tag definition.
+// You must specify a *name* for the tag, which must be unique across all tags in the tag namespace
 // and cannot be changed. The name can contain any ASCII character except the space (_) or period (.) characters.
 // Names are case insensitive. That means, for example, "myTag" and "mytag" are not allowed in the same namespace.
 // If you specify a name that's already in use in the tag namespace, a 409 error is returned.
-// You must also specify a *description* for the tag.
-// It does not have to be unique, and you can change it with
+// The tag must have a *description*. It does not have to be unique, and you can change it with
 // UpdateTag.
-// If no 'validator' is set on this tag definition, then any (valid) value can be set for this definedTag.
-// If a 'validator' is set on this tag definition, then the only valid values that can be set for this
-// definedTag those that pass the additional validation imposed by the set 'validator'.
+// The tag must have a value type, which is specified with a validator. Tags can use either a
+// static value or a list of possible values. Static values are entered by a user applying the tag
+// to a resource. Lists are created by you and the user must apply a value from the list. Lists
+// are validiated.
+// * If no `validator` is set, the user applying the tag to a resource can type in a static
+// value or leave the tag value empty.
+// * If a `validator` is set, the user applying the tag to a resource must select from a list
+// of values that you supply with EnumTagDefinitionValidator.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateTag.go.html to see an example of how to use CreateTag API.
 func (client IdentityClient) CreateTag(ctx context.Context, request CreateTagRequest) (response CreateTagResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -986,7 +1720,12 @@ func (client IdentityClient) CreateTag(ctx context.Context, request CreateTagReq
 	ociResponse, err = common.Retry(ctx, request, client.createTag, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateTagResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateTagResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateTagResponse{}
+			}
 		}
 		return
 	}
@@ -999,8 +1738,9 @@ func (client IdentityClient) CreateTag(ctx context.Context, request CreateTagReq
 }
 
 // createTag implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createTag(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tagNamespaces/{tagNamespaceId}/tags")
+func (client IdentityClient) createTag(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tagNamespaces/{tagNamespaceId}/tags", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1024,9 +1764,16 @@ func (client IdentityClient) createTag(ctx context.Context, request common.OCIRe
 // is blocked.
 // * If the `isRequired` flag is set to "true", the value is set during resource creation.
 // * If the `isRequired` flag is set to "false", the value you enter is set during resource creation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateTagDefault.go.html to see an example of how to use CreateTagDefault API.
 func (client IdentityClient) CreateTagDefault(ctx context.Context, request CreateTagDefaultRequest) (response CreateTagDefaultResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -1038,7 +1785,12 @@ func (client IdentityClient) CreateTagDefault(ctx context.Context, request Creat
 	ociResponse, err = common.Retry(ctx, request, client.createTagDefault, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateTagDefaultResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateTagDefaultResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateTagDefaultResponse{}
+			}
 		}
 		return
 	}
@@ -1051,8 +1803,9 @@ func (client IdentityClient) CreateTagDefault(ctx context.Context, request Creat
 }
 
 // createTagDefault implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createTagDefault(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tagDefaults")
+func (client IdentityClient) createTagDefault(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tagDefaults", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1081,9 +1834,16 @@ func (client IdentityClient) createTagDefault(ctx context.Context, request commo
 // You must also specify a *description* for the namespace.
 // It does not have to be unique, and you can change it with
 // UpdateTagNamespace.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateTagNamespace.go.html to see an example of how to use CreateTagNamespace API.
 func (client IdentityClient) CreateTagNamespace(ctx context.Context, request CreateTagNamespaceRequest) (response CreateTagNamespaceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -1095,7 +1855,12 @@ func (client IdentityClient) CreateTagNamespace(ctx context.Context, request Cre
 	ociResponse, err = common.Retry(ctx, request, client.createTagNamespace, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateTagNamespaceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateTagNamespaceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateTagNamespaceResponse{}
+			}
 		}
 		return
 	}
@@ -1108,8 +1873,9 @@ func (client IdentityClient) CreateTagNamespace(ctx context.Context, request Cre
 }
 
 // createTagNamespace implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createTagNamespace(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tagNamespaces")
+func (client IdentityClient) createTagNamespace(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/tagNamespaces", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1156,9 +1922,16 @@ func (client IdentityClient) createTagNamespace(ctx context.Context, request com
 // Required Keys and OCIDs (https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm) and also
 // UploadApiKey).
 // **Important:** Make sure to inform the new user which compartment(s) they have access to.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/CreateUser.go.html to see an example of how to use CreateUser API.
 func (client IdentityClient) CreateUser(ctx context.Context, request CreateUserRequest) (response CreateUserResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -1170,7 +1943,12 @@ func (client IdentityClient) CreateUser(ctx context.Context, request CreateUserR
 	ociResponse, err = common.Retry(ctx, request, client.createUser, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateUserResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateUserResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateUserResponse{}
+			}
 		}
 		return
 	}
@@ -1183,8 +1961,9 @@ func (client IdentityClient) CreateUser(ctx context.Context, request CreateUserR
 }
 
 // createUser implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) createUser(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/")
+func (client IdentityClient) createUser(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1207,16 +1986,28 @@ func (client IdentityClient) createUser(ctx context.Context, request common.OCIR
 // administrator in your organization does not need to write a policy to give users this ability.
 // To compare, administrators who have permission to the tenancy can use this operation to delete
 // a key for any user, including themselves.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteApiKey.go.html to see an example of how to use DeleteApiKey API.
 func (client IdentityClient) DeleteApiKey(ctx context.Context, request DeleteApiKeyRequest) (response DeleteApiKeyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteApiKey, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteApiKeyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteApiKeyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteApiKeyResponse{}
+			}
 		}
 		return
 	}
@@ -1229,8 +2020,9 @@ func (client IdentityClient) DeleteApiKey(ctx context.Context, request DeleteApi
 }
 
 // deleteApiKey implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteApiKey(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/apiKeys/{fingerprint}")
+func (client IdentityClient) deleteApiKey(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/apiKeys/{fingerprint}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1249,16 +2041,28 @@ func (client IdentityClient) deleteApiKey(ctx context.Context, request common.OC
 }
 
 // DeleteAuthToken Deletes the specified auth token for the specified user.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteAuthToken.go.html to see an example of how to use DeleteAuthToken API.
 func (client IdentityClient) DeleteAuthToken(ctx context.Context, request DeleteAuthTokenRequest) (response DeleteAuthTokenResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteAuthToken, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteAuthTokenResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteAuthTokenResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteAuthTokenResponse{}
+			}
 		}
 		return
 	}
@@ -1271,8 +2075,9 @@ func (client IdentityClient) DeleteAuthToken(ctx context.Context, request Delete
 }
 
 // deleteAuthToken implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteAuthToken(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/authTokens/{authTokenId}")
+func (client IdentityClient) deleteAuthToken(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/authTokens/{authTokenId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1291,16 +2096,28 @@ func (client IdentityClient) deleteAuthToken(ctx context.Context, request common
 }
 
 // DeleteCompartment Deletes the specified compartment. The compartment must be empty.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteCompartment.go.html to see an example of how to use DeleteCompartment API.
 func (client IdentityClient) DeleteCompartment(ctx context.Context, request DeleteCompartmentRequest) (response DeleteCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -1313,8 +2130,9 @@ func (client IdentityClient) DeleteCompartment(ctx context.Context, request Dele
 }
 
 // deleteCompartment implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/compartments/{compartmentId}")
+func (client IdentityClient) deleteCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/compartments/{compartmentId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1333,16 +2151,28 @@ func (client IdentityClient) deleteCompartment(ctx context.Context, request comm
 }
 
 // DeleteCustomerSecretKey Deletes the specified secret key for the specified user.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteCustomerSecretKey.go.html to see an example of how to use DeleteCustomerSecretKey API.
 func (client IdentityClient) DeleteCustomerSecretKey(ctx context.Context, request DeleteCustomerSecretKeyRequest) (response DeleteCustomerSecretKeyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteCustomerSecretKey, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteCustomerSecretKeyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteCustomerSecretKeyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteCustomerSecretKeyResponse{}
+			}
 		}
 		return
 	}
@@ -1355,8 +2185,9 @@ func (client IdentityClient) DeleteCustomerSecretKey(ctx context.Context, reques
 }
 
 // deleteCustomerSecretKey implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteCustomerSecretKey(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/customerSecretKeys/{customerSecretKeyId}")
+func (client IdentityClient) deleteCustomerSecretKey(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/customerSecretKeys/{customerSecretKeyId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1375,16 +2206,28 @@ func (client IdentityClient) deleteCustomerSecretKey(ctx context.Context, reques
 }
 
 // DeleteDynamicGroup Deletes the specified dynamic group.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteDynamicGroup.go.html to see an example of how to use DeleteDynamicGroup API.
 func (client IdentityClient) DeleteDynamicGroup(ctx context.Context, request DeleteDynamicGroupRequest) (response DeleteDynamicGroupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteDynamicGroup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteDynamicGroupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteDynamicGroupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteDynamicGroupResponse{}
+			}
 		}
 		return
 	}
@@ -1397,8 +2240,9 @@ func (client IdentityClient) DeleteDynamicGroup(ctx context.Context, request Del
 }
 
 // deleteDynamicGroup implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteDynamicGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/dynamicGroups/{dynamicGroupId}")
+func (client IdentityClient) deleteDynamicGroup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/dynamicGroups/{dynamicGroupId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1417,16 +2261,28 @@ func (client IdentityClient) deleteDynamicGroup(ctx context.Context, request com
 }
 
 // DeleteGroup Deletes the specified group. The group must be empty.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteGroup.go.html to see an example of how to use DeleteGroup API.
 func (client IdentityClient) DeleteGroup(ctx context.Context, request DeleteGroupRequest) (response DeleteGroupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteGroup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteGroupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteGroupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteGroupResponse{}
+			}
 		}
 		return
 	}
@@ -1439,8 +2295,9 @@ func (client IdentityClient) DeleteGroup(ctx context.Context, request DeleteGrou
 }
 
 // deleteGroup implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/groups/{groupId}")
+func (client IdentityClient) deleteGroup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/groups/{groupId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1460,16 +2317,28 @@ func (client IdentityClient) deleteGroup(ctx context.Context, request common.OCI
 
 // DeleteIdentityProvider Deletes the specified identity provider. The identity provider must not have
 // any group mappings (see IdpGroupMapping).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteIdentityProvider.go.html to see an example of how to use DeleteIdentityProvider API.
 func (client IdentityClient) DeleteIdentityProvider(ctx context.Context, request DeleteIdentityProviderRequest) (response DeleteIdentityProviderResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteIdentityProvider, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteIdentityProviderResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteIdentityProviderResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteIdentityProviderResponse{}
+			}
 		}
 		return
 	}
@@ -1482,8 +2351,9 @@ func (client IdentityClient) DeleteIdentityProvider(ctx context.Context, request
 }
 
 // deleteIdentityProvider implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteIdentityProvider(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/identityProviders/{identityProviderId}")
+func (client IdentityClient) deleteIdentityProvider(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/identityProviders/{identityProviderId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1502,16 +2372,28 @@ func (client IdentityClient) deleteIdentityProvider(ctx context.Context, request
 }
 
 // DeleteIdpGroupMapping Deletes the specified group mapping.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteIdpGroupMapping.go.html to see an example of how to use DeleteIdpGroupMapping API.
 func (client IdentityClient) DeleteIdpGroupMapping(ctx context.Context, request DeleteIdpGroupMappingRequest) (response DeleteIdpGroupMappingResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteIdpGroupMapping, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteIdpGroupMappingResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteIdpGroupMappingResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteIdpGroupMappingResponse{}
+			}
 		}
 		return
 	}
@@ -1524,8 +2406,9 @@ func (client IdentityClient) DeleteIdpGroupMapping(ctx context.Context, request 
 }
 
 // deleteIdpGroupMapping implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteIdpGroupMapping(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/identityProviders/{identityProviderId}/groupMappings/{mappingId}")
+func (client IdentityClient) deleteIdpGroupMapping(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/identityProviders/{identityProviderId}/groupMappings/{mappingId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1544,16 +2427,28 @@ func (client IdentityClient) deleteIdpGroupMapping(ctx context.Context, request 
 }
 
 // DeleteMfaTotpDevice Deletes the specified MFA TOTP device for the specified user.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteMfaTotpDevice.go.html to see an example of how to use DeleteMfaTotpDevice API.
 func (client IdentityClient) DeleteMfaTotpDevice(ctx context.Context, request DeleteMfaTotpDeviceRequest) (response DeleteMfaTotpDeviceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteMfaTotpDevice, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteMfaTotpDeviceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteMfaTotpDeviceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteMfaTotpDeviceResponse{}
+			}
 		}
 		return
 	}
@@ -1566,8 +2461,9 @@ func (client IdentityClient) DeleteMfaTotpDevice(ctx context.Context, request De
 }
 
 // deleteMfaTotpDevice implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteMfaTotpDevice(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/mfaTotpDevices/{mfaTotpDeviceId}")
+func (client IdentityClient) deleteMfaTotpDevice(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/mfaTotpDevices/{mfaTotpDeviceId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1585,17 +2481,139 @@ func (client IdentityClient) deleteMfaTotpDevice(ctx context.Context, request co
 	return response, err
 }
 
+// DeleteNetworkSource Deletes the specified network source
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteNetworkSource.go.html to see an example of how to use DeleteNetworkSource API.
+func (client IdentityClient) DeleteNetworkSource(ctx context.Context, request DeleteNetworkSourceRequest) (response DeleteNetworkSourceResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteNetworkSource, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteNetworkSourceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteNetworkSourceResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteNetworkSourceResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteNetworkSourceResponse")
+	}
+	return
+}
+
+// deleteNetworkSource implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) deleteNetworkSource(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/networkSources/{networkSourceId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteNetworkSourceResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeleteOAuthClientCredential Delete Oauth token for the user
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteOAuthClientCredential.go.html to see an example of how to use DeleteOAuthClientCredential API.
+func (client IdentityClient) DeleteOAuthClientCredential(ctx context.Context, request DeleteOAuthClientCredentialRequest) (response DeleteOAuthClientCredentialResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteOAuthClientCredential, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteOAuthClientCredentialResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteOAuthClientCredentialResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteOAuthClientCredentialResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteOAuthClientCredentialResponse")
+	}
+	return
+}
+
+// deleteOAuthClientCredential implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) deleteOAuthClientCredential(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/oauth2ClientCredentials/{oauth2ClientCredentialId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteOAuthClientCredentialResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // DeletePolicy Deletes the specified policy. The deletion takes effect typically within 10 seconds.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeletePolicy.go.html to see an example of how to use DeletePolicy API.
 func (client IdentityClient) DeletePolicy(ctx context.Context, request DeletePolicyRequest) (response DeletePolicyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deletePolicy, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeletePolicyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeletePolicyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeletePolicyResponse{}
+			}
 		}
 		return
 	}
@@ -1608,8 +2626,9 @@ func (client IdentityClient) DeletePolicy(ctx context.Context, request DeletePol
 }
 
 // deletePolicy implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deletePolicy(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/policies/{policyId}")
+func (client IdentityClient) deletePolicy(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/policies/{policyId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1628,16 +2647,28 @@ func (client IdentityClient) deletePolicy(ctx context.Context, request common.OC
 }
 
 // DeleteSmtpCredential Deletes the specified SMTP credential for the specified user.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteSmtpCredential.go.html to see an example of how to use DeleteSmtpCredential API.
 func (client IdentityClient) DeleteSmtpCredential(ctx context.Context, request DeleteSmtpCredentialRequest) (response DeleteSmtpCredentialResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteSmtpCredential, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteSmtpCredentialResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteSmtpCredentialResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteSmtpCredentialResponse{}
+			}
 		}
 		return
 	}
@@ -1650,8 +2681,9 @@ func (client IdentityClient) DeleteSmtpCredential(ctx context.Context, request D
 }
 
 // deleteSmtpCredential implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteSmtpCredential(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/smtpCredentials/{smtpCredentialId}")
+func (client IdentityClient) deleteSmtpCredential(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/smtpCredentials/{smtpCredentialId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1671,16 +2703,28 @@ func (client IdentityClient) deleteSmtpCredential(ctx context.Context, request c
 
 // DeleteSwiftPassword **Deprecated. Use DeleteAuthToken instead.**
 // Deletes the specified Swift password for the specified user.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteSwiftPassword.go.html to see an example of how to use DeleteSwiftPassword API.
 func (client IdentityClient) DeleteSwiftPassword(ctx context.Context, request DeleteSwiftPasswordRequest) (response DeleteSwiftPasswordResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteSwiftPassword, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteSwiftPasswordResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteSwiftPasswordResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteSwiftPasswordResponse{}
+			}
 		}
 		return
 	}
@@ -1693,8 +2737,9 @@ func (client IdentityClient) DeleteSwiftPassword(ctx context.Context, request De
 }
 
 // deleteSwiftPassword implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteSwiftPassword(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/swiftPasswords/{swiftPasswordId}")
+func (client IdentityClient) deleteSwiftPassword(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}/swiftPasswords/{swiftPasswordId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1720,23 +2765,36 @@ func (client IdentityClient) deleteSwiftPassword(ctx context.Context, request co
 //   tags limit, whether you first disabled it or not.
 //   * If the tag was used with dynamic groups, none of the rules that contain the tag will
 //   be evaluated against the tag.
-// Once you start the delete operation, the state of the tag changes to DELETING and tag removal
+// When you start the delete operation, the state of the tag changes to DELETING and tag removal
 // from resources begins. This can take up to 48 hours depending on the number of resources that
-// were tagged as well as the regions in which those resources reside. When all tags have been
-// removed, the state changes to DELETED. You cannot restore a deleted tag. Once the deleted tag
+// were tagged as well as the regions in which those resources reside.
+// When all tags have been removed, the state changes to DELETED. You cannot restore a deleted tag. Once the deleted tag
 // changes its state to DELETED, you can use the same tag name again.
+// After you start this operation, you cannot start either the BulkDeleteTags or the CascadeDeleteTagNamespace operation until this process completes.
 // To delete a tag, you must first retire it. Use UpdateTag
 // to retire a tag.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteTag.go.html to see an example of how to use DeleteTag API.
 func (client IdentityClient) DeleteTag(ctx context.Context, request DeleteTagRequest) (response DeleteTagResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteTag, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteTagResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteTagResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteTagResponse{}
+			}
 		}
 		return
 	}
@@ -1749,8 +2807,9 @@ func (client IdentityClient) DeleteTag(ctx context.Context, request DeleteTagReq
 }
 
 // deleteTag implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteTag(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/tagNamespaces/{tagNamespaceId}/tags/{tagName}")
+func (client IdentityClient) deleteTag(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/tagNamespaces/{tagNamespaceId}/tags/{tagName}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1769,16 +2828,28 @@ func (client IdentityClient) deleteTag(ctx context.Context, request common.OCIRe
 }
 
 // DeleteTagDefault Deletes the the specified tag default.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteTagDefault.go.html to see an example of how to use DeleteTagDefault API.
 func (client IdentityClient) DeleteTagDefault(ctx context.Context, request DeleteTagDefaultRequest) (response DeleteTagDefaultResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteTagDefault, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteTagDefaultResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteTagDefaultResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteTagDefaultResponse{}
+			}
 		}
 		return
 	}
@@ -1791,8 +2862,9 @@ func (client IdentityClient) DeleteTagDefault(ctx context.Context, request Delet
 }
 
 // deleteTagDefault implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteTagDefault(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/tagDefaults/{tagDefaultId}")
+func (client IdentityClient) deleteTagDefault(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/tagDefaults/{tagDefaultId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1810,19 +2882,33 @@ func (client IdentityClient) deleteTagDefault(ctx context.Context, request commo
 	return response, err
 }
 
-// DeleteTagNamespace Deletes the specified tag namespace. Only an empty tag namespace can be deleted. To delete
-// a tag namespace, first delete all its tag definitions.
+// DeleteTagNamespace Deletes the specified tag namespace. Only an empty tag namespace can be deleted with this operation. To use this operation
+// to delete a tag namespace that contains tag definitions, first delete all of its tag definitions.
+// Use CascadeDeleteTagNamespace to delete a tag namespace along with all of
+// the tag definitions contained within that namespace.
 // Use DeleteTag to delete a tag definition.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteTagNamespace.go.html to see an example of how to use DeleteTagNamespace API.
 func (client IdentityClient) DeleteTagNamespace(ctx context.Context, request DeleteTagNamespaceRequest) (response DeleteTagNamespaceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteTagNamespace, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteTagNamespaceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteTagNamespaceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteTagNamespaceResponse{}
+			}
 		}
 		return
 	}
@@ -1835,8 +2921,9 @@ func (client IdentityClient) DeleteTagNamespace(ctx context.Context, request Del
 }
 
 // deleteTagNamespace implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteTagNamespace(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/tagNamespaces/{tagNamespaceId}")
+func (client IdentityClient) deleteTagNamespace(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/tagNamespaces/{tagNamespaceId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1855,16 +2942,28 @@ func (client IdentityClient) deleteTagNamespace(ctx context.Context, request com
 }
 
 // DeleteUser Deletes the specified user. The user must not be in any groups.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/DeleteUser.go.html to see an example of how to use DeleteUser API.
 func (client IdentityClient) DeleteUser(ctx context.Context, request DeleteUserRequest) (response DeleteUserResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteUser, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteUserResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteUserResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteUserResponse{}
+			}
 		}
 		return
 	}
@@ -1877,8 +2976,9 @@ func (client IdentityClient) DeleteUser(ctx context.Context, request DeleteUserR
 }
 
 // deleteUser implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) deleteUser(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}")
+func (client IdentityClient) deleteUser(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/users/{userId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1897,16 +2997,28 @@ func (client IdentityClient) deleteUser(ctx context.Context, request common.OCIR
 }
 
 // GenerateTotpSeed Generate seed for the MFA TOTP device.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GenerateTotpSeed.go.html to see an example of how to use GenerateTotpSeed API.
 func (client IdentityClient) GenerateTotpSeed(ctx context.Context, request GenerateTotpSeedRequest) (response GenerateTotpSeedResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.generateTotpSeed, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GenerateTotpSeedResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GenerateTotpSeedResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GenerateTotpSeedResponse{}
+			}
 		}
 		return
 	}
@@ -1919,8 +3031,9 @@ func (client IdentityClient) GenerateTotpSeed(ctx context.Context, request Gener
 }
 
 // generateTotpSeed implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) generateTotpSeed(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/mfaTotpDevices/{mfaTotpDeviceId}/actions/generateSeed")
+func (client IdentityClient) generateTotpSeed(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/mfaTotpDevices/{mfaTotpDeviceId}/actions/generateSeed", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1940,16 +3053,28 @@ func (client IdentityClient) generateTotpSeed(ctx context.Context, request commo
 
 // GetAuthenticationPolicy Gets the authentication policy for the given tenancy. You must specify your tenant’s OCID as the value for
 // the compartment ID (remember that the tenancy is simply the root compartment).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetAuthenticationPolicy.go.html to see an example of how to use GetAuthenticationPolicy API.
 func (client IdentityClient) GetAuthenticationPolicy(ctx context.Context, request GetAuthenticationPolicyRequest) (response GetAuthenticationPolicyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAuthenticationPolicy, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAuthenticationPolicyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAuthenticationPolicyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAuthenticationPolicyResponse{}
+			}
 		}
 		return
 	}
@@ -1962,8 +3087,9 @@ func (client IdentityClient) GetAuthenticationPolicy(ctx context.Context, reques
 }
 
 // getAuthenticationPolicy implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getAuthenticationPolicy(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/authenticationPolicies/{compartmentId}")
+func (client IdentityClient) getAuthenticationPolicy(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/authenticationPolicies/{compartmentId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1988,16 +3114,28 @@ func (client IdentityClient) getAuthenticationPolicy(ctx context.Context, reques
 // each resource type and specify the compartment's OCID as a query parameter in the request. For example,
 // call the ListInstances operation in the Cloud Compute
 // Service or the ListVolumes operation in Cloud Block Storage.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetCompartment.go.html to see an example of how to use GetCompartment API.
 func (client IdentityClient) GetCompartment(ctx context.Context, request GetCompartmentRequest) (response GetCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -2010,8 +3148,9 @@ func (client IdentityClient) GetCompartment(ctx context.Context, request GetComp
 }
 
 // getCompartment implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/compartments/{compartmentId}")
+func (client IdentityClient) getCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/compartments/{compartmentId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2030,16 +3169,28 @@ func (client IdentityClient) getCompartment(ctx context.Context, request common.
 }
 
 // GetDynamicGroup Gets the specified dynamic group's information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetDynamicGroup.go.html to see an example of how to use GetDynamicGroup API.
 func (client IdentityClient) GetDynamicGroup(ctx context.Context, request GetDynamicGroupRequest) (response GetDynamicGroupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getDynamicGroup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetDynamicGroupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetDynamicGroupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetDynamicGroupResponse{}
+			}
 		}
 		return
 	}
@@ -2052,8 +3203,9 @@ func (client IdentityClient) GetDynamicGroup(ctx context.Context, request GetDyn
 }
 
 // getDynamicGroup implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getDynamicGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dynamicGroups/{dynamicGroupId}")
+func (client IdentityClient) getDynamicGroup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dynamicGroups/{dynamicGroupId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2075,16 +3227,28 @@ func (client IdentityClient) getDynamicGroup(ctx context.Context, request common
 // This operation does not return a list of all the users in the group. To do that, use
 // ListUserGroupMemberships and
 // provide the group's OCID as a query parameter in the request.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetGroup.go.html to see an example of how to use GetGroup API.
 func (client IdentityClient) GetGroup(ctx context.Context, request GetGroupRequest) (response GetGroupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getGroup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetGroupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetGroupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetGroupResponse{}
+			}
 		}
 		return
 	}
@@ -2097,8 +3261,9 @@ func (client IdentityClient) GetGroup(ctx context.Context, request GetGroupReque
 }
 
 // getGroup implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/groups/{groupId}")
+func (client IdentityClient) getGroup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/groups/{groupId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2117,16 +3282,28 @@ func (client IdentityClient) getGroup(ctx context.Context, request common.OCIReq
 }
 
 // GetIdentityProvider Gets the specified identity provider's information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetIdentityProvider.go.html to see an example of how to use GetIdentityProvider API.
 func (client IdentityClient) GetIdentityProvider(ctx context.Context, request GetIdentityProviderRequest) (response GetIdentityProviderResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getIdentityProvider, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetIdentityProviderResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetIdentityProviderResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetIdentityProviderResponse{}
+			}
 		}
 		return
 	}
@@ -2139,8 +3316,9 @@ func (client IdentityClient) GetIdentityProvider(ctx context.Context, request Ge
 }
 
 // getIdentityProvider implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getIdentityProvider(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/{identityProviderId}")
+func (client IdentityClient) getIdentityProvider(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/{identityProviderId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2159,16 +3337,28 @@ func (client IdentityClient) getIdentityProvider(ctx context.Context, request co
 }
 
 // GetIdpGroupMapping Gets the specified group mapping.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetIdpGroupMapping.go.html to see an example of how to use GetIdpGroupMapping API.
 func (client IdentityClient) GetIdpGroupMapping(ctx context.Context, request GetIdpGroupMappingRequest) (response GetIdpGroupMappingResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getIdpGroupMapping, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetIdpGroupMappingResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetIdpGroupMappingResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetIdpGroupMappingResponse{}
+			}
 		}
 		return
 	}
@@ -2181,8 +3371,9 @@ func (client IdentityClient) GetIdpGroupMapping(ctx context.Context, request Get
 }
 
 // getIdpGroupMapping implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getIdpGroupMapping(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/{identityProviderId}/groupMappings/{mappingId}")
+func (client IdentityClient) getIdpGroupMapping(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/{identityProviderId}/groupMappings/{mappingId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2201,16 +3392,28 @@ func (client IdentityClient) getIdpGroupMapping(ctx context.Context, request com
 }
 
 // GetMfaTotpDevice Get the specified MFA TOTP device for the specified user.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetMfaTotpDevice.go.html to see an example of how to use GetMfaTotpDevice API.
 func (client IdentityClient) GetMfaTotpDevice(ctx context.Context, request GetMfaTotpDeviceRequest) (response GetMfaTotpDeviceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getMfaTotpDevice, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetMfaTotpDeviceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetMfaTotpDeviceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetMfaTotpDeviceResponse{}
+			}
 		}
 		return
 	}
@@ -2223,8 +3426,9 @@ func (client IdentityClient) GetMfaTotpDevice(ctx context.Context, request GetMf
 }
 
 // getMfaTotpDevice implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getMfaTotpDevice(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/mfaTotpDevices/{mfaTotpDeviceId}")
+func (client IdentityClient) getMfaTotpDevice(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/mfaTotpDevices/{mfaTotpDeviceId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2242,17 +3446,84 @@ func (client IdentityClient) getMfaTotpDevice(ctx context.Context, request commo
 	return response, err
 }
 
+// GetNetworkSource Gets the specified network source's information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetNetworkSource.go.html to see an example of how to use GetNetworkSource API.
+func (client IdentityClient) GetNetworkSource(ctx context.Context, request GetNetworkSourceRequest) (response GetNetworkSourceResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getNetworkSource, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetNetworkSourceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetNetworkSourceResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetNetworkSourceResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetNetworkSourceResponse")
+	}
+	return
+}
+
+// getNetworkSource implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) getNetworkSource(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/networkSources/{networkSourceId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetNetworkSourceResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // GetPolicy Gets the specified policy's information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetPolicy.go.html to see an example of how to use GetPolicy API.
 func (client IdentityClient) GetPolicy(ctx context.Context, request GetPolicyRequest) (response GetPolicyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getPolicy, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetPolicyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetPolicyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetPolicyResponse{}
+			}
 		}
 		return
 	}
@@ -2265,8 +3536,9 @@ func (client IdentityClient) GetPolicy(ctx context.Context, request GetPolicyReq
 }
 
 // getPolicy implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getPolicy(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/policies/{policyId}")
+func (client IdentityClient) getPolicy(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/policies/{policyId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2285,16 +3557,28 @@ func (client IdentityClient) getPolicy(ctx context.Context, request common.OCIRe
 }
 
 // GetTag Gets the specified tag's information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetTag.go.html to see an example of how to use GetTag API.
 func (client IdentityClient) GetTag(ctx context.Context, request GetTagRequest) (response GetTagResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getTag, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetTagResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetTagResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetTagResponse{}
+			}
 		}
 		return
 	}
@@ -2307,8 +3591,9 @@ func (client IdentityClient) GetTag(ctx context.Context, request GetTagRequest) 
 }
 
 // getTag implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getTag(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagNamespaces/{tagNamespaceId}/tags/{tagName}")
+func (client IdentityClient) getTag(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagNamespaces/{tagNamespaceId}/tags/{tagName}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2327,16 +3612,28 @@ func (client IdentityClient) getTag(ctx context.Context, request common.OCIReque
 }
 
 // GetTagDefault Retrieves the specified tag default.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetTagDefault.go.html to see an example of how to use GetTagDefault API.
 func (client IdentityClient) GetTagDefault(ctx context.Context, request GetTagDefaultRequest) (response GetTagDefaultResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getTagDefault, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetTagDefaultResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetTagDefaultResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetTagDefaultResponse{}
+			}
 		}
 		return
 	}
@@ -2349,8 +3646,9 @@ func (client IdentityClient) GetTagDefault(ctx context.Context, request GetTagDe
 }
 
 // getTagDefault implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getTagDefault(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagDefaults/{tagDefaultId}")
+func (client IdentityClient) getTagDefault(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagDefaults/{tagDefaultId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2369,16 +3667,28 @@ func (client IdentityClient) getTagDefault(ctx context.Context, request common.O
 }
 
 // GetTagNamespace Gets the specified tag namespace's information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetTagNamespace.go.html to see an example of how to use GetTagNamespace API.
 func (client IdentityClient) GetTagNamespace(ctx context.Context, request GetTagNamespaceRequest) (response GetTagNamespaceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getTagNamespace, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetTagNamespaceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetTagNamespaceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetTagNamespaceResponse{}
+			}
 		}
 		return
 	}
@@ -2391,8 +3701,9 @@ func (client IdentityClient) GetTagNamespace(ctx context.Context, request GetTag
 }
 
 // getTagNamespace implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getTagNamespace(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagNamespaces/{tagNamespaceId}")
+func (client IdentityClient) getTagNamespace(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagNamespaces/{tagNamespaceId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2412,16 +3723,28 @@ func (client IdentityClient) getTagNamespace(ctx context.Context, request common
 
 // GetTaggingWorkRequest Gets details on a specified work request. The workRequestID is returned in the opc-workrequest-id header
 // for any asynchronous operation in the Identity and Access Management service.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetTaggingWorkRequest.go.html to see an example of how to use GetTaggingWorkRequest API.
 func (client IdentityClient) GetTaggingWorkRequest(ctx context.Context, request GetTaggingWorkRequestRequest) (response GetTaggingWorkRequestResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getTaggingWorkRequest, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetTaggingWorkRequestResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetTaggingWorkRequestResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetTaggingWorkRequestResponse{}
+			}
 		}
 		return
 	}
@@ -2434,8 +3757,9 @@ func (client IdentityClient) GetTaggingWorkRequest(ctx context.Context, request 
 }
 
 // getTaggingWorkRequest implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getTaggingWorkRequest(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/taggingWorkRequests/{workRequestId}")
+func (client IdentityClient) getTaggingWorkRequest(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/taggingWorkRequests/{workRequestId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2454,16 +3778,28 @@ func (client IdentityClient) getTaggingWorkRequest(ctx context.Context, request 
 }
 
 // GetTenancy Get the specified tenancy's information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetTenancy.go.html to see an example of how to use GetTenancy API.
 func (client IdentityClient) GetTenancy(ctx context.Context, request GetTenancyRequest) (response GetTenancyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getTenancy, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetTenancyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetTenancyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetTenancyResponse{}
+			}
 		}
 		return
 	}
@@ -2476,8 +3812,9 @@ func (client IdentityClient) GetTenancy(ctx context.Context, request GetTenancyR
 }
 
 // getTenancy implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getTenancy(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tenancies/{tenancyId}")
+func (client IdentityClient) getTenancy(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tenancies/{tenancyId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2496,16 +3833,28 @@ func (client IdentityClient) getTenancy(ctx context.Context, request common.OCIR
 }
 
 // GetUser Gets the specified user's information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetUser.go.html to see an example of how to use GetUser API.
 func (client IdentityClient) GetUser(ctx context.Context, request GetUserRequest) (response GetUserResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getUser, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetUserResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetUserResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetUserResponse{}
+			}
 		}
 		return
 	}
@@ -2518,8 +3867,9 @@ func (client IdentityClient) GetUser(ctx context.Context, request GetUserRequest
 }
 
 // getUser implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getUser(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}")
+func (client IdentityClient) getUser(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2538,16 +3888,28 @@ func (client IdentityClient) getUser(ctx context.Context, request common.OCIRequ
 }
 
 // GetUserGroupMembership Gets the specified UserGroupMembership's information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetUserGroupMembership.go.html to see an example of how to use GetUserGroupMembership API.
 func (client IdentityClient) GetUserGroupMembership(ctx context.Context, request GetUserGroupMembershipRequest) (response GetUserGroupMembershipResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getUserGroupMembership, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetUserGroupMembershipResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetUserGroupMembershipResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetUserGroupMembershipResponse{}
+			}
 		}
 		return
 	}
@@ -2560,8 +3922,9 @@ func (client IdentityClient) GetUserGroupMembership(ctx context.Context, request
 }
 
 // getUserGroupMembership implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getUserGroupMembership(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/userGroupMemberships/{userGroupMembershipId}")
+func (client IdentityClient) getUserGroupMembership(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/userGroupMemberships/{userGroupMembershipId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2581,16 +3944,28 @@ func (client IdentityClient) getUserGroupMembership(ctx context.Context, request
 
 // GetUserUIPasswordInformation Gets the specified user's console password information. The returned object contains the user's OCID,
 // but not the password itself. The actual password is returned only when created or reset.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetUserUIPasswordInformation.go.html to see an example of how to use GetUserUIPasswordInformation API.
 func (client IdentityClient) GetUserUIPasswordInformation(ctx context.Context, request GetUserUIPasswordInformationRequest) (response GetUserUIPasswordInformationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getUserUIPasswordInformation, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetUserUIPasswordInformationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetUserUIPasswordInformationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetUserUIPasswordInformationResponse{}
+			}
 		}
 		return
 	}
@@ -2603,8 +3978,9 @@ func (client IdentityClient) GetUserUIPasswordInformation(ctx context.Context, r
 }
 
 // getUserUIPasswordInformation implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getUserUIPasswordInformation(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/uiPassword")
+func (client IdentityClient) getUserUIPasswordInformation(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/uiPassword", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2624,16 +4000,28 @@ func (client IdentityClient) getUserUIPasswordInformation(ctx context.Context, r
 
 // GetWorkRequest Gets details on a specified work request. The workRequestID is returned in the opc-workrequest-id header
 // for any asynchronous operation in the Identity and Access Management service.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/GetWorkRequest.go.html to see an example of how to use GetWorkRequest API.
 func (client IdentityClient) GetWorkRequest(ctx context.Context, request GetWorkRequestRequest) (response GetWorkRequestResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getWorkRequest, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetWorkRequestResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetWorkRequestResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetWorkRequestResponse{}
+			}
 		}
 		return
 	}
@@ -2646,8 +4034,9 @@ func (client IdentityClient) GetWorkRequest(ctx context.Context, request GetWork
 }
 
 // getWorkRequest implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) getWorkRequest(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}")
+func (client IdentityClient) getWorkRequest(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2668,16 +4057,28 @@ func (client IdentityClient) getWorkRequest(ctx context.Context, request common.
 // ListApiKeys Lists the API signing keys for the specified user. A user can have a maximum of three keys.
 // Every user has permission to use this API call for *their own user ID*.  An administrator in your
 // organization does not need to write a policy to give users this ability.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListApiKeys.go.html to see an example of how to use ListApiKeys API.
 func (client IdentityClient) ListApiKeys(ctx context.Context, request ListApiKeysRequest) (response ListApiKeysResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listApiKeys, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListApiKeysResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListApiKeysResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListApiKeysResponse{}
+			}
 		}
 		return
 	}
@@ -2690,8 +4091,9 @@ func (client IdentityClient) ListApiKeys(ctx context.Context, request ListApiKey
 }
 
 // listApiKeys implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listApiKeys(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/apiKeys/")
+func (client IdentityClient) listApiKeys(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/apiKeys", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2711,16 +4113,28 @@ func (client IdentityClient) listApiKeys(ctx context.Context, request common.OCI
 
 // ListAuthTokens Lists the auth tokens for the specified user. The returned object contains the token's OCID, but not
 // the token itself. The actual token is returned only upon creation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListAuthTokens.go.html to see an example of how to use ListAuthTokens API.
 func (client IdentityClient) ListAuthTokens(ctx context.Context, request ListAuthTokensRequest) (response ListAuthTokensResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAuthTokens, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAuthTokensResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAuthTokensResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAuthTokensResponse{}
+			}
 		}
 		return
 	}
@@ -2733,8 +4147,9 @@ func (client IdentityClient) ListAuthTokens(ctx context.Context, request ListAut
 }
 
 // listAuthTokens implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listAuthTokens(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/authTokens/")
+func (client IdentityClient) listAuthTokens(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/authTokens", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2757,16 +4172,28 @@ func (client IdentityClient) listAuthTokens(ctx context.Context, request common.
 // See Where to Get the Tenancy's OCID and User's OCID (https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm#five).
 // Note that the order of the results returned can change if availability domains are added or removed; therefore, do not
 // create a dependency on the list order.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListAvailabilityDomains.go.html to see an example of how to use ListAvailabilityDomains API.
 func (client IdentityClient) ListAvailabilityDomains(ctx context.Context, request ListAvailabilityDomainsRequest) (response ListAvailabilityDomainsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAvailabilityDomains, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAvailabilityDomainsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAvailabilityDomainsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAvailabilityDomainsResponse{}
+			}
 		}
 		return
 	}
@@ -2779,13 +4206,130 @@ func (client IdentityClient) ListAvailabilityDomains(ctx context.Context, reques
 }
 
 // listAvailabilityDomains implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listAvailabilityDomains(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/availabilityDomains/")
+func (client IdentityClient) listAvailabilityDomains(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/availabilityDomains", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
 
 	var response ListAvailabilityDomainsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListBulkActionResourceTypes Lists the resource-types supported by compartment bulk actions. Use this API to help you provide the correct
+// resource-type information to the BulkDeleteResources
+// and BulkMoveResources operations. The returned list of
+// resource-types provides the appropriate resource-type names to use with the bulk action operations along with
+// the type of identifying information you'll need to provide for each resource-type. Most resource-types just
+// require an OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) to identify a specific resource, but some resource-types,
+// such as buckets, require you to provide other identifying information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListBulkActionResourceTypes.go.html to see an example of how to use ListBulkActionResourceTypes API.
+func (client IdentityClient) ListBulkActionResourceTypes(ctx context.Context, request ListBulkActionResourceTypesRequest) (response ListBulkActionResourceTypesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listBulkActionResourceTypes, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListBulkActionResourceTypesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListBulkActionResourceTypesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListBulkActionResourceTypesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListBulkActionResourceTypesResponse")
+	}
+	return
+}
+
+// listBulkActionResourceTypes implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) listBulkActionResourceTypes(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/compartments/bulkActionResourceTypes", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListBulkActionResourceTypesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListBulkEditTagsResourceTypes Lists the resource types that support bulk tag editing.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListBulkEditTagsResourceTypes.go.html to see an example of how to use ListBulkEditTagsResourceTypes API.
+func (client IdentityClient) ListBulkEditTagsResourceTypes(ctx context.Context, request ListBulkEditTagsResourceTypesRequest) (response ListBulkEditTagsResourceTypesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listBulkEditTagsResourceTypes, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListBulkEditTagsResourceTypesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListBulkEditTagsResourceTypesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListBulkEditTagsResourceTypesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListBulkEditTagsResourceTypesResponse")
+	}
+	return
+}
+
+// listBulkEditTagsResourceTypes implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) listBulkEditTagsResourceTypes(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tags/bulkEditResourceTypes", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListBulkEditTagsResourceTypesResponse
 	var httpResponse *http.Response
 	httpResponse, err = client.Call(ctx, &httpRequest)
 	defer common.CloseBodyIfValid(httpResponse)
@@ -2812,16 +4356,28 @@ func (client IdentityClient) listAvailabilityDomains(ctx context.Context, reques
 // To get a full list of all compartments and subcompartments in the tenancy (root compartment),
 // set the parameter `compartmentIdInSubtree` to true and `accessLevel` to ANY.
 // See Where to Get the Tenancy's OCID and User's OCID (https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm#five).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListCompartments.go.html to see an example of how to use ListCompartments API.
 func (client IdentityClient) ListCompartments(ctx context.Context, request ListCompartmentsRequest) (response ListCompartmentsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listCompartments, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListCompartmentsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListCompartmentsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListCompartmentsResponse{}
+			}
 		}
 		return
 	}
@@ -2834,8 +4390,9 @@ func (client IdentityClient) ListCompartments(ctx context.Context, request ListC
 }
 
 // listCompartments implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listCompartments(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/compartments/")
+func (client IdentityClient) listCompartments(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/compartments", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2855,16 +4412,28 @@ func (client IdentityClient) listCompartments(ctx context.Context, request commo
 
 // ListCostTrackingTags Lists all the tags enabled for cost-tracking in the specified tenancy. For information about
 // cost-tracking tags, see Using Cost-tracking Tags (https://docs.cloud.oracle.com/Content/Identity/Concepts/taggingoverview.htm#costs).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListCostTrackingTags.go.html to see an example of how to use ListCostTrackingTags API.
 func (client IdentityClient) ListCostTrackingTags(ctx context.Context, request ListCostTrackingTagsRequest) (response ListCostTrackingTagsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listCostTrackingTags, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListCostTrackingTagsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListCostTrackingTagsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListCostTrackingTagsResponse{}
+			}
 		}
 		return
 	}
@@ -2877,8 +4446,9 @@ func (client IdentityClient) ListCostTrackingTags(ctx context.Context, request L
 }
 
 // listCostTrackingTags implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listCostTrackingTags(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagNamespaces/actions/listCostTrackingTags")
+func (client IdentityClient) listCostTrackingTags(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagNamespaces/actions/listCostTrackingTags", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2898,16 +4468,28 @@ func (client IdentityClient) listCostTrackingTags(ctx context.Context, request c
 
 // ListCustomerSecretKeys Lists the secret keys for the specified user. The returned object contains the secret key's OCID, but not
 // the secret key itself. The actual secret key is returned only upon creation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListCustomerSecretKeys.go.html to see an example of how to use ListCustomerSecretKeys API.
 func (client IdentityClient) ListCustomerSecretKeys(ctx context.Context, request ListCustomerSecretKeysRequest) (response ListCustomerSecretKeysResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listCustomerSecretKeys, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListCustomerSecretKeysResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListCustomerSecretKeysResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListCustomerSecretKeysResponse{}
+			}
 		}
 		return
 	}
@@ -2920,8 +4502,9 @@ func (client IdentityClient) ListCustomerSecretKeys(ctx context.Context, request
 }
 
 // listCustomerSecretKeys implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listCustomerSecretKeys(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/customerSecretKeys/")
+func (client IdentityClient) listCustomerSecretKeys(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/customerSecretKeys", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2942,16 +4525,28 @@ func (client IdentityClient) listCustomerSecretKeys(ctx context.Context, request
 // ListDynamicGroups Lists the dynamic groups in your tenancy. You must specify your tenancy's OCID as the value for
 // the compartment ID (remember that the tenancy is simply the root compartment).
 // See Where to Get the Tenancy's OCID and User's OCID (https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm#five).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListDynamicGroups.go.html to see an example of how to use ListDynamicGroups API.
 func (client IdentityClient) ListDynamicGroups(ctx context.Context, request ListDynamicGroupsRequest) (response ListDynamicGroupsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listDynamicGroups, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListDynamicGroupsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDynamicGroupsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDynamicGroupsResponse{}
+			}
 		}
 		return
 	}
@@ -2964,8 +4559,9 @@ func (client IdentityClient) ListDynamicGroups(ctx context.Context, request List
 }
 
 // listDynamicGroups implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listDynamicGroups(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dynamicGroups/")
+func (client IdentityClient) listDynamicGroups(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dynamicGroups", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2986,16 +4582,28 @@ func (client IdentityClient) listDynamicGroups(ctx context.Context, request comm
 // ListFaultDomains Lists the Fault Domains in your tenancy. Specify the OCID of either the tenancy or another
 // of your compartments as the value for the compartment ID (remember that the tenancy is simply the root compartment).
 // See Where to Get the Tenancy's OCID and User's OCID (https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm#five).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListFaultDomains.go.html to see an example of how to use ListFaultDomains API.
 func (client IdentityClient) ListFaultDomains(ctx context.Context, request ListFaultDomainsRequest) (response ListFaultDomainsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listFaultDomains, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListFaultDomainsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListFaultDomainsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListFaultDomainsResponse{}
+			}
 		}
 		return
 	}
@@ -3008,8 +4616,9 @@ func (client IdentityClient) ListFaultDomains(ctx context.Context, request ListF
 }
 
 // listFaultDomains implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listFaultDomains(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/faultDomains/")
+func (client IdentityClient) listFaultDomains(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/faultDomains", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3030,16 +4639,28 @@ func (client IdentityClient) listFaultDomains(ctx context.Context, request commo
 // ListGroups Lists the groups in your tenancy. You must specify your tenancy's OCID as the value for
 // the compartment ID (remember that the tenancy is simply the root compartment).
 // See Where to Get the Tenancy's OCID and User's OCID (https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm#five).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListGroups.go.html to see an example of how to use ListGroups API.
 func (client IdentityClient) ListGroups(ctx context.Context, request ListGroupsRequest) (response ListGroupsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listGroups, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListGroupsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListGroupsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListGroupsResponse{}
+			}
 		}
 		return
 	}
@@ -3052,8 +4673,9 @@ func (client IdentityClient) ListGroups(ctx context.Context, request ListGroupsR
 }
 
 // listGroups implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listGroups(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/groups/")
+func (client IdentityClient) listGroups(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/groups", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3072,16 +4694,28 @@ func (client IdentityClient) listGroups(ctx context.Context, request common.OCIR
 }
 
 // ListIdentityProviderGroups Lists the identity provider groups.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListIdentityProviderGroups.go.html to see an example of how to use ListIdentityProviderGroups API.
 func (client IdentityClient) ListIdentityProviderGroups(ctx context.Context, request ListIdentityProviderGroupsRequest) (response ListIdentityProviderGroupsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listIdentityProviderGroups, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListIdentityProviderGroupsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListIdentityProviderGroupsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListIdentityProviderGroupsResponse{}
+			}
 		}
 		return
 	}
@@ -3094,8 +4728,9 @@ func (client IdentityClient) ListIdentityProviderGroups(ctx context.Context, req
 }
 
 // listIdentityProviderGroups implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listIdentityProviderGroups(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/{identityProviderId}/groups/")
+func (client IdentityClient) listIdentityProviderGroups(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/{identityProviderId}/groups", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3133,16 +4768,28 @@ func (m *listidentityprovider) UnmarshalPolymorphicJSON(data []byte) (interface{
 // identity providers using the SAML2.0 protocol). You must specify your tenancy's OCID as the value for the
 // compartment ID (remember that the tenancy is simply the root compartment).
 // See Where to Get the Tenancy's OCID and User's OCID (https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm#five).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListIdentityProviders.go.html to see an example of how to use ListIdentityProviders API.
 func (client IdentityClient) ListIdentityProviders(ctx context.Context, request ListIdentityProvidersRequest) (response ListIdentityProvidersResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listIdentityProviders, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListIdentityProvidersResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListIdentityProvidersResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListIdentityProvidersResponse{}
+			}
 		}
 		return
 	}
@@ -3155,8 +4802,9 @@ func (client IdentityClient) ListIdentityProviders(ctx context.Context, request 
 }
 
 // listIdentityProviders implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listIdentityProviders(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/")
+func (client IdentityClient) listIdentityProviders(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3175,16 +4823,28 @@ func (client IdentityClient) listIdentityProviders(ctx context.Context, request 
 }
 
 // ListIdpGroupMappings Lists the group mappings for the specified identity provider.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListIdpGroupMappings.go.html to see an example of how to use ListIdpGroupMappings API.
 func (client IdentityClient) ListIdpGroupMappings(ctx context.Context, request ListIdpGroupMappingsRequest) (response ListIdpGroupMappingsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listIdpGroupMappings, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListIdpGroupMappingsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListIdpGroupMappingsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListIdpGroupMappingsResponse{}
+			}
 		}
 		return
 	}
@@ -3197,8 +4857,9 @@ func (client IdentityClient) ListIdpGroupMappings(ctx context.Context, request L
 }
 
 // listIdpGroupMappings implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listIdpGroupMappings(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/{identityProviderId}/groupMappings/")
+func (client IdentityClient) listIdpGroupMappings(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/identityProviders/{identityProviderId}/groupMappings", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3218,16 +4879,28 @@ func (client IdentityClient) listIdpGroupMappings(ctx context.Context, request c
 
 // ListMfaTotpDevices Lists the MFA TOTP devices for the specified user. The returned object contains the device's OCID, but not
 // the seed. The seed is returned only upon creation or when the IAM service regenerates the MFA seed for the device.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListMfaTotpDevices.go.html to see an example of how to use ListMfaTotpDevices API.
 func (client IdentityClient) ListMfaTotpDevices(ctx context.Context, request ListMfaTotpDevicesRequest) (response ListMfaTotpDevicesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listMfaTotpDevices, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListMfaTotpDevicesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListMfaTotpDevicesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListMfaTotpDevicesResponse{}
+			}
 		}
 		return
 	}
@@ -3240,8 +4913,9 @@ func (client IdentityClient) ListMfaTotpDevices(ctx context.Context, request Lis
 }
 
 // listMfaTotpDevices implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listMfaTotpDevices(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/mfaTotpDevices")
+func (client IdentityClient) listMfaTotpDevices(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/mfaTotpDevices", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3259,20 +4933,144 @@ func (client IdentityClient) listMfaTotpDevices(ctx context.Context, request com
 	return response, err
 }
 
+// ListNetworkSources Lists the network sources in your tenancy. You must specify your tenancy's OCID as the value for
+// the compartment ID (remember that the tenancy is simply the root compartment).
+// See Where to Get the Tenancy's OCID and User's OCID (https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm#five).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListNetworkSources.go.html to see an example of how to use ListNetworkSources API.
+func (client IdentityClient) ListNetworkSources(ctx context.Context, request ListNetworkSourcesRequest) (response ListNetworkSourcesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listNetworkSources, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListNetworkSourcesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListNetworkSourcesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListNetworkSourcesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListNetworkSourcesResponse")
+	}
+	return
+}
+
+// listNetworkSources implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) listNetworkSources(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/networkSources", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListNetworkSourcesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListOAuthClientCredentials List of Oauth tokens for the user
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListOAuthClientCredentials.go.html to see an example of how to use ListOAuthClientCredentials API.
+func (client IdentityClient) ListOAuthClientCredentials(ctx context.Context, request ListOAuthClientCredentialsRequest) (response ListOAuthClientCredentialsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listOAuthClientCredentials, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListOAuthClientCredentialsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListOAuthClientCredentialsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListOAuthClientCredentialsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListOAuthClientCredentialsResponse")
+	}
+	return
+}
+
+// listOAuthClientCredentials implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) listOAuthClientCredentials(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/oauth2ClientCredentials", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListOAuthClientCredentialsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // ListPolicies Lists the policies in the specified compartment (either the tenancy or another of your compartments).
 // See Where to Get the Tenancy's OCID and User's OCID (https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm#five).
 // To determine which policies apply to a particular group or compartment, you must view the individual
 // statements inside all your policies. There isn't a way to automatically obtain that information via the API.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListPolicies.go.html to see an example of how to use ListPolicies API.
 func (client IdentityClient) ListPolicies(ctx context.Context, request ListPoliciesRequest) (response ListPoliciesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listPolicies, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListPoliciesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListPoliciesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListPoliciesResponse{}
+			}
 		}
 		return
 	}
@@ -3285,8 +5083,9 @@ func (client IdentityClient) ListPolicies(ctx context.Context, request ListPolic
 }
 
 // listPolicies implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listPolicies(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/policies/")
+func (client IdentityClient) listPolicies(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/policies", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3305,16 +5104,28 @@ func (client IdentityClient) listPolicies(ctx context.Context, request common.OC
 }
 
 // ListRegionSubscriptions Lists the region subscriptions for the specified tenancy.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListRegionSubscriptions.go.html to see an example of how to use ListRegionSubscriptions API.
 func (client IdentityClient) ListRegionSubscriptions(ctx context.Context, request ListRegionSubscriptionsRequest) (response ListRegionSubscriptionsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listRegionSubscriptions, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListRegionSubscriptionsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListRegionSubscriptionsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListRegionSubscriptionsResponse{}
+			}
 		}
 		return
 	}
@@ -3327,8 +5138,9 @@ func (client IdentityClient) ListRegionSubscriptions(ctx context.Context, reques
 }
 
 // listRegionSubscriptions implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listRegionSubscriptions(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tenancies/{tenancyId}/regionSubscriptions")
+func (client IdentityClient) listRegionSubscriptions(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tenancies/{tenancyId}/regionSubscriptions", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3347,12 +5159,21 @@ func (client IdentityClient) listRegionSubscriptions(ctx context.Context, reques
 }
 
 // ListRegions Lists all the regions offered by Oracle Cloud Infrastructure.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListRegions.go.html to see an example of how to use ListRegions API.
 func (client IdentityClient) ListRegions(ctx context.Context) (response ListRegionsResponse, err error) {
 	var ociResponse common.OCIResponse
 	ociResponse, err = client.listRegions(ctx)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListRegionsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListRegionsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListRegionsResponse{}
+			}
 		}
 		return
 	}
@@ -3384,16 +5205,28 @@ func (client IdentityClient) listRegions(ctx context.Context) (common.OCIRespons
 
 // ListSmtpCredentials Lists the SMTP credentials for the specified user. The returned object contains the credential's OCID,
 // the SMTP user name but not the SMTP password. The SMTP password is returned only upon creation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListSmtpCredentials.go.html to see an example of how to use ListSmtpCredentials API.
 func (client IdentityClient) ListSmtpCredentials(ctx context.Context, request ListSmtpCredentialsRequest) (response ListSmtpCredentialsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listSmtpCredentials, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListSmtpCredentialsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListSmtpCredentialsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListSmtpCredentialsResponse{}
+			}
 		}
 		return
 	}
@@ -3406,8 +5239,9 @@ func (client IdentityClient) ListSmtpCredentials(ctx context.Context, request Li
 }
 
 // listSmtpCredentials implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listSmtpCredentials(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/smtpCredentials/")
+func (client IdentityClient) listSmtpCredentials(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/smtpCredentials", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3428,16 +5262,28 @@ func (client IdentityClient) listSmtpCredentials(ctx context.Context, request co
 // ListSwiftPasswords **Deprecated. Use ListAuthTokens instead.**
 // Lists the Swift passwords for the specified user. The returned object contains the password's OCID, but not
 // the password itself. The actual password is returned only upon creation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListSwiftPasswords.go.html to see an example of how to use ListSwiftPasswords API.
 func (client IdentityClient) ListSwiftPasswords(ctx context.Context, request ListSwiftPasswordsRequest) (response ListSwiftPasswordsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listSwiftPasswords, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListSwiftPasswordsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListSwiftPasswordsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListSwiftPasswordsResponse{}
+			}
 		}
 		return
 	}
@@ -3450,8 +5296,9 @@ func (client IdentityClient) ListSwiftPasswords(ctx context.Context, request Lis
 }
 
 // listSwiftPasswords implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listSwiftPasswords(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/swiftPasswords/")
+func (client IdentityClient) listSwiftPasswords(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/{userId}/swiftPasswords", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3470,16 +5317,28 @@ func (client IdentityClient) listSwiftPasswords(ctx context.Context, request com
 }
 
 // ListTagDefaults Lists the tag defaults for tag definitions in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListTagDefaults.go.html to see an example of how to use ListTagDefaults API.
 func (client IdentityClient) ListTagDefaults(ctx context.Context, request ListTagDefaultsRequest) (response ListTagDefaultsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listTagDefaults, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListTagDefaultsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListTagDefaultsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListTagDefaultsResponse{}
+			}
 		}
 		return
 	}
@@ -3492,8 +5351,9 @@ func (client IdentityClient) ListTagDefaults(ctx context.Context, request ListTa
 }
 
 // listTagDefaults implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listTagDefaults(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagDefaults")
+func (client IdentityClient) listTagDefaults(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagDefaults", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3512,16 +5372,28 @@ func (client IdentityClient) listTagDefaults(ctx context.Context, request common
 }
 
 // ListTagNamespaces Lists the tag namespaces in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListTagNamespaces.go.html to see an example of how to use ListTagNamespaces API.
 func (client IdentityClient) ListTagNamespaces(ctx context.Context, request ListTagNamespacesRequest) (response ListTagNamespacesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listTagNamespaces, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListTagNamespacesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListTagNamespacesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListTagNamespacesResponse{}
+			}
 		}
 		return
 	}
@@ -3534,8 +5406,9 @@ func (client IdentityClient) ListTagNamespaces(ctx context.Context, request List
 }
 
 // listTagNamespaces implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listTagNamespaces(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagNamespaces")
+func (client IdentityClient) listTagNamespaces(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagNamespaces", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3554,16 +5427,28 @@ func (client IdentityClient) listTagNamespaces(ctx context.Context, request comm
 }
 
 // ListTaggingWorkRequestErrors Gets the errors for a work request.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListTaggingWorkRequestErrors.go.html to see an example of how to use ListTaggingWorkRequestErrors API.
 func (client IdentityClient) ListTaggingWorkRequestErrors(ctx context.Context, request ListTaggingWorkRequestErrorsRequest) (response ListTaggingWorkRequestErrorsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listTaggingWorkRequestErrors, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListTaggingWorkRequestErrorsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListTaggingWorkRequestErrorsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListTaggingWorkRequestErrorsResponse{}
+			}
 		}
 		return
 	}
@@ -3576,8 +5461,9 @@ func (client IdentityClient) ListTaggingWorkRequestErrors(ctx context.Context, r
 }
 
 // listTaggingWorkRequestErrors implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listTaggingWorkRequestErrors(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/taggingWorkRequests/{workRequestId}/errors")
+func (client IdentityClient) listTaggingWorkRequestErrors(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/taggingWorkRequests/{workRequestId}/errors", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3596,16 +5482,28 @@ func (client IdentityClient) listTaggingWorkRequestErrors(ctx context.Context, r
 }
 
 // ListTaggingWorkRequestLogs Gets the logs for a work request.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListTaggingWorkRequestLogs.go.html to see an example of how to use ListTaggingWorkRequestLogs API.
 func (client IdentityClient) ListTaggingWorkRequestLogs(ctx context.Context, request ListTaggingWorkRequestLogsRequest) (response ListTaggingWorkRequestLogsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listTaggingWorkRequestLogs, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListTaggingWorkRequestLogsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListTaggingWorkRequestLogsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListTaggingWorkRequestLogsResponse{}
+			}
 		}
 		return
 	}
@@ -3618,8 +5516,9 @@ func (client IdentityClient) ListTaggingWorkRequestLogs(ctx context.Context, req
 }
 
 // listTaggingWorkRequestLogs implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listTaggingWorkRequestLogs(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/taggingWorkRequests/{workRequestId}/logs")
+func (client IdentityClient) listTaggingWorkRequestLogs(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/taggingWorkRequests/{workRequestId}/logs", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3638,16 +5537,28 @@ func (client IdentityClient) listTaggingWorkRequestLogs(ctx context.Context, req
 }
 
 // ListTaggingWorkRequests Lists the tagging work requests in compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListTaggingWorkRequests.go.html to see an example of how to use ListTaggingWorkRequests API.
 func (client IdentityClient) ListTaggingWorkRequests(ctx context.Context, request ListTaggingWorkRequestsRequest) (response ListTaggingWorkRequestsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listTaggingWorkRequests, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListTaggingWorkRequestsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListTaggingWorkRequestsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListTaggingWorkRequestsResponse{}
+			}
 		}
 		return
 	}
@@ -3660,8 +5571,9 @@ func (client IdentityClient) ListTaggingWorkRequests(ctx context.Context, reques
 }
 
 // listTaggingWorkRequests implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listTaggingWorkRequests(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/taggingWorkRequests/")
+func (client IdentityClient) listTaggingWorkRequests(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/taggingWorkRequests", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3680,16 +5592,28 @@ func (client IdentityClient) listTaggingWorkRequests(ctx context.Context, reques
 }
 
 // ListTags Lists the tag definitions in the specified tag namespace.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListTags.go.html to see an example of how to use ListTags API.
 func (client IdentityClient) ListTags(ctx context.Context, request ListTagsRequest) (response ListTagsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listTags, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListTagsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListTagsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListTagsResponse{}
+			}
 		}
 		return
 	}
@@ -3702,8 +5626,9 @@ func (client IdentityClient) ListTags(ctx context.Context, request ListTagsReque
 }
 
 // listTags implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listTags(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagNamespaces/{tagNamespaceId}/tags")
+func (client IdentityClient) listTags(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/tagNamespaces/{tagNamespaceId}/tags", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3729,17 +5654,29 @@ func (client IdentityClient) listTags(ctx context.Context, request common.OCIReq
 // - Similarly, you can limit the results to just the memberships for a given group by specifying a `groupId`.
 // - You can set both the `userId` and `groupId` to determine if the specified user is in the specified group.
 // If the answer is no, the response is an empty list.
-// - Although`userId` and `groupId` are not indvidually required, you must set one of them.
+// - Although`userId` and `groupId` are not individually required, you must set one of them.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListUserGroupMemberships.go.html to see an example of how to use ListUserGroupMemberships API.
 func (client IdentityClient) ListUserGroupMemberships(ctx context.Context, request ListUserGroupMembershipsRequest) (response ListUserGroupMembershipsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listUserGroupMemberships, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListUserGroupMembershipsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListUserGroupMembershipsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListUserGroupMembershipsResponse{}
+			}
 		}
 		return
 	}
@@ -3752,8 +5689,9 @@ func (client IdentityClient) ListUserGroupMemberships(ctx context.Context, reque
 }
 
 // listUserGroupMemberships implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listUserGroupMemberships(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/userGroupMemberships/")
+func (client IdentityClient) listUserGroupMemberships(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/userGroupMemberships", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3774,16 +5712,28 @@ func (client IdentityClient) listUserGroupMemberships(ctx context.Context, reque
 // ListUsers Lists the users in your tenancy. You must specify your tenancy's OCID as the value for the
 // compartment ID (remember that the tenancy is simply the root compartment).
 // See Where to Get the Tenancy's OCID and User's OCID (https://docs.cloud.oracle.com/Content/API/Concepts/apisigningkey.htm#five).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListUsers.go.html to see an example of how to use ListUsers API.
 func (client IdentityClient) ListUsers(ctx context.Context, request ListUsersRequest) (response ListUsersResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listUsers, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListUsersResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListUsersResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListUsersResponse{}
+			}
 		}
 		return
 	}
@@ -3796,8 +5746,9 @@ func (client IdentityClient) ListUsers(ctx context.Context, request ListUsersReq
 }
 
 // listUsers implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listUsers(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users/")
+func (client IdentityClient) listUsers(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/users", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3816,16 +5767,28 @@ func (client IdentityClient) listUsers(ctx context.Context, request common.OCIRe
 }
 
 // ListWorkRequests Lists the work requests in compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ListWorkRequests.go.html to see an example of how to use ListWorkRequests API.
 func (client IdentityClient) ListWorkRequests(ctx context.Context, request ListWorkRequestsRequest) (response ListWorkRequestsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listWorkRequests, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListWorkRequestsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListWorkRequestsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListWorkRequestsResponse{}
+			}
 		}
 		return
 	}
@@ -3838,8 +5801,9 @@ func (client IdentityClient) ListWorkRequests(ctx context.Context, request ListW
 }
 
 // listWorkRequests implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) listWorkRequests(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/")
+func (client IdentityClient) listWorkRequests(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3864,9 +5828,16 @@ func (client IdentityClient) listWorkRequests(ctx context.Context, request commo
 // the new parent take effect and the policies of the previous parent no longer apply. Ensure that you
 // are aware of the implications for the compartment contents before you move it. For more
 // information, see Moving a Compartment (https://docs.cloud.oracle.com/Content/Identity/Tasks/managingcompartments.htm#MoveCompartment).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/MoveCompartment.go.html to see an example of how to use MoveCompartment API.
 func (client IdentityClient) MoveCompartment(ctx context.Context, request MoveCompartmentRequest) (response MoveCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -3878,7 +5849,12 @@ func (client IdentityClient) MoveCompartment(ctx context.Context, request MoveCo
 	ociResponse, err = common.Retry(ctx, request, client.moveCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = MoveCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = MoveCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = MoveCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -3891,8 +5867,9 @@ func (client IdentityClient) MoveCompartment(ctx context.Context, request MoveCo
 }
 
 // moveCompartment implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) moveCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/compartments/{compartmentId}/actions/moveCompartment")
+func (client IdentityClient) moveCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/compartments/{compartmentId}/actions/moveCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3910,17 +5887,84 @@ func (client IdentityClient) moveCompartment(ctx context.Context, request common
 	return response, err
 }
 
+// RecoverCompartment Recover the compartment from DELETED state to ACTIVE state.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/RecoverCompartment.go.html to see an example of how to use RecoverCompartment API.
+func (client IdentityClient) RecoverCompartment(ctx context.Context, request RecoverCompartmentRequest) (response RecoverCompartmentResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.recoverCompartment, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RecoverCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RecoverCompartmentResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(RecoverCompartmentResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into RecoverCompartmentResponse")
+	}
+	return
+}
+
+// recoverCompartment implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) recoverCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/compartments/{compartmentId}/actions/recoverCompartment", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response RecoverCompartmentResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // RemoveUserFromGroup Removes a user from a group by deleting the corresponding `UserGroupMembership`.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/RemoveUserFromGroup.go.html to see an example of how to use RemoveUserFromGroup API.
 func (client IdentityClient) RemoveUserFromGroup(ctx context.Context, request RemoveUserFromGroupRequest) (response RemoveUserFromGroupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.removeUserFromGroup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = RemoveUserFromGroupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RemoveUserFromGroupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RemoveUserFromGroupResponse{}
+			}
 		}
 		return
 	}
@@ -3933,8 +5977,9 @@ func (client IdentityClient) RemoveUserFromGroup(ctx context.Context, request Re
 }
 
 // removeUserFromGroup implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) removeUserFromGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/userGroupMemberships/{userGroupMembershipId}")
+func (client IdentityClient) removeUserFromGroup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/userGroupMemberships/{userGroupMembershipId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3953,16 +5998,28 @@ func (client IdentityClient) removeUserFromGroup(ctx context.Context, request co
 }
 
 // ResetIdpScimClient Resets the OAuth2 client credentials for the SCIM client associated with this identity provider.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/ResetIdpScimClient.go.html to see an example of how to use ResetIdpScimClient API.
 func (client IdentityClient) ResetIdpScimClient(ctx context.Context, request ResetIdpScimClientRequest) (response ResetIdpScimClientResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.resetIdpScimClient, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ResetIdpScimClientResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ResetIdpScimClientResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ResetIdpScimClientResponse{}
+			}
 		}
 		return
 	}
@@ -3975,8 +6032,9 @@ func (client IdentityClient) ResetIdpScimClient(ctx context.Context, request Res
 }
 
 // resetIdpScimClient implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) resetIdpScimClient(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/identityProviders/{identityProviderId}/actions/resetScimClient/")
+func (client IdentityClient) resetIdpScimClient(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/identityProviders/{identityProviderId}/actions/resetScimClient", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3995,16 +6053,28 @@ func (client IdentityClient) resetIdpScimClient(ctx context.Context, request com
 }
 
 // UpdateAuthToken Updates the specified auth token's description.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateAuthToken.go.html to see an example of how to use UpdateAuthToken API.
 func (client IdentityClient) UpdateAuthToken(ctx context.Context, request UpdateAuthTokenRequest) (response UpdateAuthTokenResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateAuthToken, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateAuthTokenResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAuthTokenResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAuthTokenResponse{}
+			}
 		}
 		return
 	}
@@ -4017,8 +6087,9 @@ func (client IdentityClient) UpdateAuthToken(ctx context.Context, request Update
 }
 
 // updateAuthToken implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateAuthToken(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/authTokens/{authTokenId}")
+func (client IdentityClient) updateAuthToken(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/authTokens/{authTokenId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4037,16 +6108,28 @@ func (client IdentityClient) updateAuthToken(ctx context.Context, request common
 }
 
 // UpdateAuthenticationPolicy Updates authentication policy for the specified tenancy
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateAuthenticationPolicy.go.html to see an example of how to use UpdateAuthenticationPolicy API.
 func (client IdentityClient) UpdateAuthenticationPolicy(ctx context.Context, request UpdateAuthenticationPolicyRequest) (response UpdateAuthenticationPolicyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateAuthenticationPolicy, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateAuthenticationPolicyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAuthenticationPolicyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAuthenticationPolicyResponse{}
+			}
 		}
 		return
 	}
@@ -4059,8 +6142,9 @@ func (client IdentityClient) UpdateAuthenticationPolicy(ctx context.Context, req
 }
 
 // updateAuthenticationPolicy implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateAuthenticationPolicy(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/authenticationPolicies/{compartmentId}")
+func (client IdentityClient) updateAuthenticationPolicy(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/authenticationPolicies/{compartmentId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4079,16 +6163,28 @@ func (client IdentityClient) updateAuthenticationPolicy(ctx context.Context, req
 }
 
 // UpdateCompartment Updates the specified compartment's description or name. You can't update the root compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateCompartment.go.html to see an example of how to use UpdateCompartment API.
 func (client IdentityClient) UpdateCompartment(ctx context.Context, request UpdateCompartmentRequest) (response UpdateCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -4101,8 +6197,9 @@ func (client IdentityClient) UpdateCompartment(ctx context.Context, request Upda
 }
 
 // updateCompartment implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/compartments/{compartmentId}")
+func (client IdentityClient) updateCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/compartments/{compartmentId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4121,16 +6218,28 @@ func (client IdentityClient) updateCompartment(ctx context.Context, request comm
 }
 
 // UpdateCustomerSecretKey Updates the specified secret key's description.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateCustomerSecretKey.go.html to see an example of how to use UpdateCustomerSecretKey API.
 func (client IdentityClient) UpdateCustomerSecretKey(ctx context.Context, request UpdateCustomerSecretKeyRequest) (response UpdateCustomerSecretKeyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateCustomerSecretKey, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateCustomerSecretKeyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateCustomerSecretKeyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateCustomerSecretKeyResponse{}
+			}
 		}
 		return
 	}
@@ -4143,8 +6252,9 @@ func (client IdentityClient) UpdateCustomerSecretKey(ctx context.Context, reques
 }
 
 // updateCustomerSecretKey implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateCustomerSecretKey(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/customerSecretKeys/{customerSecretKeyId}")
+func (client IdentityClient) updateCustomerSecretKey(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/customerSecretKeys/{customerSecretKeyId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4163,16 +6273,28 @@ func (client IdentityClient) updateCustomerSecretKey(ctx context.Context, reques
 }
 
 // UpdateDynamicGroup Updates the specified dynamic group.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateDynamicGroup.go.html to see an example of how to use UpdateDynamicGroup API.
 func (client IdentityClient) UpdateDynamicGroup(ctx context.Context, request UpdateDynamicGroupRequest) (response UpdateDynamicGroupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateDynamicGroup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateDynamicGroupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateDynamicGroupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateDynamicGroupResponse{}
+			}
 		}
 		return
 	}
@@ -4185,8 +6307,9 @@ func (client IdentityClient) UpdateDynamicGroup(ctx context.Context, request Upd
 }
 
 // updateDynamicGroup implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateDynamicGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/dynamicGroups/{dynamicGroupId}")
+func (client IdentityClient) updateDynamicGroup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/dynamicGroups/{dynamicGroupId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4205,16 +6328,28 @@ func (client IdentityClient) updateDynamicGroup(ctx context.Context, request com
 }
 
 // UpdateGroup Updates the specified group.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateGroup.go.html to see an example of how to use UpdateGroup API.
 func (client IdentityClient) UpdateGroup(ctx context.Context, request UpdateGroupRequest) (response UpdateGroupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateGroup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateGroupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateGroupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateGroupResponse{}
+			}
 		}
 		return
 	}
@@ -4227,8 +6362,9 @@ func (client IdentityClient) UpdateGroup(ctx context.Context, request UpdateGrou
 }
 
 // updateGroup implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateGroup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/groups/{groupId}")
+func (client IdentityClient) updateGroup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/groups/{groupId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4247,16 +6383,28 @@ func (client IdentityClient) updateGroup(ctx context.Context, request common.OCI
 }
 
 // UpdateIdentityProvider Updates the specified identity provider.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateIdentityProvider.go.html to see an example of how to use UpdateIdentityProvider API.
 func (client IdentityClient) UpdateIdentityProvider(ctx context.Context, request UpdateIdentityProviderRequest) (response UpdateIdentityProviderResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateIdentityProvider, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateIdentityProviderResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateIdentityProviderResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateIdentityProviderResponse{}
+			}
 		}
 		return
 	}
@@ -4269,8 +6417,9 @@ func (client IdentityClient) UpdateIdentityProvider(ctx context.Context, request
 }
 
 // updateIdentityProvider implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateIdentityProvider(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/identityProviders/{identityProviderId}")
+func (client IdentityClient) updateIdentityProvider(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/identityProviders/{identityProviderId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4289,16 +6438,28 @@ func (client IdentityClient) updateIdentityProvider(ctx context.Context, request
 }
 
 // UpdateIdpGroupMapping Updates the specified group mapping.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateIdpGroupMapping.go.html to see an example of how to use UpdateIdpGroupMapping API.
 func (client IdentityClient) UpdateIdpGroupMapping(ctx context.Context, request UpdateIdpGroupMappingRequest) (response UpdateIdpGroupMappingResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateIdpGroupMapping, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateIdpGroupMappingResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateIdpGroupMappingResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateIdpGroupMappingResponse{}
+			}
 		}
 		return
 	}
@@ -4311,8 +6472,9 @@ func (client IdentityClient) UpdateIdpGroupMapping(ctx context.Context, request 
 }
 
 // updateIdpGroupMapping implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateIdpGroupMapping(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/identityProviders/{identityProviderId}/groupMappings/{mappingId}")
+func (client IdentityClient) updateIdpGroupMapping(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/identityProviders/{identityProviderId}/groupMappings/{mappingId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4330,18 +6492,140 @@ func (client IdentityClient) updateIdpGroupMapping(ctx context.Context, request 
 	return response, err
 }
 
+// UpdateNetworkSource Updates the specified network source.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateNetworkSource.go.html to see an example of how to use UpdateNetworkSource API.
+func (client IdentityClient) UpdateNetworkSource(ctx context.Context, request UpdateNetworkSourceRequest) (response UpdateNetworkSourceResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateNetworkSource, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateNetworkSourceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateNetworkSourceResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateNetworkSourceResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateNetworkSourceResponse")
+	}
+	return
+}
+
+// updateNetworkSource implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) updateNetworkSource(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/networkSources/{networkSourceId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateNetworkSourceResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdateOAuthClientCredential Updates Oauth token for the user
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateOAuthClientCredential.go.html to see an example of how to use UpdateOAuthClientCredential API.
+func (client IdentityClient) UpdateOAuthClientCredential(ctx context.Context, request UpdateOAuthClientCredentialRequest) (response UpdateOAuthClientCredentialResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateOAuthClientCredential, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateOAuthClientCredentialResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateOAuthClientCredentialResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateOAuthClientCredentialResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateOAuthClientCredentialResponse")
+	}
+	return
+}
+
+// updateOAuthClientCredential implements the OCIOperation interface (enables retrying operations)
+func (client IdentityClient) updateOAuthClientCredential(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/oauth2ClientCredentials/{oauth2ClientCredentialId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateOAuthClientCredentialResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // UpdatePolicy Updates the specified policy. You can update the description or the policy statements themselves.
 // Policy changes take effect typically within 10 seconds.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdatePolicy.go.html to see an example of how to use UpdatePolicy API.
 func (client IdentityClient) UpdatePolicy(ctx context.Context, request UpdatePolicyRequest) (response UpdatePolicyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updatePolicy, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdatePolicyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdatePolicyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdatePolicyResponse{}
+			}
 		}
 		return
 	}
@@ -4354,8 +6638,9 @@ func (client IdentityClient) UpdatePolicy(ctx context.Context, request UpdatePol
 }
 
 // updatePolicy implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updatePolicy(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/policies/{policyId}")
+func (client IdentityClient) updatePolicy(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/policies/{policyId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4374,16 +6659,28 @@ func (client IdentityClient) updatePolicy(ctx context.Context, request common.OC
 }
 
 // UpdateSmtpCredential Updates the specified SMTP credential's description.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateSmtpCredential.go.html to see an example of how to use UpdateSmtpCredential API.
 func (client IdentityClient) UpdateSmtpCredential(ctx context.Context, request UpdateSmtpCredentialRequest) (response UpdateSmtpCredentialResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateSmtpCredential, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateSmtpCredentialResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateSmtpCredentialResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateSmtpCredentialResponse{}
+			}
 		}
 		return
 	}
@@ -4396,8 +6693,9 @@ func (client IdentityClient) UpdateSmtpCredential(ctx context.Context, request U
 }
 
 // updateSmtpCredential implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateSmtpCredential(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/smtpCredentials/{smtpCredentialId}")
+func (client IdentityClient) updateSmtpCredential(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/smtpCredentials/{smtpCredentialId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4417,16 +6715,28 @@ func (client IdentityClient) updateSmtpCredential(ctx context.Context, request c
 
 // UpdateSwiftPassword **Deprecated. Use UpdateAuthToken instead.**
 // Updates the specified Swift password's description.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateSwiftPassword.go.html to see an example of how to use UpdateSwiftPassword API.
 func (client IdentityClient) UpdateSwiftPassword(ctx context.Context, request UpdateSwiftPasswordRequest) (response UpdateSwiftPasswordResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateSwiftPassword, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateSwiftPasswordResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateSwiftPasswordResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateSwiftPasswordResponse{}
+			}
 		}
 		return
 	}
@@ -4439,8 +6749,9 @@ func (client IdentityClient) UpdateSwiftPassword(ctx context.Context, request Up
 }
 
 // updateSwiftPassword implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateSwiftPassword(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/swiftPasswords/{swiftPasswordId}")
+func (client IdentityClient) updateSwiftPassword(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/swiftPasswords/{swiftPasswordId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4459,19 +6770,35 @@ func (client IdentityClient) updateSwiftPassword(ctx context.Context, request co
 }
 
 // UpdateTag Updates the specified tag definition.
-// Setting a 'validator' will enable enforcement of additional validation on values contained in the specified for
-// this definedTag. Any values that were previously set will not be changed, but any new value set for the
-// definedTag must pass validation.
+// Setting `validator` determines the value type. Tags can use either a static value or a
+// list of possible values. Static values are entered by a user applying the tag to a resource.
+// Lists are created by you and the user must apply a value from the list. On update, any values
+// in a list that were previously set do not change, but new values must pass validation. Values
+// already applied to a resource do not change.
+// You cannot remove list values that appear in a TagDefault. To remove a list value that
+// appears in a TagDefault, first update the TagDefault to use a different value.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateTag.go.html to see an example of how to use UpdateTag API.
 func (client IdentityClient) UpdateTag(ctx context.Context, request UpdateTagRequest) (response UpdateTagResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateTag, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateTagResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateTagResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateTagResponse{}
+			}
 		}
 		return
 	}
@@ -4484,8 +6811,9 @@ func (client IdentityClient) UpdateTag(ctx context.Context, request UpdateTagReq
 }
 
 // updateTag implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateTag(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/tagNamespaces/{tagNamespaceId}/tags/{tagName}")
+func (client IdentityClient) updateTag(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/tagNamespaces/{tagNamespaceId}/tags/{tagName}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4508,16 +6836,28 @@ func (client IdentityClient) updateTag(ctx context.Context, request common.OCIRe
 // If no value is set, resource creation is blocked.
 // * If the `isRequired` flag is set to "true", the value is set during resource creation.
 // * If the `isRequired` flag is set to "false", the value you enter is set during resource creation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateTagDefault.go.html to see an example of how to use UpdateTagDefault API.
 func (client IdentityClient) UpdateTagDefault(ctx context.Context, request UpdateTagDefaultRequest) (response UpdateTagDefaultResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateTagDefault, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateTagDefaultResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateTagDefaultResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateTagDefaultResponse{}
+			}
 		}
 		return
 	}
@@ -4530,8 +6870,9 @@ func (client IdentityClient) UpdateTagDefault(ctx context.Context, request Updat
 }
 
 // updateTagDefault implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateTagDefault(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/tagDefaults/{tagDefaultId}")
+func (client IdentityClient) updateTagDefault(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/tagDefaults/{tagDefaultId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4552,20 +6893,32 @@ func (client IdentityClient) updateTagDefault(ctx context.Context, request commo
 // UpdateTagNamespace Updates the the specified tag namespace. You can't update the namespace name.
 // Updating `isRetired` to 'true' retires the namespace and all the tag definitions in the namespace. Reactivating a
 // namespace (changing `isRetired` from 'true' to 'false') does not reactivate tag definitions.
-// To reactivate the tag definitions, you must reactivate each one indvidually *after* you reactivate the namespace,
+// To reactivate the tag definitions, you must reactivate each one individually *after* you reactivate the namespace,
 // using UpdateTag. For more information about retiring tag namespaces, see
 // Retiring Key Definitions and Namespace Definitions (https://docs.cloud.oracle.com/Content/Identity/Concepts/taggingoverview.htm#Retiring).
 // You can't add a namespace with the same name as a retired namespace in the same tenancy.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateTagNamespace.go.html to see an example of how to use UpdateTagNamespace API.
 func (client IdentityClient) UpdateTagNamespace(ctx context.Context, request UpdateTagNamespaceRequest) (response UpdateTagNamespaceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateTagNamespace, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateTagNamespaceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateTagNamespaceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateTagNamespaceResponse{}
+			}
 		}
 		return
 	}
@@ -4578,8 +6931,9 @@ func (client IdentityClient) UpdateTagNamespace(ctx context.Context, request Upd
 }
 
 // updateTagNamespace implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateTagNamespace(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/tagNamespaces/{tagNamespaceId}")
+func (client IdentityClient) updateTagNamespace(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/tagNamespaces/{tagNamespaceId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4598,16 +6952,28 @@ func (client IdentityClient) updateTagNamespace(ctx context.Context, request com
 }
 
 // UpdateUser Updates the description of the specified user.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateUser.go.html to see an example of how to use UpdateUser API.
 func (client IdentityClient) UpdateUser(ctx context.Context, request UpdateUserRequest) (response UpdateUserResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateUser, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateUserResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateUserResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateUserResponse{}
+			}
 		}
 		return
 	}
@@ -4620,8 +6986,9 @@ func (client IdentityClient) UpdateUser(ctx context.Context, request UpdateUserR
 }
 
 // updateUser implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateUser(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}")
+func (client IdentityClient) updateUser(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4640,16 +7007,28 @@ func (client IdentityClient) updateUser(ctx context.Context, request common.OCIR
 }
 
 // UpdateUserCapabilities Updates the capabilities of the specified user.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateUserCapabilities.go.html to see an example of how to use UpdateUserCapabilities API.
 func (client IdentityClient) UpdateUserCapabilities(ctx context.Context, request UpdateUserCapabilitiesRequest) (response UpdateUserCapabilitiesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateUserCapabilities, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateUserCapabilitiesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateUserCapabilitiesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateUserCapabilitiesResponse{}
+			}
 		}
 		return
 	}
@@ -4662,8 +7041,9 @@ func (client IdentityClient) UpdateUserCapabilities(ctx context.Context, request
 }
 
 // updateUserCapabilities implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateUserCapabilities(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/capabilities/")
+func (client IdentityClient) updateUserCapabilities(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/capabilities", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4682,16 +7062,28 @@ func (client IdentityClient) updateUserCapabilities(ctx context.Context, request
 }
 
 // UpdateUserState Updates the state of the specified user.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UpdateUserState.go.html to see an example of how to use UpdateUserState API.
 func (client IdentityClient) UpdateUserState(ctx context.Context, request UpdateUserStateRequest) (response UpdateUserStateResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateUserState, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateUserStateResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateUserStateResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateUserStateResponse{}
+			}
 		}
 		return
 	}
@@ -4704,8 +7096,9 @@ func (client IdentityClient) UpdateUserState(ctx context.Context, request Update
 }
 
 // updateUserState implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) updateUserState(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/state/")
+func (client IdentityClient) updateUserState(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/users/{userId}/state", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4735,9 +7128,16 @@ func (client IdentityClient) updateUserState(ctx context.Context, request common
 // you have. Also confirm you're working in the correct compartment.
 // After you send your request, the new object's `lifecycleState` will temporarily be CREATING. Before using
 // the object, first make sure its `lifecycleState` has changed to ACTIVE.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/identity/UploadApiKey.go.html to see an example of how to use UploadApiKey API.
 func (client IdentityClient) UploadApiKey(ctx context.Context, request UploadApiKeyRequest) (response UploadApiKeyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -4749,7 +7149,12 @@ func (client IdentityClient) UploadApiKey(ctx context.Context, request UploadApi
 	ociResponse, err = common.Retry(ctx, request, client.uploadApiKey, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UploadApiKeyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UploadApiKeyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UploadApiKeyResponse{}
+			}
 		}
 		return
 	}
@@ -4762,8 +7167,9 @@ func (client IdentityClient) UploadApiKey(ctx context.Context, request UploadApi
 }
 
 // uploadApiKey implements the OCIOperation interface (enables retrying operations)
-func (client IdentityClient) uploadApiKey(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/apiKeys/")
+func (client IdentityClient) uploadApiKey(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/users/{userId}/apiKeys", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

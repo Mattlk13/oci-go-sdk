@@ -1,18 +1,20 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// CreateVmClusterDetails Details for the create VM cluster operation.
+// CreateVmClusterDetails Details for the create Exadata VM cluster operation. Applies to Exadata Cloud@Customer instances only.
+// For details on the create cloud Exadata VM cluster operation used with Exadata Cloud Service instances, see CreateCloudVmClusterDetails
 type CreateVmClusterDetails struct {
 
 	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the compartment.
@@ -35,6 +37,15 @@ type CreateVmClusterDetails struct {
 
 	// The Oracle Grid Infrastructure software version for the VM cluster.
 	GiVersion *string `mandatory:"true" json:"giVersion"`
+
+	// The memory to be allocated in GBs.
+	MemorySizeInGBs *int `mandatory:"false" json:"memorySizeInGBs"`
+
+	// The local node storage to be allocated in GBs.
+	DbNodeStorageSizeInGBs *int `mandatory:"false" json:"dbNodeStorageSizeInGBs"`
+
+	// The data disk group size to be allocated in TBs.
+	DataStorageSizeInTBs *float64 `mandatory:"false" json:"dataStorageSizeInTBs"`
 
 	// The Oracle license model that applies to the VM cluster. The default is BRING_YOUR_OWN_LICENSE.
 	LicenseModel CreateVmClusterDetailsLicenseModelEnum `mandatory:"false" json:"licenseModel,omitempty"`

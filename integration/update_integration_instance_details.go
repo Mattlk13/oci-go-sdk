@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Oracle Integration API
@@ -9,7 +10,7 @@
 package integration
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // UpdateIntegrationInstanceDetails The information to be updated.
@@ -36,6 +37,18 @@ type UpdateIntegrationInstanceDetails struct {
 
 	// The number of configured message packs
 	MessagePacks *int `mandatory:"false" json:"messagePacks"`
+
+	// The file server is enabled or not.
+	IsFileServerEnabled *bool `mandatory:"false" json:"isFileServerEnabled"`
+
+	// Visual Builder is enabled or not.
+	IsVisualBuilderEnabled *bool `mandatory:"false" json:"isVisualBuilderEnabled"`
+
+	CustomEndpoint *UpdateCustomEndpointDetails `mandatory:"false" json:"customEndpoint"`
+
+	// A list of alternate custom endpoints to be used for the integration instance URL
+	// (contact Oracle for alternateCustomEndpoints availability for a specific instance).
+	AlternateCustomEndpoints []UpdateCustomEndpointDetails `mandatory:"false" json:"alternateCustomEndpoints"`
 }
 
 func (m UpdateIntegrationInstanceDetails) String() string {

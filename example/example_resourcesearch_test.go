@@ -1,8 +1,7 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
-// Code generated. DO NOT EDIT.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
-// Example for Resource Search Service
-//
+// Example for Resource Search Service API
 // Search for resources across your cloud infrastructure
 
 package example
@@ -12,9 +11,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/oracle/oci-go-sdk/common"
-	"github.com/oracle/oci-go-sdk/example/helpers"
-	"github.com/oracle/oci-go-sdk/resourcesearch"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/example/helpers"
+	"github.com/oracle/oci-go-sdk/v45/resourcesearch"
 )
 
 func Example_ResourceSearch() {

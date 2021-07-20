@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Oracle Integration API
@@ -9,7 +10,8 @@
 package integration
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"encoding/json"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // IntegrationInstance Description of Integration Instance.
@@ -57,10 +59,107 @@ type IntegrationInstance struct {
 	// namespaces.
 	// Example: `{"foo-namespace": {"bar-key": "value"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
+
+	// The file server is enabled or not.
+	IsFileServerEnabled *bool `mandatory:"false" json:"isFileServerEnabled"`
+
+	// VisualBuilder is enabled or not.
+	IsVisualBuilderEnabled *bool `mandatory:"false" json:"isVisualBuilderEnabled"`
+
+	CustomEndpoint *CustomEndpointDetails `mandatory:"false" json:"customEndpoint"`
+
+	// A list of alternate custom endpoints used for the integration instance URL.
+	AlternateCustomEndpoints []CustomEndpointDetails `mandatory:"false" json:"alternateCustomEndpoints"`
+
+	// The entitlement used for billing purposes.
+	ConsumptionModel IntegrationInstanceConsumptionModelEnum `mandatory:"false" json:"consumptionModel,omitempty"`
+
+	NetworkEndpointDetails NetworkEndpointDetails `mandatory:"false" json:"networkEndpointDetails"`
 }
 
 func (m IntegrationInstance) String() string {
 	return common.PointerString(m)
+}
+
+// UnmarshalJSON unmarshals from json
+func (m *IntegrationInstance) UnmarshalJSON(data []byte) (e error) {
+	model := struct {
+		TimeCreated              *common.SDKTime                                `json:"timeCreated"`
+		TimeUpdated              *common.SDKTime                                `json:"timeUpdated"`
+		LifecycleState           IntegrationInstanceLifecycleStateEnum          `json:"lifecycleState"`
+		StateMessage             *string                                        `json:"stateMessage"`
+		FreeformTags             map[string]string                              `json:"freeformTags"`
+		DefinedTags              map[string]map[string]interface{}              `json:"definedTags"`
+		IsFileServerEnabled      *bool                                          `json:"isFileServerEnabled"`
+		IsVisualBuilderEnabled   *bool                                          `json:"isVisualBuilderEnabled"`
+		CustomEndpoint           *CustomEndpointDetails                         `json:"customEndpoint"`
+		AlternateCustomEndpoints []CustomEndpointDetails                        `json:"alternateCustomEndpoints"`
+		ConsumptionModel         IntegrationInstanceConsumptionModelEnum        `json:"consumptionModel"`
+		NetworkEndpointDetails   networkendpointdetails                         `json:"networkEndpointDetails"`
+		Id                       *string                                        `json:"id"`
+		DisplayName              *string                                        `json:"displayName"`
+		CompartmentId            *string                                        `json:"compartmentId"`
+		IntegrationInstanceType  IntegrationInstanceIntegrationInstanceTypeEnum `json:"integrationInstanceType"`
+		IsByol                   *bool                                          `json:"isByol"`
+		InstanceUrl              *string                                        `json:"instanceUrl"`
+		MessagePacks             *int                                           `json:"messagePacks"`
+	}{}
+
+	e = json.Unmarshal(data, &model)
+	if e != nil {
+		return
+	}
+	var nn interface{}
+	m.TimeCreated = model.TimeCreated
+
+	m.TimeUpdated = model.TimeUpdated
+
+	m.LifecycleState = model.LifecycleState
+
+	m.StateMessage = model.StateMessage
+
+	m.FreeformTags = model.FreeformTags
+
+	m.DefinedTags = model.DefinedTags
+
+	m.IsFileServerEnabled = model.IsFileServerEnabled
+
+	m.IsVisualBuilderEnabled = model.IsVisualBuilderEnabled
+
+	m.CustomEndpoint = model.CustomEndpoint
+
+	m.AlternateCustomEndpoints = make([]CustomEndpointDetails, len(model.AlternateCustomEndpoints))
+	for i, n := range model.AlternateCustomEndpoints {
+		m.AlternateCustomEndpoints[i] = n
+	}
+
+	m.ConsumptionModel = model.ConsumptionModel
+
+	nn, e = model.NetworkEndpointDetails.UnmarshalPolymorphicJSON(model.NetworkEndpointDetails.JsonData)
+	if e != nil {
+		return
+	}
+	if nn != nil {
+		m.NetworkEndpointDetails = nn.(NetworkEndpointDetails)
+	} else {
+		m.NetworkEndpointDetails = nil
+	}
+
+	m.Id = model.Id
+
+	m.DisplayName = model.DisplayName
+
+	m.CompartmentId = model.CompartmentId
+
+	m.IntegrationInstanceType = model.IntegrationInstanceType
+
+	m.IsByol = model.IsByol
+
+	m.InstanceUrl = model.InstanceUrl
+
+	m.MessagePacks = model.MessagePacks
+
+	return
 }
 
 // IntegrationInstanceIntegrationInstanceTypeEnum Enum with underlying type: string
@@ -94,6 +193,7 @@ const (
 	IntegrationInstanceLifecycleStateCreating IntegrationInstanceLifecycleStateEnum = "CREATING"
 	IntegrationInstanceLifecycleStateUpdating IntegrationInstanceLifecycleStateEnum = "UPDATING"
 	IntegrationInstanceLifecycleStateActive   IntegrationInstanceLifecycleStateEnum = "ACTIVE"
+	IntegrationInstanceLifecycleStateInactive IntegrationInstanceLifecycleStateEnum = "INACTIVE"
 	IntegrationInstanceLifecycleStateDeleting IntegrationInstanceLifecycleStateEnum = "DELETING"
 	IntegrationInstanceLifecycleStateDeleted  IntegrationInstanceLifecycleStateEnum = "DELETED"
 	IntegrationInstanceLifecycleStateFailed   IntegrationInstanceLifecycleStateEnum = "FAILED"
@@ -103,6 +203,7 @@ var mappingIntegrationInstanceLifecycleState = map[string]IntegrationInstanceLif
 	"CREATING": IntegrationInstanceLifecycleStateCreating,
 	"UPDATING": IntegrationInstanceLifecycleStateUpdating,
 	"ACTIVE":   IntegrationInstanceLifecycleStateActive,
+	"INACTIVE": IntegrationInstanceLifecycleStateInactive,
 	"DELETING": IntegrationInstanceLifecycleStateDeleting,
 	"DELETED":  IntegrationInstanceLifecycleStateDeleted,
 	"FAILED":   IntegrationInstanceLifecycleStateFailed,
@@ -112,6 +213,31 @@ var mappingIntegrationInstanceLifecycleState = map[string]IntegrationInstanceLif
 func GetIntegrationInstanceLifecycleStateEnumValues() []IntegrationInstanceLifecycleStateEnum {
 	values := make([]IntegrationInstanceLifecycleStateEnum, 0)
 	for _, v := range mappingIntegrationInstanceLifecycleState {
+		values = append(values, v)
+	}
+	return values
+}
+
+// IntegrationInstanceConsumptionModelEnum Enum with underlying type: string
+type IntegrationInstanceConsumptionModelEnum string
+
+// Set of constants representing the allowable values for IntegrationInstanceConsumptionModelEnum
+const (
+	IntegrationInstanceConsumptionModelUcm      IntegrationInstanceConsumptionModelEnum = "UCM"
+	IntegrationInstanceConsumptionModelGov      IntegrationInstanceConsumptionModelEnum = "GOV"
+	IntegrationInstanceConsumptionModelOic4saas IntegrationInstanceConsumptionModelEnum = "OIC4SAAS"
+)
+
+var mappingIntegrationInstanceConsumptionModel = map[string]IntegrationInstanceConsumptionModelEnum{
+	"UCM":      IntegrationInstanceConsumptionModelUcm,
+	"GOV":      IntegrationInstanceConsumptionModelGov,
+	"OIC4SAAS": IntegrationInstanceConsumptionModelOic4saas,
+}
+
+// GetIntegrationInstanceConsumptionModelEnumValues Enumerates the set of values for IntegrationInstanceConsumptionModelEnum
+func GetIntegrationInstanceConsumptionModelEnumValues() []IntegrationInstanceConsumptionModelEnum {
+	values := make([]IntegrationInstanceConsumptionModelEnum, 0)
+	for _, v := range mappingIntegrationInstanceConsumptionModel {
 		values = append(values, v)
 	}
 	return values

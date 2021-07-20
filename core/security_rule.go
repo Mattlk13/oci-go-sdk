@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,7 +14,7 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // SecurityRule A security rule is one of the items in a NetworkSecurityGroup.
@@ -21,7 +22,8 @@ import (
 // either inbound (`direction`= INGRESS) or outbound (`direction`= EGRESS) IP packets.
 type SecurityRule struct {
 
-	// Direction of the security rule. Set to `EGRESS` for rules to allow outbound IP packets, or `INGRESS` for rules to allow inbound IP packets.
+	// Direction of the security rule. Set to `EGRESS` for rules to allow outbound IP packets,
+	// or `INGRESS` for rules to allow inbound IP packets.
 	Direction SecurityRuleDirectionEnum `mandatory:"true" json:"direction"`
 
 	// The transport protocol. Specify either `all` or an IPv4 protocol number as
@@ -37,7 +39,8 @@ type SecurityRule struct {
 	// can go to.
 	// Allowed values:
 	//   * An IP address range in CIDR notation. For example: `192.168.1.0/24` or `2001:0db8:0123:45::/56`
-	//     Note that IPv6 addressing is currently supported only in the Government Cloud.
+	//     IPv6 addressing is supported for all commercial and government regions.
+	//     See IPv6 Addresses (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/ipv6.htm).
 	//   * The `cidrBlock` value for a Service, if you're
 	//     setting up a security rule for traffic destined for a particular `Service` through
 	//     a service gateway. For example: `oci-phx-objectstorage`.
@@ -56,15 +59,6 @@ type SecurityRule struct {
 	//     NetworkSecurityGroup.
 	DestinationType SecurityRuleDestinationTypeEnum `mandatory:"false" json:"destinationType,omitempty"`
 
-	// Optional and valid only for ICMP and ICMPv6. Use to specify a particular ICMP type and code
-	// as defined in:
-	// - ICMP Parameters (http://www.iana.org/assignments/icmp-parameters/icmp-parameters.xhtml)
-	// - ICMPv6 Parameters (https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtml)
-	// If you specify ICMP or ICMPv6 as the protocol but omit this object, then all ICMP types and
-	// codes are allowed. If you do provide this object, the type is required and the code is optional.
-	// To enable MTU negotiation for ingress internet traffic via IPv4, make sure to allow type 3 ("Destination
-	// Unreachable") code 4 ("Fragmentation Needed and Don't Fragment was Set"). If you need to specify
-	// multiple codes for a single type, create a separate security rule for each.
 	IcmpOptions *IcmpOptions `mandatory:"false" json:"icmpOptions"`
 
 	// An Oracle-assigned identifier for the security rule. You specify this ID when you want to
@@ -88,7 +82,8 @@ type SecurityRule struct {
 	// can come from.
 	// Allowed values:
 	//   * An IP address range in CIDR notation. For example: `192.168.1.0/24` or `2001:0db8:0123:45::/56`
-	//     Note that IPv6 addressing is currently supported only in the Government Cloud.
+	//     IPv6 addressing is supported for all commercial and government regions.
+	//     See IPv6 Addresses (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/ipv6.htm).
 	//   * The `cidrBlock` value for a Service, if you're
 	//     setting up a security rule for traffic coming from a particular `Service` through
 	//     a service gateway. For example: `oci-phx-objectstorage`.
@@ -106,15 +101,11 @@ type SecurityRule struct {
 	//     NetworkSecurityGroup.
 	SourceType SecurityRuleSourceTypeEnum `mandatory:"false" json:"sourceType,omitempty"`
 
-	// Optional and valid only for TCP. Use to specify particular destination ports for TCP rules.
-	// If you specify TCP as the protocol but omit this object, then all destination ports are allowed.
 	TcpOptions *TcpOptions `mandatory:"false" json:"tcpOptions"`
 
-	// The date and time the security rule was created. Format defined by RFC3339.
+	// The date and time the security rule was created. Format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	TimeCreated *common.SDKTime `mandatory:"false" json:"timeCreated"`
 
-	// Optional and valid only for UDP. Use to specify particular destination ports for UDP rules.
-	// If you specify UDP as the protocol but omit this object, then all destination ports are allowed.
 	UdpOptions *UdpOptions `mandatory:"false" json:"udpOptions"`
 }
 

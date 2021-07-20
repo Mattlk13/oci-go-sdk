@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Container Engine for Kubernetes API
@@ -11,7 +12,8 @@
 package containerengine
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"encoding/json"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // UpdateNodePoolDetails The properties that define a request to update a node pool.
@@ -43,8 +45,83 @@ type UpdateNodePoolDetails struct {
 	// pool may still be scaled using quantityPerSubnet. Before you can use nodeConfigDetails,
 	// you must first scale the node pool to 0 nodes using quantityPerSubnet.
 	NodeConfigDetails *UpdateNodePoolNodeConfigDetails `mandatory:"false" json:"nodeConfigDetails"`
+
+	// A list of key/value pairs to add to each underlying OCI instance in the node pool on launch.
+	NodeMetadata map[string]string `mandatory:"false" json:"nodeMetadata"`
+
+	// Specify the source to use to launch nodes in the node pool. Currently, image is the only supported source.
+	NodeSourceDetails NodeSourceDetails `mandatory:"false" json:"nodeSourceDetails"`
+
+	// The SSH public key to add to each node in the node pool on launch.
+	SshPublicKey *string `mandatory:"false" json:"sshPublicKey"`
+
+	// The name of the node shape of the nodes in the node pool used on launch.
+	NodeShape *string `mandatory:"false" json:"nodeShape"`
+
+	// Specify the configuration of the shape to launch nodes in the node pool.
+	NodeShapeConfig *UpdateNodeShapeConfigDetails `mandatory:"false" json:"nodeShapeConfig"`
 }
 
 func (m UpdateNodePoolDetails) String() string {
 	return common.PointerString(m)
+}
+
+// UnmarshalJSON unmarshals from json
+func (m *UpdateNodePoolDetails) UnmarshalJSON(data []byte) (e error) {
+	model := struct {
+		Name              *string                          `json:"name"`
+		KubernetesVersion *string                          `json:"kubernetesVersion"`
+		InitialNodeLabels []KeyValue                       `json:"initialNodeLabels"`
+		QuantityPerSubnet *int                             `json:"quantityPerSubnet"`
+		SubnetIds         []string                         `json:"subnetIds"`
+		NodeConfigDetails *UpdateNodePoolNodeConfigDetails `json:"nodeConfigDetails"`
+		NodeMetadata      map[string]string                `json:"nodeMetadata"`
+		NodeSourceDetails nodesourcedetails                `json:"nodeSourceDetails"`
+		SshPublicKey      *string                          `json:"sshPublicKey"`
+		NodeShape         *string                          `json:"nodeShape"`
+		NodeShapeConfig   *UpdateNodeShapeConfigDetails    `json:"nodeShapeConfig"`
+	}{}
+
+	e = json.Unmarshal(data, &model)
+	if e != nil {
+		return
+	}
+	var nn interface{}
+	m.Name = model.Name
+
+	m.KubernetesVersion = model.KubernetesVersion
+
+	m.InitialNodeLabels = make([]KeyValue, len(model.InitialNodeLabels))
+	for i, n := range model.InitialNodeLabels {
+		m.InitialNodeLabels[i] = n
+	}
+
+	m.QuantityPerSubnet = model.QuantityPerSubnet
+
+	m.SubnetIds = make([]string, len(model.SubnetIds))
+	for i, n := range model.SubnetIds {
+		m.SubnetIds[i] = n
+	}
+
+	m.NodeConfigDetails = model.NodeConfigDetails
+
+	m.NodeMetadata = model.NodeMetadata
+
+	nn, e = model.NodeSourceDetails.UnmarshalPolymorphicJSON(model.NodeSourceDetails.JsonData)
+	if e != nil {
+		return
+	}
+	if nn != nil {
+		m.NodeSourceDetails = nn.(NodeSourceDetails)
+	} else {
+		m.NodeSourceDetails = nil
+	}
+
+	m.SshPublicKey = model.SshPublicKey
+
+	m.NodeShape = model.NodeShape
+
+	m.NodeShapeConfig = model.NodeShapeConfig
+
+	return
 }

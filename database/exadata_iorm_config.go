@@ -1,32 +1,33 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// ExadataIormConfig Response details which has IORM Settings for this Exadata System
+// ExadataIormConfig The IORM settings of the Exadata DB system.
 type ExadataIormConfig struct {
 
-	// The current config state of IORM settings for this Exadata System.
+	// The current state of IORM configuration for the Exadata DB system.
 	LifecycleState ExadataIormConfigLifecycleStateEnum `mandatory:"false" json:"lifecycleState,omitempty"`
 
-	// Additional information about the current lifecycleState.
+	// Additional information about the current `lifecycleState`.
 	LifecycleDetails *string `mandatory:"false" json:"lifecycleDetails"`
 
-	// Value for the IORM objective
-	// Default is "Auto"
+	// The current value for the IORM objective.
+	// The default is `AUTO`.
 	Objective ExadataIormConfigObjectiveEnum `mandatory:"false" json:"objective,omitempty"`
 
-	// Array of IORM Setting for all the database in
-	// this Exadata DB System
+	// An array of IORM settings for all the database in
+	// the Exadata DB system.
 	DbPlans []DbIormConfig `mandatory:"false" json:"dbPlans"`
 }
 

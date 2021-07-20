@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Analytics API
@@ -11,7 +12,8 @@ package analytics
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type AnalyticsClient struct {
 // NewAnalyticsClientWithConfigurationProvider Creates a new default Analytics client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewAnalyticsClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client AnalyticsClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newAnalyticsClientFromBaseClient(baseClient, provider)
+}
+
+// NewAnalyticsClientWithOboToken Creates a new default Analytics client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewAnalyticsClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client AnalyticsClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newAnalyticsClientFromBaseClient(baseClient, configProvider)
+}
+
+func newAnalyticsClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client AnalyticsClient, err error) {
 	client = AnalyticsClient{BaseClient: baseClient}
 	client.BasePath = "20190331"
 	err = client.setConfigurationProvider(configProvider)
@@ -60,9 +81,16 @@ func (client *AnalyticsClient) ConfigurationProvider() *common.ConfigurationProv
 
 // ChangeAnalyticsInstanceCompartment Change the compartment of an Analytics instance. The operation is long-running
 // and creates a new WorkRequest.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/ChangeAnalyticsInstanceCompartment.go.html to see an example of how to use ChangeAnalyticsInstanceCompartment API.
 func (client AnalyticsClient) ChangeAnalyticsInstanceCompartment(ctx context.Context, request ChangeAnalyticsInstanceCompartmentRequest) (response ChangeAnalyticsInstanceCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -74,7 +102,12 @@ func (client AnalyticsClient) ChangeAnalyticsInstanceCompartment(ctx context.Con
 	ociResponse, err = common.Retry(ctx, request, client.changeAnalyticsInstanceCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeAnalyticsInstanceCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeAnalyticsInstanceCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeAnalyticsInstanceCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -87,8 +120,9 @@ func (client AnalyticsClient) ChangeAnalyticsInstanceCompartment(ctx context.Con
 }
 
 // changeAnalyticsInstanceCompartment implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) changeAnalyticsInstanceCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances/{analyticsInstanceId}/actions/changeCompartment")
+func (client AnalyticsClient) changeAnalyticsInstanceCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances/{analyticsInstanceId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -106,11 +140,79 @@ func (client AnalyticsClient) changeAnalyticsInstanceCompartment(ctx context.Con
 	return response, err
 }
 
+// ChangeAnalyticsInstanceNetworkEndpoint Change an Analytics instance network endpoint. The operation is long-running
+// and creates a new WorkRequest.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/ChangeAnalyticsInstanceNetworkEndpoint.go.html to see an example of how to use ChangeAnalyticsInstanceNetworkEndpoint API.
+func (client AnalyticsClient) ChangeAnalyticsInstanceNetworkEndpoint(ctx context.Context, request ChangeAnalyticsInstanceNetworkEndpointRequest) (response ChangeAnalyticsInstanceNetworkEndpointResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.changeAnalyticsInstanceNetworkEndpoint, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeAnalyticsInstanceNetworkEndpointResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeAnalyticsInstanceNetworkEndpointResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ChangeAnalyticsInstanceNetworkEndpointResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ChangeAnalyticsInstanceNetworkEndpointResponse")
+	}
+	return
+}
+
+// changeAnalyticsInstanceNetworkEndpoint implements the OCIOperation interface (enables retrying operations)
+func (client AnalyticsClient) changeAnalyticsInstanceNetworkEndpoint(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances/{analyticsInstanceId}/actions/changeNetworkEndpoint", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ChangeAnalyticsInstanceNetworkEndpointResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // CreateAnalyticsInstance Create a new AnalyticsInstance in the specified compartment. The operation is long-running
 // and creates a new WorkRequest.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/CreateAnalyticsInstance.go.html to see an example of how to use CreateAnalyticsInstance API.
 func (client AnalyticsClient) CreateAnalyticsInstance(ctx context.Context, request CreateAnalyticsInstanceRequest) (response CreateAnalyticsInstanceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -122,7 +224,12 @@ func (client AnalyticsClient) CreateAnalyticsInstance(ctx context.Context, reque
 	ociResponse, err = common.Retry(ctx, request, client.createAnalyticsInstance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateAnalyticsInstanceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateAnalyticsInstanceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateAnalyticsInstanceResponse{}
+			}
 		}
 		return
 	}
@@ -135,8 +242,9 @@ func (client AnalyticsClient) CreateAnalyticsInstance(ctx context.Context, reque
 }
 
 // createAnalyticsInstance implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) createAnalyticsInstance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances")
+func (client AnalyticsClient) createAnalyticsInstance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -154,11 +262,140 @@ func (client AnalyticsClient) createAnalyticsInstance(ctx context.Context, reque
 	return response, err
 }
 
+// CreatePrivateAccessChannel Create an Private access Channel for the Analytics instance. The operation is long-running
+// and creates a new WorkRequest.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/CreatePrivateAccessChannel.go.html to see an example of how to use CreatePrivateAccessChannel API.
+func (client AnalyticsClient) CreatePrivateAccessChannel(ctx context.Context, request CreatePrivateAccessChannelRequest) (response CreatePrivateAccessChannelResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createPrivateAccessChannel, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreatePrivateAccessChannelResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreatePrivateAccessChannelResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreatePrivateAccessChannelResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreatePrivateAccessChannelResponse")
+	}
+	return
+}
+
+// createPrivateAccessChannel implements the OCIOperation interface (enables retrying operations)
+func (client AnalyticsClient) createPrivateAccessChannel(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances/{analyticsInstanceId}/privateAccessChannels", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreatePrivateAccessChannelResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateVanityUrl Allows specifying a custom host name to be used to access the analytics instance.  This requires prior setup of DNS entry and certificate
+// for this host.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/CreateVanityUrl.go.html to see an example of how to use CreateVanityUrl API.
+func (client AnalyticsClient) CreateVanityUrl(ctx context.Context, request CreateVanityUrlRequest) (response CreateVanityUrlResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createVanityUrl, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateVanityUrlResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateVanityUrlResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateVanityUrlResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateVanityUrlResponse")
+	}
+	return
+}
+
+// createVanityUrl implements the OCIOperation interface (enables retrying operations)
+func (client AnalyticsClient) createVanityUrl(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances/{analyticsInstanceId}/vanityUrls", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateVanityUrlResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // DeleteAnalyticsInstance Terminates the specified Analytics instance. The operation is long-running
 // and creates a new WorkRequest.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/DeleteAnalyticsInstance.go.html to see an example of how to use DeleteAnalyticsInstance API.
 func (client AnalyticsClient) DeleteAnalyticsInstance(ctx context.Context, request DeleteAnalyticsInstanceRequest) (response DeleteAnalyticsInstanceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -170,7 +407,12 @@ func (client AnalyticsClient) DeleteAnalyticsInstance(ctx context.Context, reque
 	ociResponse, err = common.Retry(ctx, request, client.deleteAnalyticsInstance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteAnalyticsInstanceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteAnalyticsInstanceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteAnalyticsInstanceResponse{}
+			}
 		}
 		return
 	}
@@ -183,8 +425,9 @@ func (client AnalyticsClient) DeleteAnalyticsInstance(ctx context.Context, reque
 }
 
 // deleteAnalyticsInstance implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) deleteAnalyticsInstance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/analyticsInstances/{analyticsInstanceId}")
+func (client AnalyticsClient) deleteAnalyticsInstance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/analyticsInstances/{analyticsInstanceId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -202,17 +445,149 @@ func (client AnalyticsClient) deleteAnalyticsInstance(ctx context.Context, reque
 	return response, err
 }
 
+// DeletePrivateAccessChannel Delete an Analytics instance's Private access channel with the given unique identifier key.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/DeletePrivateAccessChannel.go.html to see an example of how to use DeletePrivateAccessChannel API.
+func (client AnalyticsClient) DeletePrivateAccessChannel(ctx context.Context, request DeletePrivateAccessChannelRequest) (response DeletePrivateAccessChannelResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.deletePrivateAccessChannel, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeletePrivateAccessChannelResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeletePrivateAccessChannelResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeletePrivateAccessChannelResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeletePrivateAccessChannelResponse")
+	}
+	return
+}
+
+// deletePrivateAccessChannel implements the OCIOperation interface (enables retrying operations)
+func (client AnalyticsClient) deletePrivateAccessChannel(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/analyticsInstances/{analyticsInstanceId}/privateAccessChannels/{privateAccessChannelKey}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeletePrivateAccessChannelResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeleteVanityUrl Allows deleting a previously created vanity url.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/DeleteVanityUrl.go.html to see an example of how to use DeleteVanityUrl API.
+func (client AnalyticsClient) DeleteVanityUrl(ctx context.Context, request DeleteVanityUrlRequest) (response DeleteVanityUrlResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.deleteVanityUrl, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteVanityUrlResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteVanityUrlResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteVanityUrlResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteVanityUrlResponse")
+	}
+	return
+}
+
+// deleteVanityUrl implements the OCIOperation interface (enables retrying operations)
+func (client AnalyticsClient) deleteVanityUrl(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/analyticsInstances/{analyticsInstanceId}/vanityUrls/{vanityUrlKey}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteVanityUrlResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // DeleteWorkRequest Cancel a work request that has not started yet.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/DeleteWorkRequest.go.html to see an example of how to use DeleteWorkRequest API.
 func (client AnalyticsClient) DeleteWorkRequest(ctx context.Context, request DeleteWorkRequestRequest) (response DeleteWorkRequestResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteWorkRequest, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteWorkRequestResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteWorkRequestResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteWorkRequestResponse{}
+			}
 		}
 		return
 	}
@@ -225,8 +600,9 @@ func (client AnalyticsClient) DeleteWorkRequest(ctx context.Context, request Del
 }
 
 // deleteWorkRequest implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) deleteWorkRequest(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/workRequests/{workRequestId}")
+func (client AnalyticsClient) deleteWorkRequest(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/workRequests/{workRequestId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -245,16 +621,28 @@ func (client AnalyticsClient) deleteWorkRequest(ctx context.Context, request com
 }
 
 // GetAnalyticsInstance Info for a specific Analytics instance.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/GetAnalyticsInstance.go.html to see an example of how to use GetAnalyticsInstance API.
 func (client AnalyticsClient) GetAnalyticsInstance(ctx context.Context, request GetAnalyticsInstanceRequest) (response GetAnalyticsInstanceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAnalyticsInstance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAnalyticsInstanceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAnalyticsInstanceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAnalyticsInstanceResponse{}
+			}
 		}
 		return
 	}
@@ -267,8 +655,9 @@ func (client AnalyticsClient) GetAnalyticsInstance(ctx context.Context, request 
 }
 
 // getAnalyticsInstance implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) getAnalyticsInstance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/analyticsInstances/{analyticsInstanceId}")
+func (client AnalyticsClient) getAnalyticsInstance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/analyticsInstances/{analyticsInstanceId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -286,17 +675,84 @@ func (client AnalyticsClient) getAnalyticsInstance(ctx context.Context, request 
 	return response, err
 }
 
+// GetPrivateAccessChannel Retrieve private access channel in the specified Analytics Instance.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/GetPrivateAccessChannel.go.html to see an example of how to use GetPrivateAccessChannel API.
+func (client AnalyticsClient) GetPrivateAccessChannel(ctx context.Context, request GetPrivateAccessChannelRequest) (response GetPrivateAccessChannelResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getPrivateAccessChannel, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetPrivateAccessChannelResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetPrivateAccessChannelResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetPrivateAccessChannelResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetPrivateAccessChannelResponse")
+	}
+	return
+}
+
+// getPrivateAccessChannel implements the OCIOperation interface (enables retrying operations)
+func (client AnalyticsClient) getPrivateAccessChannel(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/analyticsInstances/{analyticsInstanceId}/privateAccessChannels/{privateAccessChannelKey}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetPrivateAccessChannelResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // GetWorkRequest Get the details of a work request.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/GetWorkRequest.go.html to see an example of how to use GetWorkRequest API.
 func (client AnalyticsClient) GetWorkRequest(ctx context.Context, request GetWorkRequestRequest) (response GetWorkRequestResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getWorkRequest, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetWorkRequestResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetWorkRequestResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetWorkRequestResponse{}
+			}
 		}
 		return
 	}
@@ -309,8 +765,9 @@ func (client AnalyticsClient) GetWorkRequest(ctx context.Context, request GetWor
 }
 
 // getWorkRequest implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) getWorkRequest(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}")
+func (client AnalyticsClient) getWorkRequest(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -329,16 +786,28 @@ func (client AnalyticsClient) getWorkRequest(ctx context.Context, request common
 }
 
 // ListAnalyticsInstances List Analytics instances.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/ListAnalyticsInstances.go.html to see an example of how to use ListAnalyticsInstances API.
 func (client AnalyticsClient) ListAnalyticsInstances(ctx context.Context, request ListAnalyticsInstancesRequest) (response ListAnalyticsInstancesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAnalyticsInstances, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAnalyticsInstancesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAnalyticsInstancesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAnalyticsInstancesResponse{}
+			}
 		}
 		return
 	}
@@ -351,8 +820,9 @@ func (client AnalyticsClient) ListAnalyticsInstances(ctx context.Context, reques
 }
 
 // listAnalyticsInstances implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) listAnalyticsInstances(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/analyticsInstances")
+func (client AnalyticsClient) listAnalyticsInstances(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/analyticsInstances", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -371,16 +841,28 @@ func (client AnalyticsClient) listAnalyticsInstances(ctx context.Context, reques
 }
 
 // ListWorkRequestErrors Get the errors of a work request.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/ListWorkRequestErrors.go.html to see an example of how to use ListWorkRequestErrors API.
 func (client AnalyticsClient) ListWorkRequestErrors(ctx context.Context, request ListWorkRequestErrorsRequest) (response ListWorkRequestErrorsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listWorkRequestErrors, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListWorkRequestErrorsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListWorkRequestErrorsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListWorkRequestErrorsResponse{}
+			}
 		}
 		return
 	}
@@ -393,8 +875,9 @@ func (client AnalyticsClient) ListWorkRequestErrors(ctx context.Context, request
 }
 
 // listWorkRequestErrors implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) listWorkRequestErrors(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}/errors")
+func (client AnalyticsClient) listWorkRequestErrors(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}/errors", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -413,16 +896,28 @@ func (client AnalyticsClient) listWorkRequestErrors(ctx context.Context, request
 }
 
 // ListWorkRequestLogs Get the logs of a work request.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/ListWorkRequestLogs.go.html to see an example of how to use ListWorkRequestLogs API.
 func (client AnalyticsClient) ListWorkRequestLogs(ctx context.Context, request ListWorkRequestLogsRequest) (response ListWorkRequestLogsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listWorkRequestLogs, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListWorkRequestLogsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListWorkRequestLogsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListWorkRequestLogsResponse{}
+			}
 		}
 		return
 	}
@@ -435,8 +930,9 @@ func (client AnalyticsClient) ListWorkRequestLogs(ctx context.Context, request L
 }
 
 // listWorkRequestLogs implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) listWorkRequestLogs(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}/logs")
+func (client AnalyticsClient) listWorkRequestLogs(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}/logs", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -455,16 +951,28 @@ func (client AnalyticsClient) listWorkRequestLogs(ctx context.Context, request c
 }
 
 // ListWorkRequests List all work requests in a compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/ListWorkRequests.go.html to see an example of how to use ListWorkRequests API.
 func (client AnalyticsClient) ListWorkRequests(ctx context.Context, request ListWorkRequestsRequest) (response ListWorkRequestsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listWorkRequests, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListWorkRequestsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListWorkRequestsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListWorkRequestsResponse{}
+			}
 		}
 		return
 	}
@@ -477,8 +985,9 @@ func (client AnalyticsClient) ListWorkRequests(ctx context.Context, request List
 }
 
 // listWorkRequests implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) listWorkRequests(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests")
+func (client AnalyticsClient) listWorkRequests(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -498,9 +1007,16 @@ func (client AnalyticsClient) listWorkRequests(ctx context.Context, request comm
 
 // ScaleAnalyticsInstance Scale an Analytics instance up or down. The operation is long-running
 // and creates a new WorkRequest.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/ScaleAnalyticsInstance.go.html to see an example of how to use ScaleAnalyticsInstance API.
 func (client AnalyticsClient) ScaleAnalyticsInstance(ctx context.Context, request ScaleAnalyticsInstanceRequest) (response ScaleAnalyticsInstanceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -512,7 +1028,12 @@ func (client AnalyticsClient) ScaleAnalyticsInstance(ctx context.Context, reques
 	ociResponse, err = common.Retry(ctx, request, client.scaleAnalyticsInstance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ScaleAnalyticsInstanceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ScaleAnalyticsInstanceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ScaleAnalyticsInstanceResponse{}
+			}
 		}
 		return
 	}
@@ -525,8 +1046,9 @@ func (client AnalyticsClient) ScaleAnalyticsInstance(ctx context.Context, reques
 }
 
 // scaleAnalyticsInstance implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) scaleAnalyticsInstance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances/{analyticsInstanceId}/actions/scale")
+func (client AnalyticsClient) scaleAnalyticsInstance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances/{analyticsInstanceId}/actions/scale", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -546,9 +1068,16 @@ func (client AnalyticsClient) scaleAnalyticsInstance(ctx context.Context, reques
 
 // StartAnalyticsInstance Starts the specified Analytics instance. The operation is long-running
 // and creates a new WorkRequest.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/StartAnalyticsInstance.go.html to see an example of how to use StartAnalyticsInstance API.
 func (client AnalyticsClient) StartAnalyticsInstance(ctx context.Context, request StartAnalyticsInstanceRequest) (response StartAnalyticsInstanceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -560,7 +1089,12 @@ func (client AnalyticsClient) StartAnalyticsInstance(ctx context.Context, reques
 	ociResponse, err = common.Retry(ctx, request, client.startAnalyticsInstance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = StartAnalyticsInstanceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = StartAnalyticsInstanceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = StartAnalyticsInstanceResponse{}
+			}
 		}
 		return
 	}
@@ -573,8 +1107,9 @@ func (client AnalyticsClient) StartAnalyticsInstance(ctx context.Context, reques
 }
 
 // startAnalyticsInstance implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) startAnalyticsInstance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances/{analyticsInstanceId}/actions/start")
+func (client AnalyticsClient) startAnalyticsInstance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances/{analyticsInstanceId}/actions/start", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -594,9 +1129,16 @@ func (client AnalyticsClient) startAnalyticsInstance(ctx context.Context, reques
 
 // StopAnalyticsInstance Stop the specified Analytics instance. The operation is long-running
 // and creates a new WorkRequest.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/StopAnalyticsInstance.go.html to see an example of how to use StopAnalyticsInstance API.
 func (client AnalyticsClient) StopAnalyticsInstance(ctx context.Context, request StopAnalyticsInstanceRequest) (response StopAnalyticsInstanceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -608,7 +1150,12 @@ func (client AnalyticsClient) StopAnalyticsInstance(ctx context.Context, request
 	ociResponse, err = common.Retry(ctx, request, client.stopAnalyticsInstance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = StopAnalyticsInstanceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = StopAnalyticsInstanceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = StopAnalyticsInstanceResponse{}
+			}
 		}
 		return
 	}
@@ -621,8 +1168,9 @@ func (client AnalyticsClient) StopAnalyticsInstance(ctx context.Context, request
 }
 
 // stopAnalyticsInstance implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) stopAnalyticsInstance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances/{analyticsInstanceId}/actions/stop")
+func (client AnalyticsClient) stopAnalyticsInstance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/analyticsInstances/{analyticsInstanceId}/actions/stop", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -642,16 +1190,28 @@ func (client AnalyticsClient) stopAnalyticsInstance(ctx context.Context, request
 
 // UpdateAnalyticsInstance Updates certain fields of an Analytics instance. Fields that are not provided in the
 // request will not be updated.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/UpdateAnalyticsInstance.go.html to see an example of how to use UpdateAnalyticsInstance API.
 func (client AnalyticsClient) UpdateAnalyticsInstance(ctx context.Context, request UpdateAnalyticsInstanceRequest) (response UpdateAnalyticsInstanceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateAnalyticsInstance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateAnalyticsInstanceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAnalyticsInstanceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAnalyticsInstanceResponse{}
+			}
 		}
 		return
 	}
@@ -664,13 +1224,134 @@ func (client AnalyticsClient) UpdateAnalyticsInstance(ctx context.Context, reque
 }
 
 // updateAnalyticsInstance implements the OCIOperation interface (enables retrying operations)
-func (client AnalyticsClient) updateAnalyticsInstance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/analyticsInstances/{analyticsInstanceId}")
+func (client AnalyticsClient) updateAnalyticsInstance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/analyticsInstances/{analyticsInstanceId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
 
 	var response UpdateAnalyticsInstanceResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdatePrivateAccessChannel Update the Private Access Channel with the given unique identifier key in the specified Analytics Instance.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/UpdatePrivateAccessChannel.go.html to see an example of how to use UpdatePrivateAccessChannel API.
+func (client AnalyticsClient) UpdatePrivateAccessChannel(ctx context.Context, request UpdatePrivateAccessChannelRequest) (response UpdatePrivateAccessChannelResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.updatePrivateAccessChannel, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdatePrivateAccessChannelResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdatePrivateAccessChannelResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdatePrivateAccessChannelResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdatePrivateAccessChannelResponse")
+	}
+	return
+}
+
+// updatePrivateAccessChannel implements the OCIOperation interface (enables retrying operations)
+func (client AnalyticsClient) updatePrivateAccessChannel(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/analyticsInstances/{analyticsInstanceId}/privateAccessChannels/{privateAccessChannelKey}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdatePrivateAccessChannelResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdateVanityUrl Allows uploading a new certificate for a vanity url, which will have to be done when the current certificate is expiring.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/analytics/UpdateVanityUrl.go.html to see an example of how to use UpdateVanityUrl API.
+func (client AnalyticsClient) UpdateVanityUrl(ctx context.Context, request UpdateVanityUrlRequest) (response UpdateVanityUrlResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.updateVanityUrl, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateVanityUrlResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateVanityUrlResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateVanityUrlResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateVanityUrlResponse")
+	}
+	return
+}
+
+// updateVanityUrl implements the OCIOperation interface (enables retrying operations)
+func (client AnalyticsClient) updateVanityUrl(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/analyticsInstances/{analyticsInstanceId}/vanityUrls/{vanityUrlKey}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateVanityUrlResponse
 	var httpResponse *http.Response
 	httpResponse, err = client.Call(ctx, &httpRequest)
 	defer common.CloseBodyIfValid(httpResponse)

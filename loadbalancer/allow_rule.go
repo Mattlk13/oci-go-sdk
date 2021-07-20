@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Load Balancing API
@@ -11,7 +12,7 @@ package loadbalancer
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // AllowRule An object that represents the action of configuring an access control rule. Access control rules permit access
@@ -61,12 +62,14 @@ func (m *AllowRule) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.Description = model.Description
+
 	m.Conditions = make([]RuleCondition, len(model.Conditions))
 	for i, n := range model.Conditions {
-		nn, err := n.UnmarshalPolymorphicJSON(n.JsonData)
-		if err != nil {
-			return err
+		nn, e = n.UnmarshalPolymorphicJSON(n.JsonData)
+		if e != nil {
+			return e
 		}
 		if nn != nil {
 			m.Conditions[i] = nn.(RuleCondition)
@@ -74,5 +77,6 @@ func (m *AllowRule) UnmarshalJSON(data []byte) (e error) {
 			m.Conditions[i] = nil
 		}
 	}
+
 	return
 }

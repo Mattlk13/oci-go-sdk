@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Functions Service API
@@ -11,7 +12,8 @@ package functions
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type FunctionsManagementClient struct {
 // NewFunctionsManagementClientWithConfigurationProvider Creates a new default FunctionsManagement client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewFunctionsManagementClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client FunctionsManagementClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newFunctionsManagementClientFromBaseClient(baseClient, provider)
+}
+
+// NewFunctionsManagementClientWithOboToken Creates a new default FunctionsManagement client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewFunctionsManagementClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client FunctionsManagementClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newFunctionsManagementClientFromBaseClient(baseClient, configProvider)
+}
+
+func newFunctionsManagementClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client FunctionsManagementClient, err error) {
 	client = FunctionsManagementClient{BaseClient: baseClient}
 	client.BasePath = "20181201"
 	err = client.setConfigurationProvider(configProvider)
@@ -60,16 +81,28 @@ func (client *FunctionsManagementClient) ConfigurationProvider() *common.Configu
 
 // ChangeApplicationCompartment Moves an application into a different compartment within the same tenancy.
 // For information about moving resources between compartments, see Moving Resources Between Compartments (https://docs.cloud.oracle.com/iaas/Content/Identity/Tasks/managingcompartments.htm#moveRes).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/functions/ChangeApplicationCompartment.go.html to see an example of how to use ChangeApplicationCompartment API.
 func (client FunctionsManagementClient) ChangeApplicationCompartment(ctx context.Context, request ChangeApplicationCompartmentRequest) (response ChangeApplicationCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.changeApplicationCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeApplicationCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeApplicationCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeApplicationCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -82,8 +115,9 @@ func (client FunctionsManagementClient) ChangeApplicationCompartment(ctx context
 }
 
 // changeApplicationCompartment implements the OCIOperation interface (enables retrying operations)
-func (client FunctionsManagementClient) changeApplicationCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/applications/{applicationId}/actions/changeCompartment")
+func (client FunctionsManagementClient) changeApplicationCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/applications/{applicationId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -102,16 +136,28 @@ func (client FunctionsManagementClient) changeApplicationCompartment(ctx context
 }
 
 // CreateApplication Creates a new application.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/functions/CreateApplication.go.html to see an example of how to use CreateApplication API.
 func (client FunctionsManagementClient) CreateApplication(ctx context.Context, request CreateApplicationRequest) (response CreateApplicationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.createApplication, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateApplicationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateApplicationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateApplicationResponse{}
+			}
 		}
 		return
 	}
@@ -124,8 +170,9 @@ func (client FunctionsManagementClient) CreateApplication(ctx context.Context, r
 }
 
 // createApplication implements the OCIOperation interface (enables retrying operations)
-func (client FunctionsManagementClient) createApplication(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/applications")
+func (client FunctionsManagementClient) createApplication(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/applications", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -144,16 +191,28 @@ func (client FunctionsManagementClient) createApplication(ctx context.Context, r
 }
 
 // CreateFunction Creates a new function.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/functions/CreateFunction.go.html to see an example of how to use CreateFunction API.
 func (client FunctionsManagementClient) CreateFunction(ctx context.Context, request CreateFunctionRequest) (response CreateFunctionResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.createFunction, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateFunctionResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateFunctionResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateFunctionResponse{}
+			}
 		}
 		return
 	}
@@ -166,8 +225,9 @@ func (client FunctionsManagementClient) CreateFunction(ctx context.Context, requ
 }
 
 // createFunction implements the OCIOperation interface (enables retrying operations)
-func (client FunctionsManagementClient) createFunction(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/functions")
+func (client FunctionsManagementClient) createFunction(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/functions", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -186,16 +246,28 @@ func (client FunctionsManagementClient) createFunction(ctx context.Context, requ
 }
 
 // DeleteApplication Deletes an application.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/functions/DeleteApplication.go.html to see an example of how to use DeleteApplication API.
 func (client FunctionsManagementClient) DeleteApplication(ctx context.Context, request DeleteApplicationRequest) (response DeleteApplicationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteApplication, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteApplicationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteApplicationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteApplicationResponse{}
+			}
 		}
 		return
 	}
@@ -208,8 +280,9 @@ func (client FunctionsManagementClient) DeleteApplication(ctx context.Context, r
 }
 
 // deleteApplication implements the OCIOperation interface (enables retrying operations)
-func (client FunctionsManagementClient) deleteApplication(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/applications/{applicationId}")
+func (client FunctionsManagementClient) deleteApplication(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/applications/{applicationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -228,16 +301,28 @@ func (client FunctionsManagementClient) deleteApplication(ctx context.Context, r
 }
 
 // DeleteFunction Deletes a function.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/functions/DeleteFunction.go.html to see an example of how to use DeleteFunction API.
 func (client FunctionsManagementClient) DeleteFunction(ctx context.Context, request DeleteFunctionRequest) (response DeleteFunctionResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteFunction, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteFunctionResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteFunctionResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteFunctionResponse{}
+			}
 		}
 		return
 	}
@@ -250,8 +335,9 @@ func (client FunctionsManagementClient) DeleteFunction(ctx context.Context, requ
 }
 
 // deleteFunction implements the OCIOperation interface (enables retrying operations)
-func (client FunctionsManagementClient) deleteFunction(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/functions/{functionId}")
+func (client FunctionsManagementClient) deleteFunction(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/functions/{functionId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -270,16 +356,28 @@ func (client FunctionsManagementClient) deleteFunction(ctx context.Context, requ
 }
 
 // GetApplication Retrieves an application.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/functions/GetApplication.go.html to see an example of how to use GetApplication API.
 func (client FunctionsManagementClient) GetApplication(ctx context.Context, request GetApplicationRequest) (response GetApplicationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getApplication, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetApplicationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetApplicationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetApplicationResponse{}
+			}
 		}
 		return
 	}
@@ -292,8 +390,9 @@ func (client FunctionsManagementClient) GetApplication(ctx context.Context, requ
 }
 
 // getApplication implements the OCIOperation interface (enables retrying operations)
-func (client FunctionsManagementClient) getApplication(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/applications/{applicationId}")
+func (client FunctionsManagementClient) getApplication(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/applications/{applicationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -312,16 +411,28 @@ func (client FunctionsManagementClient) getApplication(ctx context.Context, requ
 }
 
 // GetFunction Retrieves a function.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/functions/GetFunction.go.html to see an example of how to use GetFunction API.
 func (client FunctionsManagementClient) GetFunction(ctx context.Context, request GetFunctionRequest) (response GetFunctionResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getFunction, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetFunctionResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetFunctionResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetFunctionResponse{}
+			}
 		}
 		return
 	}
@@ -334,8 +445,9 @@ func (client FunctionsManagementClient) GetFunction(ctx context.Context, request
 }
 
 // getFunction implements the OCIOperation interface (enables retrying operations)
-func (client FunctionsManagementClient) getFunction(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/functions/{functionId}")
+func (client FunctionsManagementClient) getFunction(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/functions/{functionId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -354,16 +466,28 @@ func (client FunctionsManagementClient) getFunction(ctx context.Context, request
 }
 
 // ListApplications Lists applications for a compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/functions/ListApplications.go.html to see an example of how to use ListApplications API.
 func (client FunctionsManagementClient) ListApplications(ctx context.Context, request ListApplicationsRequest) (response ListApplicationsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listApplications, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListApplicationsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListApplicationsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListApplicationsResponse{}
+			}
 		}
 		return
 	}
@@ -376,8 +500,9 @@ func (client FunctionsManagementClient) ListApplications(ctx context.Context, re
 }
 
 // listApplications implements the OCIOperation interface (enables retrying operations)
-func (client FunctionsManagementClient) listApplications(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/applications")
+func (client FunctionsManagementClient) listApplications(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/applications", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -396,16 +521,28 @@ func (client FunctionsManagementClient) listApplications(ctx context.Context, re
 }
 
 // ListFunctions Lists functions for an application.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/functions/ListFunctions.go.html to see an example of how to use ListFunctions API.
 func (client FunctionsManagementClient) ListFunctions(ctx context.Context, request ListFunctionsRequest) (response ListFunctionsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listFunctions, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListFunctionsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListFunctionsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListFunctionsResponse{}
+			}
 		}
 		return
 	}
@@ -418,8 +555,9 @@ func (client FunctionsManagementClient) ListFunctions(ctx context.Context, reque
 }
 
 // listFunctions implements the OCIOperation interface (enables retrying operations)
-func (client FunctionsManagementClient) listFunctions(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/functions")
+func (client FunctionsManagementClient) listFunctions(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/functions", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -438,16 +576,28 @@ func (client FunctionsManagementClient) listFunctions(ctx context.Context, reque
 }
 
 // UpdateApplication Modifies an application
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/functions/UpdateApplication.go.html to see an example of how to use UpdateApplication API.
 func (client FunctionsManagementClient) UpdateApplication(ctx context.Context, request UpdateApplicationRequest) (response UpdateApplicationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateApplication, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateApplicationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateApplicationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateApplicationResponse{}
+			}
 		}
 		return
 	}
@@ -460,8 +610,9 @@ func (client FunctionsManagementClient) UpdateApplication(ctx context.Context, r
 }
 
 // updateApplication implements the OCIOperation interface (enables retrying operations)
-func (client FunctionsManagementClient) updateApplication(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/applications/{applicationId}")
+func (client FunctionsManagementClient) updateApplication(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/applications/{applicationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -480,16 +631,28 @@ func (client FunctionsManagementClient) updateApplication(ctx context.Context, r
 }
 
 // UpdateFunction Modifies a function
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/functions/UpdateFunction.go.html to see an example of how to use UpdateFunction API.
 func (client FunctionsManagementClient) UpdateFunction(ctx context.Context, request UpdateFunctionRequest) (response UpdateFunctionResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateFunction, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateFunctionResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateFunctionResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateFunctionResponse{}
+			}
 		}
 		return
 	}
@@ -502,8 +665,9 @@ func (client FunctionsManagementClient) UpdateFunction(ctx context.Context, requ
 }
 
 // updateFunction implements the OCIOperation interface (enables retrying operations)
-func (client FunctionsManagementClient) updateFunction(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/functions/{functionId}")
+func (client FunctionsManagementClient) updateFunction(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/functions/{functionId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

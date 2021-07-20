@@ -1,7 +1,7 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
-//
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
+
 // Example code for Object Storage Service API
-//
 
 package example
 
@@ -10,13 +10,14 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"path"
 
-	"github.com/oracle/oci-go-sdk/common"
-	"github.com/oracle/oci-go-sdk/example/helpers"
-	"github.com/oracle/oci-go-sdk/objectstorage"
-	"github.com/oracle/oci-go-sdk/objectstorage/transfer"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/example/helpers"
+	"github.com/oracle/oci-go-sdk/v45/objectstorage"
+	"github.com/oracle/oci-go-sdk/v45/objectstorage/transfer"
 )
 
 // ExampleObjectStorage_UploadFile shows how to create a bucket and upload a file
@@ -57,6 +58,8 @@ func ExampleObjectStorage_UploadFile() {
 func ExampleObjectStorage_UploadManager_UploadFile() {
 	c, clerr := objectstorage.NewObjectStorageClientWithConfigurationProvider(common.DefaultConfigProvider())
 	helpers.FatalIfError(clerr)
+	// Disable timeout to support big file upload(Once need to specify the os client for Upload Manager)
+	c.HTTPClient = &http.Client{}
 
 	ctx := context.Background()
 	bname := "bname"
@@ -65,7 +68,7 @@ func ExampleObjectStorage_UploadManager_UploadFile() {
 	createBucket(ctx, c, namespace, bname)
 	defer deleteBucket(ctx, c, namespace, bname)
 
-	contentlen := 1024 * 1000 * 300 // 300MB
+	contentlen := 1024 * 1024 * 300 // 300MB
 	filepath, _ := helpers.WriteTempFileOfSize(int64(contentlen))
 	filename := path.Base(filepath)
 	defer os.Remove(filename)
@@ -75,11 +78,13 @@ func ExampleObjectStorage_UploadManager_UploadFile() {
 
 	req := transfer.UploadFileRequest{
 		UploadRequest: transfer.UploadRequest{
-			NamespaceName: common.String(namespace),
-			BucketName:    common.String(bname),
-			ObjectName:    common.String(objectName),
-			//PartSize:      common.Int(10000000),
-			CallBack: callBack,
+			NamespaceName:                       common.String(namespace),
+			BucketName:                          common.String(bname),
+			ObjectName:                          common.String(objectName),
+			PartSize:                            common.Int64(128 * 1024 * 1024),
+			CallBack:                            callBack,
+			ObjectStorageClient:                 &c,
+			EnableMultipartChecksumVerification: common.Bool(true),
 		},
 		FilePath: filepath,
 	}
@@ -115,6 +120,8 @@ func callBack(multiPartUploadPart transfer.MultiPartUploadPart) {
 		// Please refer this as the progress bar print content.
 		// fmt.Printf("Part: %d / %d is uploaded.\n", multiPartUploadPart.PartNum, multiPartUploadPart.TotalParts)
 		fmt.Printf("One example of progress bar could be the above comment content.\n")
+		// Please refer following fmt to get each part opc-md5 res.
+		// fmt.Printf("and this part opcMD5(64BasedEncoding) is: %s.\n", *multiPartUploadPart.OpcMD5 )
 	}
 }
 
@@ -144,16 +151,17 @@ func ExampleObjectStorage_UploadManager_Stream() {
 
 	req := transfer.UploadStreamRequest{
 		UploadRequest: transfer.UploadRequest{
-			NamespaceName: common.String(namespace),
-			BucketName:    common.String(bname),
-			ObjectName:    common.String(objectName),
+			NamespaceName:                       common.String(namespace),
+			BucketName:                          common.String(bname),
+			ObjectName:                          common.String(objectName),
+			EnableMultipartChecksumVerification: common.Bool(true),
 		},
 		StreamReader: file, // any struct implements the io.Reader interface
 	}
 
 	// if you want to overwrite default value, you can do it
 	// as: transfer.UploadRequest.AllowMultipartUploads = common.Bool(false) // default is true
-	// or: transfer.UploadRequest.AllowParrallelUploads = common.Bool(false) // default is true
+	// or: transfer.UploadRequest.AllowParallelUploads = common.Bool(false) // default is true
 	_, err := uploadManager.UploadStream(context.Background(), req)
 
 	if err != nil {

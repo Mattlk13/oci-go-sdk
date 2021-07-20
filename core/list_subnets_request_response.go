@@ -1,21 +1,23 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // ListSubnetsRequest wrapper for the ListSubnets operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/core/ListSubnets.go.html to see an example of how to use ListSubnetsRequest.
 type ListSubnetsRequest struct {
 
-	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the compartment.
+	// The OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the compartment.
 	CompartmentId *string `mandatory:"true" contributesTo:"query" name:"compartmentId"`
-
-	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the VCN.
-	VcnId *string `mandatory:"true" contributesTo:"query" name:"vcnId"`
 
 	// For list pagination. The maximum number of results per page, or items to return in a paginated
 	// "List" call. For important details about how pagination works, see
@@ -27,6 +29,9 @@ type ListSubnetsRequest struct {
 	// call. For important details about how pagination works, see
 	// List Pagination (https://docs.cloud.oracle.com/iaas/Content/API/Concepts/usingapi.htm#nine).
 	Page *string `mandatory:"false" contributesTo:"query" name:"page"`
+
+	// The OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the VCN.
+	VcnId *string `mandatory:"false" contributesTo:"query" name:"vcnId"`
 
 	// A filter to return only resources that match the given display name exactly.
 	DisplayName *string `mandatory:"false" contributesTo:"query" name:"displayName"`
@@ -44,7 +49,8 @@ type ListSubnetsRequest struct {
 	// is case sensitive.
 	SortOrder ListSubnetsSortOrderEnum `mandatory:"false" contributesTo:"query" name:"sortOrder" omitEmpty:"true"`
 
-	// A filter to only return resources that match the given lifecycle state.  The state value is case-insensitive.
+	// A filter to only return resources that match the given lifecycle
+	// state. The state value is case-insensitive.
 	LifecycleState SubnetLifecycleStateEnum `mandatory:"false" contributesTo:"query" name:"lifecycleState" omitEmpty:"true"`
 
 	// Unique Oracle-assigned identifier for the request.
@@ -61,8 +67,16 @@ func (request ListSubnetsRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request ListSubnetsRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request ListSubnetsRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request ListSubnetsRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.

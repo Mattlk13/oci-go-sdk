@@ -1,35 +1,40 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package limits
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // ListLimitValuesRequest wrapper for the ListLimitValues operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/limits/ListLimitValues.go.html to see an example of how to use ListLimitValuesRequest.
 type ListLimitValuesRequest struct {
 
 	// The OCID of the parent compartment (remember that the tenancy is simply the root compartment).
 	CompartmentId *string `mandatory:"true" contributesTo:"query" name:"compartmentId"`
 
-	// The target service name
+	// The target service name.
 	ServiceName *string `mandatory:"true" contributesTo:"query" name:"serviceName"`
 
 	// Filter entries by scope type.
 	ScopeType ListLimitValuesScopeTypeEnum `mandatory:"false" contributesTo:"query" name:"scopeType" omitEmpty:"true"`
 
-	// Filter entries by availability domain. This implies that only AD-specific values will be returned.
+	// Filter entries by availability domain. This implies that only AD-specific values are returned.
 	AvailabilityDomain *string `mandatory:"false" contributesTo:"query" name:"availabilityDomain"`
 
 	// Optional field, can be used to see a specific resource limit value.
 	Name *string `mandatory:"false" contributesTo:"query" name:"name"`
 
-	// The field to sort by. We will be implicitly sorting by availabilityDomain, as a second level field, if available.
+	// The field to sort by. The sorting is by availabilityDomain, as a second level field, if available.
 	SortBy ListLimitValuesSortByEnum `mandatory:"false" contributesTo:"query" name:"sortBy" omitEmpty:"true"`
 
-	// The sort order to use, either 'asc' or 'desc'. By default it will be ascending.
+	// The sort order to use, either 'asc' or 'desc'. By default, it is ascending.
 	SortOrder ListLimitValuesSortOrderEnum `mandatory:"false" contributesTo:"query" name:"sortOrder" omitEmpty:"true"`
 
 	// The maximum number of items to return in a paginated "List" call.
@@ -52,8 +57,16 @@ func (request ListLimitValuesRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request ListLimitValuesRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request ListLimitValuesRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request ListLimitValuesRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.

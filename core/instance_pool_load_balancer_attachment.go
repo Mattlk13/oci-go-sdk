@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,19 +14,19 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // InstancePoolLoadBalancerAttachment Represents a load balancer that is attached to an instance pool.
 type InstancePoolLoadBalancerAttachment struct {
 
-	// The OCID of the load balancer attachment.
+	// The OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the load balancer attachment.
 	Id *string `mandatory:"true" json:"id"`
 
-	// The OCID of the instance pool of the load balancer attachment.
+	// The OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the instance pool of the load balancer attachment.
 	InstancePoolId *string `mandatory:"true" json:"instancePoolId"`
 
-	// The OCID of the load balancer attached to the instance pool.
+	// The OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the load balancer attached to the instance pool.
 	LoadBalancerId *string `mandatory:"true" json:"loadBalancerId"`
 
 	// The name of the backend set on the load balancer.
@@ -34,7 +35,9 @@ type InstancePoolLoadBalancerAttachment struct {
 	// The port value used for the backends.
 	Port *int `mandatory:"true" json:"port"`
 
-	// Indicates which VNIC on each instance in the instance pool should be used to associate with the load balancer. Possible values are "PrimaryVnic" or the displayName of one of the secondary VNICs on the instance configuration that is associated with the instance pool.
+	// Indicates which VNIC on each instance in the instance pool should be used to associate with the load balancer.
+	// Possible values are "PrimaryVnic" or the displayName of one of the secondary VNICs on the instance configuration
+	// that is associated with the instance pool.
 	VnicSelection *string `mandatory:"true" json:"vnicSelection"`
 
 	// The status of the interaction between the instance pool and the load balancer.

@@ -1,14 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package keymanagement
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // ListKeysRequest wrapper for the ListKeys operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/keymanagement/ListKeys.go.html to see an example of how to use ListKeysRequest.
 type ListKeysRequest struct {
 
 	// The OCID of the compartment.
@@ -27,12 +32,28 @@ type ListKeysRequest struct {
 	OpcRequestId *string `mandatory:"false" contributesTo:"header" name:"opc-request-id"`
 
 	// The field to sort by. You can specify only one sort order. The default
-	// order for TIMECREATED is descending. The default order for DISPLAYNAME
+	// order for `TIMECREATED` is descending. The default order for `DISPLAYNAME`
 	// is ascending.
 	SortBy ListKeysSortByEnum `mandatory:"false" contributesTo:"query" name:"sortBy" omitEmpty:"true"`
 
 	// The sort order to use, either ascending (`ASC`) or descending (`DESC`).
 	SortOrder ListKeysSortOrderEnum `mandatory:"false" contributesTo:"query" name:"sortOrder" omitEmpty:"true"`
+
+	// A key's protection mode indicates how the key persists and where cryptographic operations that use the key are performed. A
+	// protection mode of `HSM` means that the key persists on a hardware security module (HSM) and all cryptographic operations are
+	// performed inside the HSM. A protection mode of `SOFTWARE` means that the key persists on the server, protected by the vault's
+	// RSA wrapping key which persists on the HSM. All cryptographic operations that use a key with a protection mode of
+	// `SOFTWARE` are performed on the server.
+	ProtectionMode ListKeysProtectionModeEnum `mandatory:"false" contributesTo:"query" name:"protectionMode" omitEmpty:"true"`
+
+	// The algorithm used by a key's key versions to encrypt or decrypt data. Currently, support includes AES, RSA, and ECDSA algorithms.
+	Algorithm ListKeysAlgorithmEnum `mandatory:"false" contributesTo:"query" name:"algorithm" omitEmpty:"true"`
+
+	// The length of the key in bytes, expressed as an integer. Supported values include 16, 24, or 32.
+	Length *int `mandatory:"false" contributesTo:"query" name:"length"`
+
+	// The curve ID of the keys. (This pertains only to ECDSA keys.)
+	CurveId ListKeysCurveIdEnum `mandatory:"false" contributesTo:"query" name:"curveId" omitEmpty:"true"`
 
 	// Metadata about the request. This information will not be transmitted to the service, but
 	// represents information that the SDK will consume to drive retry behavior.
@@ -44,8 +65,16 @@ func (request ListKeysRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request ListKeysRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request ListKeysRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request ListKeysRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.
@@ -123,6 +152,79 @@ var mappingListKeysSortOrder = map[string]ListKeysSortOrderEnum{
 func GetListKeysSortOrderEnumValues() []ListKeysSortOrderEnum {
 	values := make([]ListKeysSortOrderEnum, 0)
 	for _, v := range mappingListKeysSortOrder {
+		values = append(values, v)
+	}
+	return values
+}
+
+// ListKeysProtectionModeEnum Enum with underlying type: string
+type ListKeysProtectionModeEnum string
+
+// Set of constants representing the allowable values for ListKeysProtectionModeEnum
+const (
+	ListKeysProtectionModeHsm      ListKeysProtectionModeEnum = "HSM"
+	ListKeysProtectionModeSoftware ListKeysProtectionModeEnum = "SOFTWARE"
+)
+
+var mappingListKeysProtectionMode = map[string]ListKeysProtectionModeEnum{
+	"HSM":      ListKeysProtectionModeHsm,
+	"SOFTWARE": ListKeysProtectionModeSoftware,
+}
+
+// GetListKeysProtectionModeEnumValues Enumerates the set of values for ListKeysProtectionModeEnum
+func GetListKeysProtectionModeEnumValues() []ListKeysProtectionModeEnum {
+	values := make([]ListKeysProtectionModeEnum, 0)
+	for _, v := range mappingListKeysProtectionMode {
+		values = append(values, v)
+	}
+	return values
+}
+
+// ListKeysAlgorithmEnum Enum with underlying type: string
+type ListKeysAlgorithmEnum string
+
+// Set of constants representing the allowable values for ListKeysAlgorithmEnum
+const (
+	ListKeysAlgorithmAes   ListKeysAlgorithmEnum = "AES"
+	ListKeysAlgorithmRsa   ListKeysAlgorithmEnum = "RSA"
+	ListKeysAlgorithmEcdsa ListKeysAlgorithmEnum = "ECDSA"
+)
+
+var mappingListKeysAlgorithm = map[string]ListKeysAlgorithmEnum{
+	"AES":   ListKeysAlgorithmAes,
+	"RSA":   ListKeysAlgorithmRsa,
+	"ECDSA": ListKeysAlgorithmEcdsa,
+}
+
+// GetListKeysAlgorithmEnumValues Enumerates the set of values for ListKeysAlgorithmEnum
+func GetListKeysAlgorithmEnumValues() []ListKeysAlgorithmEnum {
+	values := make([]ListKeysAlgorithmEnum, 0)
+	for _, v := range mappingListKeysAlgorithm {
+		values = append(values, v)
+	}
+	return values
+}
+
+// ListKeysCurveIdEnum Enum with underlying type: string
+type ListKeysCurveIdEnum string
+
+// Set of constants representing the allowable values for ListKeysCurveIdEnum
+const (
+	ListKeysCurveIdP256 ListKeysCurveIdEnum = "NIST_P256"
+	ListKeysCurveIdP384 ListKeysCurveIdEnum = "NIST_P384"
+	ListKeysCurveIdP521 ListKeysCurveIdEnum = "NIST_P521"
+)
+
+var mappingListKeysCurveId = map[string]ListKeysCurveIdEnum{
+	"NIST_P256": ListKeysCurveIdP256,
+	"NIST_P384": ListKeysCurveIdP384,
+	"NIST_P521": ListKeysCurveIdP521,
+}
+
+// GetListKeysCurveIdEnumValues Enumerates the set of values for ListKeysCurveIdEnum
+func GetListKeysCurveIdEnumValues() []ListKeysCurveIdEnum {
+	values := make([]ListKeysCurveIdEnum, 0)
+	for _, v := range mappingListKeysCurveId {
 		values = append(values, v)
 	}
 	return values

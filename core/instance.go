@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -14,16 +15,16 @@ package core
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // Instance A compute host. The image used to launch the instance determines its operating system and other
 // software. The shape specified during the launch process determines the number of CPUs and memory
 // allocated to the instance. For more information, see
-// Overview of the Compute Service (https://docs.cloud.oracle.com/Content/Compute/Concepts/computeoverview.htm).
+// Overview of the Compute Service (https://docs.cloud.oracle.com/iaas/Content/Compute/Concepts/computeoverview.htm).
 // To use any of the API operations, you must be authorized in an IAM policy. If you're not authorized,
 // talk to an administrator. If you're an administrator who needs to write policies to give users access, see
-// Getting Started with Policies (https://docs.cloud.oracle.com/Content/Identity/Concepts/policygetstarted.htm).
+// Getting Started with Policies (https://docs.cloud.oracle.com/iaas/Content/Identity/Concepts/policygetstarted.htm).
 // **Warning:** Oracle recommends that you avoid using any confidential information when you
 // supply string values using the API.
 type Instance struct {
@@ -52,15 +53,20 @@ type Instance struct {
 	// ListShapes.
 	Shape *string `mandatory:"true" json:"shape"`
 
-	// The date and time the instance was created, in the format defined by RFC3339.
+	// The date and time the instance was created, in the format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
+
+	// The OCID of the compute capacity reservation this instance is launched under.
+	// When this field contains an empty string or is null, the instance is not currently in a capacity reservation.
+	// For more information, see Capacity Reservations (https://docs.cloud.oracle.com/iaas/Content/Compute/Tasks/reserve-capacity.htm#default).
+	CapacityReservationId *string `mandatory:"false" json:"capacityReservationId"`
 
 	// The OCID of dedicated VM host.
 	DedicatedVmHostId *string `mandatory:"false" json:"dedicatedVmHostId"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
@@ -69,8 +75,10 @@ type Instance struct {
 	// Example: `My bare metal instance`
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
-	// Additional metadata key/value pairs that you provide. They serve the same purpose and functionality as fields in the 'metadata' object.
-	// They are distinguished from 'metadata' fields in that these can be nested JSON objects (whereas 'metadata' fields are string/string maps only).
+	// Additional metadata key/value pairs that you provide. They serve the same purpose and functionality
+	// as fields in the `metadata` object.
+	// They are distinguished from `metadata` fields in that these can be nested JSON objects (whereas `metadata`
+	// fields are string/string maps only).
 	ExtendedMetadata map[string]interface{} `mandatory:"false" json:"extendedMetadata"`
 
 	// The name of the fault domain the instance is running in.
@@ -79,13 +87,12 @@ type Instance struct {
 	// instances so that they are not on the same physical hardware within a single availability domain.
 	// A hardware failure or Compute hardware maintenance that affects one fault domain does not affect
 	// instances in other fault domains.
-	// If you do not specify the fault domain, the system selects one for you. To change the fault
-	// domain for an instance, terminate it and launch a new instance in the preferred fault domain.
+	// If you do not specify the fault domain, the system selects one for you.
 	// Example: `FAULT-DOMAIN-1`
 	FaultDomain *string `mandatory:"false" json:"faultDomain"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
@@ -108,23 +115,30 @@ type Instance struct {
 	// iqn.2015-02.oracle.boot.
 	// For more information about the Bring Your Own Image feature of
 	// Oracle Cloud Infrastructure, see
-	// Bring Your Own Image (https://docs.cloud.oracle.com/Content/Compute/References/bringyourownimage.htm).
+	// Bring Your Own Image (https://docs.cloud.oracle.com/iaas/Content/Compute/References/bringyourownimage.htm).
 	// For more information about iPXE, see http://ipxe.org.
 	IpxeScript *string `mandatory:"false" json:"ipxeScript"`
 
 	// Specifies the configuration mode for launching virtual machine (VM) instances. The configuration modes are:
-	// * `NATIVE` - VM instances launch with iSCSI boot and VFIO devices. The default value for Oracle-provided images.
+	// * `NATIVE` - VM instances launch with iSCSI boot and VFIO devices. The default value for platform images.
 	// * `EMULATED` - VM instances launch with emulated devices, such as the E1000 network driver and emulated SCSI disk controller.
-	// * `PARAVIRTUALIZED` - VM instances launch with paravirtualized devices using virtio drivers.
+	// * `PARAVIRTUALIZED` - VM instances launch with paravirtualized devices using VirtIO drivers.
 	// * `CUSTOM` - VM instances launch with custom configuration settings specified in the `LaunchOptions` parameter.
 	LaunchMode InstanceLaunchModeEnum `mandatory:"false" json:"launchMode,omitempty"`
 
 	LaunchOptions *LaunchOptions `mandatory:"false" json:"launchOptions"`
 
+	InstanceOptions *InstanceOptions `mandatory:"false" json:"instanceOptions"`
+
+	AvailabilityConfig *InstanceAvailabilityConfig `mandatory:"false" json:"availabilityConfig"`
+
+	PreemptibleInstanceConfig *PreemptibleInstanceConfigDetails `mandatory:"false" json:"preemptibleInstanceConfig"`
+
 	// Custom metadata that you provide.
 	Metadata map[string]string `mandatory:"false" json:"metadata"`
 
-	// Details for creating an instance
+	ShapeConfig *InstanceShapeConfig `mandatory:"false" json:"shapeConfig"`
+
 	SourceDetails InstanceSourceDetails `mandatory:"false" json:"sourceDetails"`
 
 	// System tags for this resource. Each key is predefined and scoped to a namespace.
@@ -133,11 +147,13 @@ type Instance struct {
 
 	AgentConfig *InstanceAgentConfig `mandatory:"false" json:"agentConfig"`
 
-	// The date and time the instance is expected to be stopped / started,  in the format defined by RFC3339.
+	// The date and time the instance is expected to be stopped / started,  in the format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	// After that time if instance hasn't been rebooted, Oracle will reboot the instance within 24 hours of the due time.
 	// Regardless of how the instance was stopped, the flag will be reset to empty as soon as instance reaches Stopped state.
 	// Example: `2018-05-25T21:10:29.600Z`
 	TimeMaintenanceRebootDue *common.SDKTime `mandatory:"false" json:"timeMaintenanceRebootDue"`
+
+	PlatformConfig PlatformConfig `mandatory:"false" json:"platformConfig"`
 }
 
 func (m Instance) String() string {
@@ -147,46 +163,74 @@ func (m Instance) String() string {
 // UnmarshalJSON unmarshals from json
 func (m *Instance) UnmarshalJSON(data []byte) (e error) {
 	model := struct {
-		DedicatedVmHostId        *string                           `json:"dedicatedVmHostId"`
-		DefinedTags              map[string]map[string]interface{} `json:"definedTags"`
-		DisplayName              *string                           `json:"displayName"`
-		ExtendedMetadata         map[string]interface{}            `json:"extendedMetadata"`
-		FaultDomain              *string                           `json:"faultDomain"`
-		FreeformTags             map[string]string                 `json:"freeformTags"`
-		ImageId                  *string                           `json:"imageId"`
-		IpxeScript               *string                           `json:"ipxeScript"`
-		LaunchMode               InstanceLaunchModeEnum            `json:"launchMode"`
-		LaunchOptions            *LaunchOptions                    `json:"launchOptions"`
-		Metadata                 map[string]string                 `json:"metadata"`
-		SourceDetails            instancesourcedetails             `json:"sourceDetails"`
-		SystemTags               map[string]map[string]interface{} `json:"systemTags"`
-		AgentConfig              *InstanceAgentConfig              `json:"agentConfig"`
-		TimeMaintenanceRebootDue *common.SDKTime                   `json:"timeMaintenanceRebootDue"`
-		AvailabilityDomain       *string                           `json:"availabilityDomain"`
-		CompartmentId            *string                           `json:"compartmentId"`
-		Id                       *string                           `json:"id"`
-		LifecycleState           InstanceLifecycleStateEnum        `json:"lifecycleState"`
-		Region                   *string                           `json:"region"`
-		Shape                    *string                           `json:"shape"`
-		TimeCreated              *common.SDKTime                   `json:"timeCreated"`
+		CapacityReservationId     *string                           `json:"capacityReservationId"`
+		DedicatedVmHostId         *string                           `json:"dedicatedVmHostId"`
+		DefinedTags               map[string]map[string]interface{} `json:"definedTags"`
+		DisplayName               *string                           `json:"displayName"`
+		ExtendedMetadata          map[string]interface{}            `json:"extendedMetadata"`
+		FaultDomain               *string                           `json:"faultDomain"`
+		FreeformTags              map[string]string                 `json:"freeformTags"`
+		ImageId                   *string                           `json:"imageId"`
+		IpxeScript                *string                           `json:"ipxeScript"`
+		LaunchMode                InstanceLaunchModeEnum            `json:"launchMode"`
+		LaunchOptions             *LaunchOptions                    `json:"launchOptions"`
+		InstanceOptions           *InstanceOptions                  `json:"instanceOptions"`
+		AvailabilityConfig        *InstanceAvailabilityConfig       `json:"availabilityConfig"`
+		PreemptibleInstanceConfig *PreemptibleInstanceConfigDetails `json:"preemptibleInstanceConfig"`
+		Metadata                  map[string]string                 `json:"metadata"`
+		ShapeConfig               *InstanceShapeConfig              `json:"shapeConfig"`
+		SourceDetails             instancesourcedetails             `json:"sourceDetails"`
+		SystemTags                map[string]map[string]interface{} `json:"systemTags"`
+		AgentConfig               *InstanceAgentConfig              `json:"agentConfig"`
+		TimeMaintenanceRebootDue  *common.SDKTime                   `json:"timeMaintenanceRebootDue"`
+		PlatformConfig            platformconfig                    `json:"platformConfig"`
+		AvailabilityDomain        *string                           `json:"availabilityDomain"`
+		CompartmentId             *string                           `json:"compartmentId"`
+		Id                        *string                           `json:"id"`
+		LifecycleState            InstanceLifecycleStateEnum        `json:"lifecycleState"`
+		Region                    *string                           `json:"region"`
+		Shape                     *string                           `json:"shape"`
+		TimeCreated               *common.SDKTime                   `json:"timeCreated"`
 	}{}
 
 	e = json.Unmarshal(data, &model)
 	if e != nil {
 		return
 	}
+	var nn interface{}
+	m.CapacityReservationId = model.CapacityReservationId
+
 	m.DedicatedVmHostId = model.DedicatedVmHostId
+
 	m.DefinedTags = model.DefinedTags
+
 	m.DisplayName = model.DisplayName
+
 	m.ExtendedMetadata = model.ExtendedMetadata
+
 	m.FaultDomain = model.FaultDomain
+
 	m.FreeformTags = model.FreeformTags
+
 	m.ImageId = model.ImageId
+
 	m.IpxeScript = model.IpxeScript
+
 	m.LaunchMode = model.LaunchMode
+
 	m.LaunchOptions = model.LaunchOptions
+
+	m.InstanceOptions = model.InstanceOptions
+
+	m.AvailabilityConfig = model.AvailabilityConfig
+
+	m.PreemptibleInstanceConfig = model.PreemptibleInstanceConfig
+
 	m.Metadata = model.Metadata
-	nn, e := model.SourceDetails.UnmarshalPolymorphicJSON(model.SourceDetails.JsonData)
+
+	m.ShapeConfig = model.ShapeConfig
+
+	nn, e = model.SourceDetails.UnmarshalPolymorphicJSON(model.SourceDetails.JsonData)
 	if e != nil {
 		return
 	}
@@ -195,16 +239,37 @@ func (m *Instance) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.SourceDetails = nil
 	}
+
 	m.SystemTags = model.SystemTags
+
 	m.AgentConfig = model.AgentConfig
+
 	m.TimeMaintenanceRebootDue = model.TimeMaintenanceRebootDue
+
+	nn, e = model.PlatformConfig.UnmarshalPolymorphicJSON(model.PlatformConfig.JsonData)
+	if e != nil {
+		return
+	}
+	if nn != nil {
+		m.PlatformConfig = nn.(PlatformConfig)
+	} else {
+		m.PlatformConfig = nil
+	}
+
 	m.AvailabilityDomain = model.AvailabilityDomain
+
 	m.CompartmentId = model.CompartmentId
+
 	m.Id = model.Id
+
 	m.LifecycleState = model.LifecycleState
+
 	m.Region = model.Region
+
 	m.Shape = model.Shape
+
 	m.TimeCreated = model.TimeCreated
+
 	return
 }
 

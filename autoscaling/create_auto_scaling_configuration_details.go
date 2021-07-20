@@ -1,17 +1,21 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Autoscaling API
 //
-// APIs for dynamically scaling Compute resources to meet application requirements.
-// For information about the Compute service, see Overview of the Compute Service (https://docs.cloud.oracle.com/Content/Compute/Concepts/computeoverview.htm).
+// APIs for dynamically scaling Compute resources to meet application requirements. For more information about
+// autoscaling, see Autoscaling (https://docs.cloud.oracle.com/Content/Compute/Tasks/autoscalinginstancepools.htm). For information about the
+// Compute service, see Overview of the Compute Service (https://docs.cloud.oracle.com/Content/Compute/Concepts/computeoverview.htm).
+// **Note:** Autoscaling is not available in US Government Cloud tenancies. For more information, see
+// Oracle Cloud Infrastructure US Government Cloud (https://docs.cloud.oracle.com/Content/General/Concepts/govoverview.htm).
 //
 
 package autoscaling
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateAutoScalingConfigurationDetails Creation details for an autoscaling configuration.
@@ -37,8 +41,10 @@ type CreateAutoScalingConfigurationDetails struct {
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
-	// The minimum period of time to wait between scaling actions. The cooldown period gives the system time to stabilize
-	// before rescaling. The minimum value is 300 seconds, which is also the default.
+	// For threshold-based autoscaling policies, this value is the minimum period of time to wait between scaling actions.
+	// The cooldown period gives the system time to stabilize before rescaling. The minimum value is 300 seconds, which
+	// is also the default. The cooldown period starts when the instance pool reaches the running state.
+	// For schedule-based autoscaling policies, this value is not used.
 	CoolDownInSeconds *int `mandatory:"false" json:"coolDownInSeconds"`
 
 	// Whether the autoscaling configuration is enabled.
@@ -66,17 +72,24 @@ func (m *CreateAutoScalingConfigurationDetails) UnmarshalJSON(data []byte) (e er
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.DefinedTags = model.DefinedTags
+
 	m.DisplayName = model.DisplayName
+
 	m.FreeformTags = model.FreeformTags
+
 	m.CoolDownInSeconds = model.CoolDownInSeconds
+
 	m.IsEnabled = model.IsEnabled
+
 	m.CompartmentId = model.CompartmentId
+
 	m.Policies = make([]CreateAutoScalingPolicyDetails, len(model.Policies))
 	for i, n := range model.Policies {
-		nn, err := n.UnmarshalPolymorphicJSON(n.JsonData)
-		if err != nil {
-			return err
+		nn, e = n.UnmarshalPolymorphicJSON(n.JsonData)
+		if e != nil {
+			return e
 		}
 		if nn != nil {
 			m.Policies[i] = nn.(CreateAutoScalingPolicyDetails)
@@ -84,7 +97,8 @@ func (m *CreateAutoScalingConfigurationDetails) UnmarshalJSON(data []byte) (e er
 			m.Policies[i] = nil
 		}
 	}
-	nn, e := model.Resource.UnmarshalPolymorphicJSON(model.Resource.JsonData)
+
+	nn, e = model.Resource.UnmarshalPolymorphicJSON(model.Resource.JsonData)
 	if e != nil {
 		return
 	}
@@ -93,5 +107,6 @@ func (m *CreateAutoScalingConfigurationDetails) UnmarshalJSON(data []byte) (e er
 	} else {
 		m.Resource = nil
 	}
+
 	return
 }

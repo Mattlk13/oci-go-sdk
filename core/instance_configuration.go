@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -14,12 +15,12 @@ package core
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // InstanceConfiguration An instance configuration is a template that defines the settings to use when creating Compute instances.
 // For more information about instance configurations, see
-// Managing Compute Instances (https://docs.cloud.oracle.com/Content/Compute/Concepts/instancemanagement.htm).
+// Managing Compute Instances (https://docs.cloud.oracle.com/iaas/Content/Compute/Concepts/instancemanagement.htm).
 type InstanceConfiguration struct {
 
 	// The OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the compartment
@@ -29,12 +30,12 @@ type InstanceConfiguration struct {
 	// The OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the instance configuration.
 	Id *string `mandatory:"true" json:"id"`
 
-	// The date and time the instance configuration was created, in the format defined by RFC3339.
+	// The date and time the instance configuration was created, in the format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
@@ -42,7 +43,7 @@ type InstanceConfiguration struct {
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
@@ -75,10 +76,14 @@ func (m *InstanceConfiguration) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.DefinedTags = model.DefinedTags
+
 	m.DisplayName = model.DisplayName
+
 	m.FreeformTags = model.FreeformTags
-	nn, e := model.InstanceDetails.UnmarshalPolymorphicJSON(model.InstanceDetails.JsonData)
+
+	nn, e = model.InstanceDetails.UnmarshalPolymorphicJSON(model.InstanceDetails.JsonData)
 	if e != nil {
 		return
 	}
@@ -87,12 +92,17 @@ func (m *InstanceConfiguration) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.InstanceDetails = nil
 	}
+
 	m.DeferredFields = make([]string, len(model.DeferredFields))
 	for i, n := range model.DeferredFields {
 		m.DeferredFields[i] = n
 	}
+
 	m.CompartmentId = model.CompartmentId
+
 	m.Id = model.Id
+
 	m.TimeCreated = model.TimeCreated
+
 	return
 }

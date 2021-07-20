@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Streaming Service API
@@ -9,7 +10,7 @@
 package streaming
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // StreamSummary Summary representation of a stream.
@@ -28,6 +29,9 @@ type StreamSummary struct {
 	// The OCID of the compartment that contains the stream.
 	CompartmentId *string `mandatory:"true" json:"compartmentId"`
 
+	// The OCID of the stream pool that contains the stream.
+	StreamPoolId *string `mandatory:"true" json:"streamPoolId"`
+
 	// The current state of the stream.
 	LifecycleState StreamSummaryLifecycleStateEnum `mandatory:"true" json:"lifecycleState"`
 
@@ -36,6 +40,7 @@ type StreamSummary struct {
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 
 	// The endpoint to use when creating the StreamClient to consume or publish messages in the stream.
+	// If the associated stream pool is private, the endpoint is also private and can only be accessed from inside the stream pool's associated subnet.
 	MessagesEndpoint *string `mandatory:"true" json:"messagesEndpoint"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair that is applied with no predefined name, type, or namespace. Exists for cross-compatibility only.
@@ -62,6 +67,7 @@ const (
 	StreamSummaryLifecycleStateDeleting StreamSummaryLifecycleStateEnum = "DELETING"
 	StreamSummaryLifecycleStateDeleted  StreamSummaryLifecycleStateEnum = "DELETED"
 	StreamSummaryLifecycleStateFailed   StreamSummaryLifecycleStateEnum = "FAILED"
+	StreamSummaryLifecycleStateUpdating StreamSummaryLifecycleStateEnum = "UPDATING"
 )
 
 var mappingStreamSummaryLifecycleState = map[string]StreamSummaryLifecycleStateEnum{
@@ -70,6 +76,7 @@ var mappingStreamSummaryLifecycleState = map[string]StreamSummaryLifecycleStateE
 	"DELETING": StreamSummaryLifecycleStateDeleting,
 	"DELETED":  StreamSummaryLifecycleStateDeleted,
 	"FAILED":   StreamSummaryLifecycleStateFailed,
+	"UPDATING": StreamSummaryLifecycleStateUpdating,
 }
 
 // GetStreamSummaryLifecycleStateEnumValues Enumerates the set of values for StreamSummaryLifecycleStateEnum

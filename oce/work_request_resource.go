@@ -1,7 +1,8 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
-// OceInstance API
+// Oracle Content and Experience API
 //
 // Oracle Content and Experience is a cloud-based content hub to drive omni-channel content management and accelerate experience delivery
 //
@@ -9,7 +10,7 @@
 package oce
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // WorkRequestResource A resource created or operated on by a work request.
@@ -44,6 +45,7 @@ const (
 	WorkRequestResourceActionTypeUpdated    WorkRequestResourceActionTypeEnum = "UPDATED"
 	WorkRequestResourceActionTypeDeleted    WorkRequestResourceActionTypeEnum = "DELETED"
 	WorkRequestResourceActionTypeInProgress WorkRequestResourceActionTypeEnum = "IN_PROGRESS"
+	WorkRequestResourceActionTypeFailed     WorkRequestResourceActionTypeEnum = "FAILED"
 )
 
 var mappingWorkRequestResourceActionType = map[string]WorkRequestResourceActionTypeEnum{
@@ -51,6 +53,7 @@ var mappingWorkRequestResourceActionType = map[string]WorkRequestResourceActionT
 	"UPDATED":     WorkRequestResourceActionTypeUpdated,
 	"DELETED":     WorkRequestResourceActionTypeDeleted,
 	"IN_PROGRESS": WorkRequestResourceActionTypeInProgress,
+	"FAILED":      WorkRequestResourceActionTypeFailed,
 }
 
 // GetWorkRequestResourceActionTypeEnumValues Enumerates the set of values for WorkRequestResourceActionTypeEnum

@@ -4,6 +4,910 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 
+## 45.0.0 - 2021-07-20
+### Added
+- Support for schedules, schedule tasks, REST tasks, operators, S3, and Fusion Apps in the Data Integration service
+- Support for getting available updates and update histories for VM clusters in the Database service
+- Support for downloading network validation reports for Exadata network resources in the Database service
+- Support for patch and upgrade of Grid Infrastructure (GI), and update of DomU OS software for VM clusters in the Database service
+- Support for updating data guard associations in the Database service
+
+### Breaking
+- The property `ModelType` was removed and property `BucketName` was replaced by `BucketSchema` in the models OracleAdwcWriteAttributes and OracleAtpWriteAttributes under the Data Integration service
+- The type for property `Type` was changed from `BaseType` to `*interface{}` for Parameter model under the Data Integration service
+- The type for property `Type` was changed from `*string` to `*interface{}` for ShapeField and NativeShapeField models under the Data Integration service
+- Added extraHeaders parameter to `HTTPRequest` method in OCIRquest interface
+
+## 44.0.0 - 2021-07-13
+### Added
+- Support for the AI Anomaly Detection service
+- Support for retrieving a DNS zone as a zone file in the DNS service
+- Support for querying manual adjustments in the Usage service
+- Support for searching Marketplace listings in the Marketplace service
+- Support for new cluster type 'ODH' in the Big Data service
+- Support for availability domain as an optional parameter when creating VLANs in the Networking service
+- Support for search domain type on DHCP options, to support multi-level domain search in the Networking service
+
+### Breaking
+- Parameter `Tsig` in model `external_master` was removed in the DNS service
+- model `create_custom_table_details`, `create_schedule_report_details`, `custom_table`, `custom_table_collection`, `custom_table_summary`, `saved_schedule_report`, `schedule_report`, `schedule_report_collection`, `schedule_report_summary`, `update_custom_table_details`, `update_schedule_report_details` were removed in the Usage service
+
+## 43.1.0 - 2021-07-06
+### Added
+- Support for order activation in the Organizations service
+- Support for resource principal authorization on Enterprise Manager bridge resources in the Operations Insights service
+- Support for the starter edition license type in the Content and Experience service
+- Support for the Generic Artifacts service's new domain name
+
+## 43.0.0 - 2021-06-29
+### Added
+- Support for the DevOps service
+- Support for configuring network security groups for node pools in the Container Engine for Kubernetes service
+- Support for optionally specifying CPU core count and data storage size when creating autonomous databases in the Database service
+- Support for metastore and initial data asset import/export in the Data Catalog service
+- Support for associating domain names to emails and managing email domain names / DKIM in the Email Delivery service
+- Support for email domain names on senders and suppressions in the Email Delivery service
+- Add multipart download example
+
+### Breaking changes
+- Property `LifecycleState` in model `SenderSummary`'s type was changed from `SenderSummaryLifecycleStateEnum` to `SenderLifecycleStateEnum` 
+  in the Email Delivery service
+- Parameter `SoryBy` in the operation `ListJobExecutions`'s type `ListJobExecutionsSortByEnum`, item `ListJobExecutionsSortByDisplayname`
+  was removed in the Data Catalog service
+
+    
+
+## 42.1.0 - 2021-06-22
+### Added
+- Support for virtual machine and bare metal pluggable databases in the Database service
+
+## 42.0.0 - 2021-06-15
+### Added
+- Support for elastic storage on Exadata Infrastructure resources for Cloud at Customer in the Database service
+- Support for registration and management of target databases in the Data Safe service
+- Support for config on metadata in the Management Dashboard service
+- Support for a new work request operation type for node pool reconciliation events in the Container Engine for Kubernetes service
+- Support for migrating clusters with a public Kubernetes API endpoint which are not integrated with a customer's VCN to a VCN-native cluster in the Container Engine for Kubernetes service
+- Support for getting the spark version of applications, and filtering applications by spark version, in the Data Flow service
+
+### Breaking
+- Propertry `FreeformTags` and `DefinedTags` were removed from the management_dashboard_export_details model in the Management Dashboard service
+
+## 41.2.0 - 2021-06-08
+### Added
+- Support for Java Management service
+- Support for resource principals for the Enterprise Manager bridge resource in Operations Insights service
+- Support for encryptionInTransitType in BootVolumeAttachment and IScsiVolumeAttachment in Core service
+- Support for updating iscsiLoginState for VolumeAttachment in Core service
+- Support for a new type of Source called Import for use with the Export tool in Application Migration service
+- Support for Expect/100-continue HTTP header. Expect headers are added by default for all PUT/POST operations
+
+## 41.1.0 - 2021-06-01
+### Added
+- Support for configuration of autonomous database KMS keys in the Database service
+- Support for creating database software images with any supported RUs in the Database service
+- Support for creating database software images from an existing database home in the Database service
+- Support for listing all NSGs associated with a given VLAN in the Networking service
+- Support for a duration windows, task failure reasons, and next execution times on scheduled tasks in the Logging Analytics service 
+- Support for calling Oracle Cloud Infrastructure services in the sa-vinhedo-1 region
+
+## 41.0.0 - 2021-05-25
+### Added
+- Support for the Generic Artifacts service
+- Support for the Bastion service
+- Support for reading secrets by name in the Vault service
+- Support for the isDynamic field when listing definitions in the Limits service
+- Support for getting billable image sizes in the Compute service
+- Support for getting Automatic Workload Repository (AWR) data on external databases in the Database Management service
+- Support for the VM.Standard.E3.Flex flexible compute shape with customizable OCPUs and memory on notebooks in the Data Science service
+- Support for container images and generic artifacts billing in the Registry service
+- Support for the HCX Enterprise add-on in the VMware Solution service
+
+### Breaking changes
+- Property `Name` of Model `SupportedSkuSummary` type changed from `SupportedSkuSummaryNameEnum` to `SkuEnum` in the VMware Solution service
+
+## 40.4.0 - 2021-05-18
+### Added
+- Support for spark-submit compatible options in the Data Flow service
+- Support for Object Storage as a configuration source in the Resource Manager service
+  
+### Fixed
+- Fixed UploadManager creates too many small parts issue
+
+## 40.3.0 - 2021-05-11
+### Added
+- Support for creating notebook sessions with larger block volumes in the Data Science service
+- Support for database maintenance run patch modes in the Database service
+
+## 40.2.0 - 2021-05-04
+### Added
+- Support for the Operator Access Control service
+- Support for the Service Catalog service
+- Support for the AI Language service
+- Support for autonomous database on Exadata Cloud at Customer infrastructure patching in the Database service
+- Added default retry policy, which retries on 409(IncorrectState), 429(TooManyRequests) and any 5XX errors except 
+  501(MethodNotImplemented), and uses exponential backoff
+
+
+
+
+## 40.1.0 - 2021-04-27
+### Added
+- VCN id parameters were moved from being required to being optional on all list operations in the Networking service
+- Support for RACs (real application clusters) for external container, non-container, and pluggable databases in the Database service
+- Support for data masking in the Cloud Guard service
+- Support for opting out of DNS records during instance launch, as well as attaching secondary VNICs, in the Compute service
+- Support for mutable sizes on cluster networks in the Autoscaling service
+- Support for auto-tiering on buckets in the Object Storage service
+
+
+
+
+## 40.0.0 - 2021-04-20
+### Added
+- Support for opting in/out of live migration on instances in the Compute service
+- Support for enabling/disabling Operations Insights on external non-container and external pluggable databases in the Database service
+- Support for a GraphStudio URL as a connection URL on databases in the Database service
+- Support for adding customer contacts on autonomous databases in the Database service
+- Support for name annotations on harvested objects in the Data Catalog service
+- Fixed retry doesn't work once the request is with binary request body issue, for detail, can refer https://github.com/oracle/oci-go-sdk/blob/master/oci.go#L271
+
+### Breaking changes
+- Added a method `BinaryRequestBody()` to interface `OCIRetryableRequest`, any data type inherit the interface has to implement the method
+
+## 39.0.0 - 2021-04-13
+### Added
+- Support for the Database Migration service
+- Support for the Networking Topology service
+- Support for getting the id of peered VCNs on local peering gateways in the Networking service
+- Support for burstable instances in the Compute service
+- Support for preemptible instances in the Compute service
+- Support for fractional resource usage and availability in the Limits service
+- Support for streaming analytics in the Service Connector Hub service
+- Support for flexible routing inside DRGs to enable packet flow between any two attachments in the Networking service 
+- Support for routing policy to customize dynamic import/export of routes in the Networking service
+- Support for IPv6, including on FastConnect and IPsec resources, in the Networking service
+- Support for request validation policies in the API Gateway service
+- Support for RESP-compliant (e.g. REDIS) response caches, and for configuring response caching per-route in the API Gateway service
+- Support for flexible billing in the VMWare Solution service
+- Support for new DNS format for the Web Application Acceleration and Security service
+- Support for configuring APM tracing on applications and functions in the Functions service
+- Support for Enterprise Manager external databases and Management Agent Service managed external databases and hosts in the Operations Insights service
+- Support for getting cluster cache metrics for RAC CDB managed databases in the Database Management service
+
+### Breaking Changes
+- Property `IsInternetAccessAllowed` in model `CreateIpv6Details` was removed in the Networking service
+- Property `Ipv6CidrBlock` in model `CreateVcnDetails` was removed in the Networking service
+- Property `IsInternetAccessAllowed` and `PublicIpAddress` in model `Ipv6` were removed in the Networking service
+- Property `Ipv6PublicCidrBlock` in model `Subnet` was removed in the Networking service
+- Property `IsInternetAccessAllowed` in model `UpdateIpv6Details` was removed in the Networking service
+- Property `Ipv6CidrBlock` and `Ipv6PublicCidrBlock` in model `Vcn` were removed in the Networking service
+- Property `CurrentSku` in model `CreateEsxiHostDetails` was added in the VMWare Solution service
+- Property `InitialSku` in model `CreateSddcDetails` was added in the VMWare Solution service
+- Model `DatabaseInsightSummary` type was changed from struct to interface in the Operations Insights service
+
+## 38.1.0 - 2021-04-06
+### Added
+- Support for scheduling the suspension and resumption of compute instance pools based on predefined schedules in the Autoscaling service
+- Support for database software images for Cloud@Customer in the Database service
+- Support for OCIC IDCS authorization details in the Application Migration service
+- Support for cross-region asynchronous volume replication in the Block Storage service
+- Support for SDK generation in the API Gateway service
+- Support for container image signing in the Registry service
+- Support for cluster features as a part of the Container Engine for Kubernetes service
+- Support for filtering dedicated virtual machine hosts by remaining memory and OCPUs in the Compute service
+- Support for read/write-any object from buckets using pre-authenticated requests in the Object Storage service
+- Support for restricting pre-authenticated requests by prefix in the Object Storage service
+- Support for route filtering on public virtual circuits in the Virtual Networking service
+
+## 38.0.0 - 2021-03-30
+### Added
+- Support for the Vulnerability Scanning service
+- Support for vSphere 7.0 in the VMware Solution service
+- Support for forecasting in the Usage service
+- Support for viewing, searching, and modifying parameters for on-premise Oracle databases in the Database Management service
+- Support for listing tablespaces of managed databases in the Database Management service
+- Support for cross-regional replication of keys in the Key Management service
+- Support for highly-available database systems in the MySQL Database service
+- Support for Oracle Enterprise Manager bridges, source auto-association, source event type mappings, and plugins to upload data in the Logging Analytics service
+
+### Breaking changes
+- Model `Forecast`'s Enum value was changed from `ForecastForcastTypeEnum` to `ForecastForecastTypeEnum` in the Usage service
+- Operation `ListLookups`'s Enum value was changed from `ListLookupsStatusSuccesful` to `ListLookupsStatusSuccessful` in the
+Logging Analytics service
+
+## 37.0.0 - 2021-03-23
+### Added
+- Support for the Network Load Balancing service
+- Support for maintenance runs on autonomous databases in the Database service
+- Support for announcement preferences in the Announcements service
+- Support for domain claiming in the Organizations service
+- Support for saved reports in the Usage service
+- Support for the HeatWave in-memory analytics accelerator in the MySQL Database service
+- Support for community applications in the Marketplace service
+- Support for capacity reservations in the Compute service
+
+### Breaking changes
+- Operation `ListWorkRequests`'s param `Status`'s type was changed from `[]ListWorkRequestsStatusEnum` to 
+`[]WorkRequestStatusEnum` in the Analytics service
+- Operation `RequestSummarizedProblems`'s parameter `ListDimensions`'s type was changed from 
+`[]RequestSummarizedProblemsListDimensionsEnum` to `[]ProblemDimensionEnum` in the Cloudguard service
+- Operation `RequestSummarizedResponderExecutions`'s parameter `ResponderExecutionsDimensions`'s type was changed from 
+`[]RequestSummarizedResponderExecutionsResponderExecutionsDimensionsEnum` to `[]ResponderDimensionEnum` in the Cloudguard service
+- Operation `ListClusters`'s parameter `LifecycleState`'s type was changed from `[]ListClustersLifecycleStateEnum` to 
+`[]ClusterLifecycleStateEnum` in the ContainerEngine service
+- Model `Attribute`'s property `AssociatedRuleTypes`'s type was changed from `[]AttributeAssociatedRuleTypesEnum` to 
+`[]RuleTypeEnum` in the Datacatalog service
+- Model `AttributeSummary`'s property `AssociatedRuleTypes`'s type was changed from `[]AttributeSummaryAssociatedRuleTypesEnum`
+to `[]RuleTypeEnum` in the Datacatalog service
+- Operation `ListCustomProperties`'s parameter `DataTypes`'s type was changed from `[]ListCustomPropertiesDataTypesEnum` to 
+`[]CustomPropertyDataTypeEnum` in the Datacatalog service
+- Operation `Recommendations`'s parameter `RecommendationType`'s type was changed from `[]RecommendationsRecommendationTypeEnum`
+to `[]RecommendationTypeEnum` in the Datacatalog service
+- Operation `ListListings`'s parameter `Pricing`'s type was changed from `[]ListListingsPricingEnum`  to `[]PricingTypeEnumEnum`
+in the Marketplace service
+- Operation `ListListings`'s parameter `ListingTypes`'s type was changed from `[]ListListingsListingTypesEnum`  to `[]ListingTypeEnum`
+in the Marketplace service
+- Operation `ListAddressLists`'s parameter `LifecycleState`'s type was changed from `[]ListAddressListsLifecycleStateEnum` to
+`LifecycleStatesEnum` in the Waas service
+- Operation `ListCertificates`'s parameter `LifecycleState`'s type was changed from `[]ListCertificatesLifecycleStateEnum` to 
+`[]LifecycleStatesEnum` in the Waas service
+- Operation `ListCustomProtectionRules`'s parameter `LifecycleState`'s type was changed from `[]ListCustomProtectionRulesLifecycleStateEnum`
+to `[]LifecycleStatesEnum` in the Waas service
+- Operation `ListHttpRedirects`'s parameter `LifecycleState`'s type was changed from `[]ListHttpRedirectsLifecycleStateEnum`
+to `[]LifecycleStatesEnum` in the Waas service
+- Operation `ListWaasPolicies`'s parameter `LifecycleState`'s type was changed from `[]ListWaasPoliciesLifecycleStateEnum` to
+`LifecycleStatesEnum` in the Waas service
+- Operation `ListWorkRequestErrors`'s parameter `CompartmentId` was removed in the Tenantmanagercontrolplane Service
+- Model `Ipv6`'s property `VnicId` was tagged as mandatory in the VCN service
+- Model `CreateIpv6Details`'s property `VnicId` was tagged as mandatory in the VCN service
+
+## 36.2.0 - 2021-03-16
+### Added
+- Support for routing policies and HTTP2 listener protocols in the Load Balancing service
+- Support for model deployments in the Data Science service
+- Support for private clusters in the Container Engine for Kubernetes service
+- Support for updating an instance's usage type in the Content and Experience service
+
+## 36.1.0 - 2021-03-09
+### Added
+- Support for the Application Performance Monitoring service
+- Support for the Golden Gate service
+- Support for SMS subscriptions in the Notifications service
+- Support for friendly-formatted messages in the Service Connector Hub service
+- Support for attaching and detaching instances to instance pools in the Autoscaling service
+
+## 36.0.0 - 2021-03-02
+### Added
+- Support for pipelines, pipeline tasks, and favorites in the Data Integration service
+- Support for publishing tasks to OCI Data Flow in the Data Integration service
+- Support for clones in the File Storage service
+
+### Breaking changes
+- Changed model `UniqueKey` type from struct to interface in the Data Integration service
+- Removed property `ModelType` from Model `PrimaryKey` in the Data Integration service
+- Changed model `ForeignKey` property `ReferenceUniqueKey` type from `*UniqueKey` to `UniqueKey` in the Data Integration service
+- Removed KeyModelTypeEnum enum type `PRIMARY_KEY` and `UNIQUE_KEY` from model `key` in the Data Integration service
+
+## 35.3.0 - 2021-02-23
+### Added
+- Support for the OCI Registry service
+- Support for exporting an existing running VM, or a copy of VM, into a VMDK, QCOW2, VDI, VHD, or OCI formatted image in the Compute service
+- Support for platform configurations on instances in the Compute service
+- Support for providing target tags and target compartments on profiles in the Optimizer service
+- Support for the 'Fix it' feature in the Optimizer service
+
+## 35.2.0 - 2021-02-16
+### Added
+- Support for scan DNS names and zone ids on database system, cloud VM cluster, and autonomous Exadata infrastructure responses in the Database service
+- Support for specifying ACL rules to limit ingress into public load balancers in the Integration service
+- Support for Cloud at Customer as a source type in the Application Migration service
+- Support for selective migration of specific resources in the Application Migration service
+
+## 35.1.0 - 2021-02-09
+### Added
+- Support for the Database Management service
+- Support for setting an offset for budget processing in the Budgets service
+- Support for enabling and disabling Oracle Cloud Agent plugins in the Compute service
+- Support for listing available plugins and for getting the status of plugins in the Oracle Cloud Agent service
+- Support for one-off patching in autonomous transaction processing - dedicated databases in the Database service
+- Support for additional database upgrade options in the Database service
+- Support for glossary term recommendations in the Data Catalog service
+- Support for listing errata in the OS Management service
+
+## 35.0.0 - 2021-02-02
+### Added
+- Support for checking if a contact for Exadata infrastructure is valid in My Oracle Support in the Database service
+- Support for checking if Exadata infrastructure is in a degraded state in the Database service
+- Support for updating the operating system on a VM cluster in the Database service
+- Support for external databases in the Database service
+- Support for uploading objects to the infrequent access storage tier in the Object Storage service
+- Support for changing the storage tier of existing objects in the Object Storage service
+- Support for private templates in the Resource Manager service
+- Support for multiple encryption domains on IPSec tunnels in the Networking service
+
+### Breaking changes
+- Header Parameter `Etag` in Operation `ListAppCatalogListingResourceVersions` response was removed from the Core service
+- Property `VnicId` in model `Ipv6` was removed from from the Core service
+- Const `GetObjectArchivalStateAvailable` was removed from operation `GetObject` response from the Object Storage service
+
+## 34.0.0 - 2021-01-26
+### Added
+- Support for creating, managing, and using asymmetric keys in the Key Management service
+- Support for peer ACD unique names in Exadata Cloud at Customer in the Database service
+- Support for ACLs on autonomous databases in Exadata Cloud at Customer Data Guard in the Database service
+- Support for drift detection on individual resources of a stack in the Resource Manager service
+- Support for private access channels and vanity URLs in the Analytics Cloud service
+- Support for updating load balancer shapes in the Blockchain Platform service
+- Support for assigning volume backup policies to volume groups in the Block Volume service
+
+### Breaking changes
+- Property `IdcsAccessToken` in model `CreateBlockchainPlatformDetails` changed from `optional` to `required` in the Blockchain Platform service
+- Const `WrappedImportKeyWrappingAlgorithmRsaOaepSha256` was removed from model `WrappedImportKey` in the Key Management service
+
+## 33.0.0 - 2021-01-19
+### Added
+- Support for Logging Analytics as a target in the Service Connector Hub service
+- Support for lookups, agent collection warnings, task commands, and data archive/recall in the Logging Analytics service
+
+### Fixed
+- Fixed a bug in the endpoint used for the Management Dashboard service
+
+### Breaking changes
+- Parameter `SortBy` type in request `ListMetaSourceTypesRequest` changed from `*string` to `ListMetaSourceTypesSortByEnum` in the Logging Analytics service
+- Parameter `SortBy` type in request `ListParserFunctionsRequest` changed from `*string` to `ListParserFunctionsSortByEnum` in the Logging Analytics service
+- Parameter `SortBy` type in request `ListParserMetaPluginsRequest` changed from `*string` to `ListParserMetaPluginsSortByEnum` in the Logging Analytics service
+- Parameter `SortBy` type in request `ListSourceLabelOperatorsRequest` changed from `*string` to `ListSourceLabelOperatorsSortByEnum` in the Logging Analytics service
+- Parameter `SortBy` type in request `ListSourceMetaFunctionsRequest` changed from `*string` to `ListSourceMetaFunctionsSortByEnum` in the Logging Analytics service
+- Model `UpdateScheduledTaskDetails` type changed from struct to interface
+- Model `ScheduledTask` type changed from struct to interface in the Logging Analytics service
+
+## 32.0.0 - 2021-01-12
+### Added
+- Support for auto-scaling in the Big Data service
+- Documentation fixes for the Logging Search service
+
+### Breaking changes
+- Removed `NodeLifecycleStateStarting` and `NodeLifecycleStateStopping` from the model of `NodeLifecycleStateEnum` in the Big Data service
+- Removed `BdsInstanceLifecycleStateUpdatingInfra` from `BdsInstanceLifecycleStateEnum` from the model of `BdsInstance` in the Big Data service
+
+## 31.0.0 - 2020-12-15
+### Added
+- Support for filtering listKeys based on KeyShape in KeyManagement service
+- Support for the Oracle Roving Edge Infrastructure service
+- Support for flexible ShapeDetails in Load Balancer service
+- Support for listing of harvested Rules, additional filtering for Logical Entity list calls in Data Catalog service
+- Support second level domain for audit SDK
+- Support for listing flex components in Database service
+- Support for APEX service for ADBS on OCI console for Database service
+- Support for Customer-Managed Key features as a part of the Database service
+- Support for Github configuration source provider as part of the Resource Manager service
+
+### Breaking changes
+- Removed deprecated API `CreateAutonomousDataWarehouse` from Database service
+- Removed deprecated API `CreateAutonomousDataWarehouseBackup` from Database service
+- Removed deprecated API `DeleteAutonomousDataWarehouse` from Database service
+- Removed deprecated API `GenerateAutonomousDataWarehouseWallet` from Database service
+- Removed deprecated API `GetAutonomousDataWarehouse` from Database service
+- Removed deprecated API `GetAutonomousDataWarehouseBackup` from Database service
+- Removed deprecated API `ListAutonomousDataWarehouseBackups` from Database service
+- Removed deprecated API `ListAutonomousDataWarehouses` from Database service
+- Removed deprecated API `RestoreAutonomousDataWarehouse` from Database service
+- Removed deprecated API `StartAutonomousDataWarehouse` from Database service
+- Removed deprecated API `StopAutonomousDataWarehouse` from Database service
+- Removed deprecated API `UpdateAutonomousDataWarehouse` from Database service
+- Method GetLifecycleState()'s return type in the interface `ConfigurationSourceProviderSummary` was changed from 
+`ConfigurationSourceProviderSummary` to `ConfigurationSourceProviderLifecycleStateEnum`
+
+## 30.1.0 - 2020-12-08
+### Added
+- Support for Integration Service custom endpoint feature
+- Support for metadata field in IdentityProvider Get and List response
+- Support for fine-grained data analysis and improved SQL insights
+- Support for ADB Dedicated - ORDS and SSL cert rotation at AEI
+- Support for Maintenance Schedule feature for Exadata Infrastructure resources for ExaCC
+
+## 30.0.0 - 2020-12-01
+### Added
+- Support for calling Oracle Cloud Infrastructure services in the sa-santiago-1 region
+- Support for peer and OSN resources, as well as retry tokens, in the - Blockchain Platform service
+- Support for getting the availability status of management agents in the Management Agent service
+- Support for the on-prem-connector resource type in the Data Safe service
+- Support for service channels in the MySQL Database service
+- Support for getting the creation type of backups, and for filtering backups by creation type in the MySQL Database service
+
+### Breaking changes
+- Update property `IsEnabled` in model `EnableDataSafeConfigurationDetails` of service `datasafe`
+
+## 29.0.0 - 2020-11-17
+### Added
+- Support for specifying memory for AMD E3 shapes during node pool creation and update in the Container Engine for Kubernetes service
+- Support for upgrading a database on a VM database system in the Database service
+- Support for listing autonomous database clones in the Database service
+- Support for Data Guard with autonomous container databases on Exadata Cloud at Customer in the Database service
+- Support for getting the last login time of a user in the Identity service
+- Support to bulk editing tags on resources in the Identity service
+
+### Breaking changes
+- Models `AgentUpload`, `Attribute`, `CreateNamespaceDetails`, `FieldMap`, `GenerateAgentObjectNameDetails`, 
+`LogAnalytics`, `LogAnalyticsCollectionWarning`, `LogAnalyticsSummary`, `OutOfBoxEntityTypeDetails`, `Query`, 
+`QueryWorkRequestResource`, `RegisterEntityTypesDetails`, `ServiceTenancy`, `StringListDetails` and property 
+`SortOrdersEnum` are removed in loganalytics service
+- Property 'Id' type changed from *interface{} to *string of model `LogAnalyticsParserFilter` in loganalytics service
+- Property `mappingAbstractCommandDescriptorName` key `CUSLTER_SPLIT` and value `AbstractCommandDescriptorNameCuslterSplit`
+were changed to `CLUSTER_SPLIT` and `AbstractCommandDescriptorNameClusterSplit` in loganalytics service
+
+## 28.0.0 - 2020-11-10
+### Added
+- Support for the 21C autonomous database version in the Database service
+- Support for creating a Data Guard association with a standby database from a database software image in the Database service
+- Support for specifying a TDE wallet password when creating a database or database system in the Database service
+- Support for enabling access control lists for autonomous databases on Exadata Cloud At Customer in the Database service
+- Support for private DNS resolvers, resolver endpoints, and views in the DNS service
+- Support for getting a VCN and resolver association in the Networking service
+- Support for additional parameters when updating subnets and VLANs in the Networking service
+- Support for analytics clusters (database accelerators) in the MySQL Database service
+- Support for migrations to Java Cloud Service and Oracle Weblogic Server instances that use existing databases in the Application Migration service
+- Support for specifying reserved IPs when creating load balancers in the Load Balancing service
+- Fix once request header content-length is 0, request body is not nil, then send chunked-encoding header issue
+
+### Breaking changes
+- Parameter `LifecycleState` type in `listMigrations` API from applicationmigration service is changed to `ListMigrationsLifecycleStateEnum`
+- Parameter `LifecycleState` type in `listSources` API from applicationmigration service is changed to `ListSourcesLifecycleStateEnum`
+
+## 27.3.0 - 2020-11-03
+### Added
+- Support for calling Oracle Cloud Infrastructure services in the uk-cardiff-1 region
+- Support for the Organizations service
+- Support for the Optimizer service
+- Support for tenancy ID and name on responses in the Usage service
+- Support for object versioning in object lifecycle management in the Object Storage service
+- Support for specifying a syslog URL for applications in the Functions service
+- Support for creation of always-free NoSQL database tables in the NoSQL Database service
+
+## 27.2.0 - 2020-10-27
+### Added
+- Support for the Compute Instance Agent service
+- Support for key store resources and operations in the Database service
+- Support for specifying a key store when creating autonomous container databases in the Database service
+
+## 27.1.0 - 2020-10-20
+### Added
+- Support for the Operations Insights service
+- Support for updating autonomous databases to enable/disable Operations Insights service integration, in the Database service
+- Support for the NEEDS_ATTENTION lifecycle state on database systems in the Database service
+- Support for HCX in the VMware Solutions service
+
+## 27.0.0 - 2020-10-13
+### Added
+- Support for API definitions in the API Gateway service
+- Support for pattern-based logical entities, namespace-bound custom properties, and faceted search in the Data Catalog service
+- Support for autonomous Data Guard on autonomous infrastructure in the Database service
+- Support for creating a Data Guard association on an existing standby database home in the Database service
+- Support for upgrading cloud VM cluster grid infrastructure in the Database service
+- Support for applying same retry policy across multiple requests in the same service
+- Support for resource principal v1.1 authentication.
+
+### Breaking changes
+- Removed property `IsQuickStart` from model `LogSavedSearch`, `LogSavedSearchSummary`, `UpdateLogSavedSearchDetails` and 
+`CreateLogSavedSearchDetails` in logging service.
+- Removed LogSavedSearchLifecycleStateEnum `DELETED` in logging service
+
+## 26.0.0 - 2020-10-06
+### Added
+- Support for calling Oracle Cloud Infrastructure services in the me-dubai-1 region
+- Support for rotating keys on autonomous container databases and autonomous databases in the Database service
+- Support for cloud Exadata infrastructure and cloud VM clusters in the Database service
+- Support for controlling the display of tax banners in the Marketplace service
+- Support for application references, patch changes, generic JDBC and MySQL data asset types, and publishing tasks to OCI Dataflow in the Data Integration service
+- Support for disabling the legacy Instance Metadata endpoints v1 in the Compute service
+- Support for instance configurations specifying instance options in the Compute Management service
+
+### Breaking changes
+- Removed model `TypedNamePatternRule` method `UnmarshalJSON` in dataintegration service.
+
+## 25.2.0 - 2020-09-29
+### Added
+- Support for specifying custom content dispositions when downloading objects in the Object Storage service
+- Support for the “bring your own IP address” feature in the Virtual Networking service
+- Support for updating the tags of instance console connections in the Compute service
+- Support for custom SSL certificates on gateways in the API Gateway service
+
+## 25.1.0 - 2020-09-22
+### Added
+- Support for software keys in the Key Management service
+- Support for customer contacts on Exadata Cloud at Customer in the Database service
+- Support for updating open modes and permission levels of autonomous databases in the Database service
+- Support for flexible memory on VM instances in the Compute and Compute Management services
+
+## 25.0.0 - 2020-09-15
+### Added
+- Support for the Cloud Guard service
+- Support for specifying desired consumption models when creating instances in the Integration service
+- Support for dynamic shapes in the Load Balancing service
+- Support for allowing clients to return their currently configured endpoint
+- Support for running existing code/samples which call the SDK in Cloud Shell without any changes
+- Support for dumping request/response body in SDK logging error for 4XX/5XX errors
+- Support for Go Modules
+
+### Breaking changes
+- All oci-go-sdk imports need to add specific major version for go module users, for more information please refer README.md
+- Method `AuthType()` was added to the interface `ConfigurationProvider`, any interface/struct that inherits the interface is expected to implement AuthType()
+- Client end logging level was updated from debug to info level for errors in `client.HTTPClient.Do(request)`
+
+## 24.3.0 - 2020-09-08
+### Added
+- Support for Logging Service
+- Support for Logging Analytics Service
+- Support for Logging Search Service
+- Support for Logging Ingestion Service
+- Support for Management Agent Cloud Service
+- Support for Management Dashboard Service
+- Support for Service Connector Hub service
+- Support for Policy based Request/Response transformation in the API Gateway Service
+- Support for sending diagnostic interrupt to a VM instance in the Compute Service
+- Support for custom Database Software Images in the Database Service
+- Support for getting and listing container database patches for Autonomous Container Database resources in the Database Service
+- Support for updating patch id on maintenance run for Autonomous Container Database resources in the Database Service
+- Support for searching Oracle Cloud resources across tenancies in the Search Service
+- Documentation update for Logging Policies in the API Gateway service
+
+## 24.2.0 - 2020-09-01
+### Added
+- Support for calling Oracle Cloud Infrastructure services in the ap-chiyoda-1 region
+- Support for VM database cloning in the Database service
+- Support for the MAINTENANCE_IN_PROGRESS lifecycle state on database systems, VM clusters, and Cloud Exadata in the Database service
+- Support for provisioning refreshable clones in the Database service
+- Support for new options on listeners and backend sets for specifying SSL protocols, SSL cipher suites, and server ordering preferences in the Load Balancing service
+- Support for AMD flexible shapes with configurable CPU in the Container Engine for Kubernetes service
+- Support for network sources in authentication policies in the Identity service
+
+## 24.1.0 - 2020-08-18
+### Added
+- Support for custom boot volume size and other node pool updates in the Container Engine for Kubernetes service
+- Support for Data Guard on Exadata Cloud at Customer VM clusters in the Database service
+- Support for stopping VM instances after scheduled maintenance or hypervisor reboots in the Compute service
+- Support for creating and managing private endpoints in the Data Flow service
+- Fix upload manager upload extreme large file out of memory issue
+- Temporarily remove go mod feature
+
+## 24.0.0 - 2020-08-11
+### Added
+- Support for autonomous json databases in the Database service
+- Support for cleaning up uncommitted multipart uploads in the Object Storage service
+- Support for additional list API filters in the Data Catalog service
+- Support for Go SDK logging to file 
+- Support for Go Modules
+
+### Breaking changes
+- Some unusable region enums were removed from the Support Management service
+- `CreateIncidentRequest` parameter `OpcRetryToken` was removed from the Support Management service
+
+## 23.0.0 - 2020-08-04
+### Added
+- Support for calling Oracle Cloud Infrastructure services in the uk-gov-cardiff-1 region
+- Support for creating and managing private endpoints in the Data Flow service
+- Support for changing instance shapes and restarting nodes in the Big Data service
+- Support for additional versions (for example CSQL) in the Big Data service
+- Support for creating stacks from compartments in the Resource Manager service
+
+### Breaking changes
+- Updated the property of `LifeCycleDetails` to `LifecycleDetails` from the model of `BlockchainPlatformSummary` and `BlockchainPlatformByHostname` in the blockchain service
+
+## 22.0.0 - 2020-07-28
+### Added
+- Support for calling Oracle Cloud Infrastructure services in the us-sanjose-1 region
+- Support for PKCS#8 format API Keys
+- Support for updating the fault domain and launch options of VM instances in the Compute service
+- Support for image capability schemas and schema versions in the Compute service
+- Support for 'Patch Now' maintenance runs for autonomous Exadata infrastructure and autonomous container database resources in the Database service
+- Support for automatic performance and cost tuning on volumes in the Block Storage service
+
+### Breaking changes
+- Removed the accessToken field from the GitlabAccessTokenConfigurationSourceProvider model in the Resource Manager service
+
+## 21.4.0 - 2020-07-21
+### Added
+- Support for license types on instances in the Content and Experience service
+
+## 21.3.0 - 2020-07-14
+### Added
+- Support for the Blockchain service
+- Support for failing over an autonomous database that has Data Guard enabled in the Database service
+- Support for switching over an autonomous database that has Data Guard enabled in the Database service
+- Support for git configuration sources in the Resource Manager service
+- Support for optionally specifying a VCN id on list operations of DHCP options, subnets, security lists, route tables, internet gateways, and local peering gateways in the Networking service
+
+## 21.2.0 - 2020-07-07
+### Added
+- Support for registering and deregistering autonomous dedicated databases with Data Safe in the Database service
+- Support for switching between non-private-endpoints and private endpoints on autonomous databases in the Database service
+- Support for returning group names when listing identity provider groups in the Identity service
+- Support for server-side object re-encryption in the Object Storage service
+- Support for private endpoint (ingress) and public endpoint whitelisting in the Analytics Cloud service
+
+### Fixed
+- Fixed a bug where setting a Content-Type header twice in the same request
+
+## 21.1.0 - 2020-06-30
+### Added
+- Support for the Usage service
+- Support for the VMware Provisioning service
+- Support for applying one-off patches to databases in the Database service
+- Support for layer-2 virtualization features on vlans in the Networking service
+- Support for all AttachVolumeDetails and ParavirtualizedAttachVolumeDetails properties on instance configurations in the Compute Management service
+- Support for setting HTTP header size and allowing invalid characters in HTTP request headers in the Load Balancing service
+
+## 21.0.0 - 2020-06-23
+### Added
+- Support for the Data Integration service
+- Support for updating database home IDs on databases in the Database service
+- Support for backing up autonomous databases on Cloud at Customer in the Database service
+- Support for managing autonomous VM clusters on Cloud at Customer in the Database service
+- Support for accessing data assets via private endpoints in the Data Catalog service
+- Support for dependency archive zip files to be specified for use by applications in the Data Flow service
+
+### Breaking changes
+- Property `LifecycleState` type changed from `JobLifecycleStateEnum` to `ListJobsLifecycleStateEnum` in the Data Catalog service
+- Property `JobType` type changed from `JobTypeEnum` to `ListJobsJobTypeEnum` in the Data Catalog service
+
+## 20.1.0 - 2020-06-16
+### Added
+- Support for creating a new database from an existing database based on a given timestamp in the Database service
+- Support for enabling archive log backups of databases in the Database service
+- Support for returning the database version on autonomous container databases in the Database service
+- Support for the new DNS format of the Data Transfer service
+- Support for scheduled autoscaling, which allows for scaling actions triggered at particular times based on CRON expressions, in the Compute Autoscaling service
+- Support for filtering of list APIs for groups, identity providers, identity provider groups, compartments, dynamic groups, network sources, policies, and users by name or lifecycle state in the Identity Service
+
+## 20.0.0 - 2020-06-09
+### Added
+- Support for returning the database version of backups in the Database service
+- Support for patching on Exadata Cloud at Customer resources in the Database service
+- Support for new lifecycle substates on instances in the Digital Assistant service
+- Support for file servers in the Integration service
+- Support for deleting non-empty tag namespaces and bulk deleting tags in the Identity service
+- Support for bulk move and bulk delete of resources by compartment in the Identity service
+- Support for allowing config file location to be set via env var
+
+### Breaking changes
+- Updated property DataStorageSizeInTBs type from *int to *float64 in the database service
+- Removed state 'OFFLINE' and added 'DISCONNECTED' for property ExadataInfrastructureLifecycleStateEnum in database service
+
+
+## 19.4.0 - 2020-06-02
+### Added
+- Support for optionally supplying a signature when deleting an agreement in the Marketplace service
+- Support for launching paid listings in non-US regions in the Marketplace service
+- Support for returning the image id of packages in the Marketplace service
+- Support for calling Oracle Cloud Infrastructure services in the ap-chuncheon-1 region
+- Support security-token based authentication for all services
+
+
+## 19.3.0 - 2020-05-18
+### Added
+- Support for returning the private IP of a private endpoint database in the Database service
+- Support for native JWT validation in the API Gateway service
+
+
+## 19.2.0 - 2020-05-12
+### Added
+- Support for drift detection in the Resource Manager service
+
+
+## 19.1.0 - 2020-05-05
+### Added
+- Support for updating the license type of database systems in the Database service
+- Support for updating the version of 19c autonomous databases in the Database service
+- Support for backup and restore functionality in the Key Management service
+- Support for reports in the Marketplace service
+- Support for calling Oracle Cloud Infrastructure services in the ap-hyderabad-1 region
+
+## 19.0.0 - 2020-04-28
+### Added
+- Support for the MySQL Database service
+- Support for updating the database home of a database in the Database service
+- Support for government regions in the Marketplace service
+- Support for starting and stopping instances in the Integration service
+- Support for installing Windows updates in the OS Management service
+
+### Breaking changes
+- Removed the models of `UpdatablePackageSummary`, `ManagedInstanceUpdateDetails` and the header parameter `etag` from `WorkRequestErrorsResponse` and `WorkRequestLogsResponse` in the osmanagement service
+
+## 18.0.0 - 2020-04-21
+### Added
+- Support for the Data Safe service
+- Support for the Incident Management service
+- Support for showing which database versions support always-free in the Database service
+- Support in instance configurations for flex shapes, dedicated VM hosts, encryption in transit, and KMS keys in the Compute Autoscaling service
+- Support for server-side object encryption using a customer-provided encryption key in the Object Storage service
+- Support for specifying maintenance preferences while launching and updating Exadata Database systems in the Database service
+- Support for flexible-shaped VM instances in the Compute service
+- Support for scheduled cross-region backups in the Block Volume service
+- Support for object versioning in the Object Storage service
+
+### Breaking changes
+- Removed the models of `Archiver`, `CreateArchiverDetails` and `UpdateArchiverDetails`, operations of `CreateArchiver`, `GetArchiver`, `StartArchiver`, `StopArchiver` and `UpdateArchiver` in the streaming service
+
+## 17.4.0 - 2020-04-14
+### Added
+- Support for access types on instances in the Content and Experience service
+- Support for identity contexts in the Search service
+
+## 17.3.0 - 2020-04-07
+### Added
+- Support for changing compartments of runs and applications in the Data Flow service
+- Support for getting usage information in the Key Management Vault service
+- Support for custom Key Management service endpoints and private endpoints on stream pools in the Streaming service
+
+## 17.2.0 - 2020-03-31
+### Added
+- Support for the Secrets Management service 
+- Support for the Big Data service
+- Support for updating class name, file URI, language, and spark version of applications in the Data Flow service
+- Support for cross-region replication in the Object Storage service
+- Support for retention rules in the Object Storage service
+- Support for enabling and disabling pod security policy admission controllers in the Container Engine for Kubernetes service
+
+## 17.1.0 - 2020-03-24
+### Added
+- Support for Web Application Acceleration and Security configurations on instances in the Content and Experience service
+- Support for shared database homes on Exadata Cloud at Customer resources in the Database service
+- Support for Exadata database creation from backup in the Database service
+- Support for conditions on JavaScript challenges, new action types on access rules, new policy configuration settings, exclusions on custom protection rules, and IP address lists on IP whitelists in the Web Application Acceleration and Security service
+
+## 17.0.0 - 2020-03-17
+### Added
+- Support for serial console connections in the Database service
+- Support for preview database versions in the Database service
+- Support for node reboot migration maintenance status and maintenance windows in the Database service
+- Support for using instance metadata API v2 for instance principals authentication
+
+
+### Breaking changes
+- Removed the model of `AutonomousExadataInfrastructureMaintenanceWindow` from Database service
+
+## 16.0.0 - 2020-03-10
+### Added
+- Support for Events service integration with alerts in the Budgets service
+- Support delegation-token auth for all services
+
+### Breaking changes
+- The parameters sort_by and lifecycle_state type from Budget service are changed from str to enum
+
+## 15.8.0 - 2020-03-03
+### Added
+- Support for updating the shape of a Database System in the Database service
+- Support for generating CPE configurations for download in the Networking service
+- Support for private IPs and fault domains of cluster nodes in the Container Engine for Kubernetes service
+- Support for calling Oracle Cloud Infrastructure services in the ca-montreal-1 region
+- Support for exposing error after retrying failed in all services.
+
+## 15.7.0 - 2020-02-25
+### Added
+- Support for restarting autonomous databases in the Database service
+- Support for private endpoints on autonomous databases in the Database service
+- Support for IP-based policies in the Identity service
+- Support for management of OAuth 2.0 client credentials in the Identity service
+- Support for OCI Functions as a subscription protocol in the Notifications service
+
+## 15.6.0 - 2020-02-18
+### Added
+- Support for the NoSQL Database service
+- Support for filtering database versions by storage management type in the Database service
+- Support for specifying paid listing types within pricing models in the Marketplace service
+- Support for primary and non-primary instance types in the Content and Experience service
+
+## 15.5.0 - 2020-02-11
+### Added
+- Support for listing supported database versions for Autonomous Database Serverless, and selecting a version at provisioning time in the Database service
+- Support for TCP proxy protocol versions on listener connection configurations in the Load Balancer service
+- Support for calling the Notifications service in alternate realms
+- Support for calling Oracle Cloud Infrastructure services in the eu-amsterdam-1 and me-jeddah-1 regions
+- Support for non-default profiles for credentials
+
+## 15.4.0 - 2020-02-04
+## Added
+- Support for the Data Science service
+- Support for calling Oracle Cloud Infrastructure services in the ap-osaka-1 and ap-melbourne-1 regions
+
+## 15.3.0 - 2020-01-28
+## Added
+- Support for the Application Migration service
+- Support for the Data Flow service
+- Support for the Data Catalog service
+- Support for cross-shape Data Guard in the Database service
+- Support for offline data export in the Data Transfer service
+
+## 15.2.0 - 2020-01-21
+## Added
+- Support for getting DRG redundancy status in the Networking service
+- Support for cloning autonomous databases from backups in the Database service
+
+## 15.1.0 - 2020-01-14
+### Added
+- Support for a description field on route rules and security rules in the Networking service
+- Support for starting and stopping Digital Assistant instances in the Digital Assistant service
+- Support for shared database homes on Exadata, bare metal, and virtual machine instances in the Database service
+- Support for tracking a number of Database service operations through the Work Requests service
+
+## 15.0.0 - 2020-01-07
+### Added
+- Support for optionally specifying the corporate proxy field when creating Exadata infrastructure in the Database service
+- Support for maintenance windows, and rescheduling maintenance runs, on autonomous container databases in the Database service
+
+### Breaking changes
+- Field `hostname` in `NodeDetails` from Database service is changed to mandatory
+
+## 14.0.0 - 2019-12-17
+### Added
+- Support for the API Gateway service
+- Support for the OS Management service
+- Support for the Marketplace service
+- Support for "default"-type vaults in the Key Management service
+- Support for bringing your own keys in the Key Management service 
+- Support for cross-region backups of boot volumes in the Block Storage service
+- Support for top-level TSIG keys in the DNS service
+- Support for resizing virtual machine instances to different shapes in the Compute service
+- Support for management configuration of cloud agents in the Compute service
+- Support for launching node pools using image IDs in the Container Engine for Kubernetes service
+
+### Breaking changes
+- Removed support for v1 auth tokens in kubeconfig files in the `CreateClusterKubeconfigContentDetails` class of the Container Engine for Kubernetes service
+- Removed the IDCS access token requirement on the delete deleteOceInstance operation in the Content and Experience service, which is why the `DeleteOceInstanceDetails` class was removed
+- Parameter `compartment_id` in `list_stream_pools` API from Streaming service is changed to required parameter
+
+## 13.1.0 - 2019-12-10
+### Added
+- Support for etags on results of the List Objects API in the Object Storage service
+- Support for OCIDs on buckets in the Object Storage service
+- Support for content-disposition and cache-control headers on objects in the Object Storage service
+- Support for recovering deleted compartments in the Identity service
+- Support for sharing volumes across multiple instances in the Block Storage service
+- Support for connect harnesses and stream pools in the Streaming service
+- Support for associating file storage mount targets with network security groups in the File Storage service 
+- Support for calling Oracle Cloud Infrastructure services in the uk-gov-london-1 region
+
+## 13.0.0 - 2019-11-26
+### Added
+- Support for maintenance windows on autonomous databases in the Database service
+- Support for getting the compute units (OCPUs) of an Exadata autonomous transaction processing - dedicated resource in the Database service
+
+### Breaking changes
+- Create database home from VM_CLUSTER_BACKUP is removed from Database Service
+- Response type is changed for following two APIs in Virtual Network Service 
+    - Before
+
+    ```golang
+    BulkAddVirtualCircuitPublicPrefixes (err error)
+
+    BulkDeleteVirtualCircuitPublicPrefixes (err error)
+    ```
+
+    - After
+
+    ```golang
+    BulkAddVirtualCircuitPublicPrefixes (response BulkAddVirtualCircuitPublicPrefixesResponse, err error)
+
+    BulkDeleteVirtualCircuitPublicPrefixes (response BulkDeleteVirtualCircuitPublicPrefixesResponse, err error)
+    ```
+
+## 12.5.0 - 2019-11-19
+### Added
+- Support for four-byte autonomous system numbers (ASNs) on FastConnect resources in the Networking service
+- Support for choosing fault domains when creating instance pools in the Compute service
+- Support for allowing connections from only specific VCNs to autonomous data warehouse and autonomous transaction processing instances in the Database service
+- Support for Streaming Client Non-Regional
+
+## 12.4.0 - 2019-11-12
+### Added
+- Support for access to APEX and SQL Dev features on autonomous transaction processing and autonomous data warehouse resources in the Database service
+- Support for registering / deregistering autonomous transaction processing and autonomous data warehouse resources with Data Safe in the Database service
+- Support for redirecting HTTP / HTTPS request URIs to different URIs in the Load Balancing service
+- Support for specifying compartments on options APIs in the Container Engine for Kubernetes service
+- Support for volume performance units on block volumes in the Block Storage service
+- Support for opc-multipart-md5 verification for UploadManager. Example can be found on [Github](https://github.com/oracle/oci-go-sdk/blob/v8.0.0/example/example_objectstorage_test.go#L57)
+
 ## 12.3.0 - 2019-11-05
 ### Added
 - Support for the Analytics Cloud service

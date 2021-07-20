@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Budgets API
@@ -9,7 +10,7 @@
 package budget
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // Budget A budget.
@@ -50,12 +51,15 @@ type Budget struct {
 	// The description of the budget.
 	Description *string `mandatory:"false" json:"description"`
 
+	// The number of days offset from the first day of the month, at which the budget processing period starts. In months that have fewer days than this value, processing will begin on the last day of that month. For example, for a value of 12, processing starts every month on the 12th at midnight.
+	BudgetProcessingPeriodStartOffset *int `mandatory:"false" json:"budgetProcessingPeriodStartOffset"`
+
 	// The type of target on which the budget is applied.
 	TargetType TargetTypeEnum `mandatory:"false" json:"targetType,omitempty"`
 
 	// The list of targets on which the budget is applied.
 	//   If targetType is "COMPARTMENT", targets contains list of compartment OCIDs.
-	//   If targetType is "TAG", targets contains list of tag identifiers in the form of "{tagNamespace}.{tagKey}.{tagValue}".
+	//   If targetType is "TAG", targets contains list of cost tracking tag identifiers in the form of "{tagNamespace}.{tagKey}.{tagValue}".
 	Targets []string `mandatory:"false" json:"targets"`
 
 	// Version of the budget. Starts from 1 and increments by 1.

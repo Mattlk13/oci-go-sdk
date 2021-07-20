@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2020, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 package transfer
 
@@ -9,9 +10,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/oracle/oci-go-sdk/common"
-	"github.com/oracle/oci-go-sdk/example/helpers"
-	"github.com/oracle/oci-go-sdk/objectstorage"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/example/helpers"
+	"github.com/oracle/oci-go-sdk/v45/objectstorage"
 )
 
 type fake struct {
@@ -116,7 +117,7 @@ func TestUploadFileMultiparts(t *testing.T) {
 	for _, testData := range testDataSet {
 		fake := fake{upLoadID: testData.uploadID, failedPartNumbers: testData.failedPartNumbers, numberOfCommitedParts: common.Int(0), numberOfUploadedParts: common.Int(0)}
 		fileUpload.multipartUploader = &fake
-		filePath, _ := helpers.WriteTempFileOfSize(int64(fileSize))
+		filePath, _ := helpers.WriteTempFileOfSize(fileSize)
 		request := UploadFileRequest{
 			UploadRequest: UploadRequest{PartSize: common.Int64(partSize)},
 			FilePath:      filePath,

@@ -1,14 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // ListAutonomousContainerDatabasesRequest wrapper for the ListAutonomousContainerDatabases operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListAutonomousContainerDatabases.go.html to see an example of how to use ListAutonomousContainerDatabasesRequest.
 type ListAutonomousContainerDatabasesRequest struct {
 
 	// The compartment OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm).
@@ -16,6 +21,12 @@ type ListAutonomousContainerDatabasesRequest struct {
 
 	// The Autonomous Exadata Infrastructure OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm).
 	AutonomousExadataInfrastructureId *string `mandatory:"false" contributesTo:"query" name:"autonomousExadataInfrastructureId"`
+
+	// The Autonomous VM Cluster OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm).
+	AutonomousVmClusterId *string `mandatory:"false" contributesTo:"query" name:"autonomousVmClusterId"`
+
+	// A filter to return only resources that match the given Infrastructure Type.
+	InfrastructureType AutonomousContainerDatabaseSummaryInfrastructureTypeEnum `mandatory:"false" contributesTo:"query" name:"infrastructureType" omitEmpty:"true"`
 
 	// The maximum number of items to return per page.
 	Limit *int `mandatory:"false" contributesTo:"query" name:"limit"`
@@ -39,6 +50,9 @@ type ListAutonomousContainerDatabasesRequest struct {
 	// A filter to return only resources that match the entire display name given. The match is not case sensitive.
 	DisplayName *string `mandatory:"false" contributesTo:"query" name:"displayName"`
 
+	// A filter to return only resources that match the given service-level agreement type exactly.
+	ServiceLevelAgreementType *string `mandatory:"false" contributesTo:"query" name:"serviceLevelAgreementType"`
+
 	// Unique Oracle-assigned identifier for the request.
 	// If you need to contact Oracle about a particular request, please provide the request ID.
 	OpcRequestId *string `mandatory:"false" contributesTo:"header" name:"opc-request-id"`
@@ -53,8 +67,16 @@ func (request ListAutonomousContainerDatabasesRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request ListAutonomousContainerDatabasesRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request ListAutonomousContainerDatabasesRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request ListAutonomousContainerDatabasesRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.
@@ -71,8 +93,8 @@ type ListAutonomousContainerDatabasesResponse struct {
 	// A list of []AutonomousContainerDatabaseSummary instances
 	Items []AutonomousContainerDatabaseSummary `presentIn:"body"`
 
-	// Unique Oracle-assigned identifier for the request. If you need to contact Oracle about
-	// a particular request, please provide the request ID.
+	// Unique Oracle-assigned identifier for the request. If you must contact Oracle about
+	// a particular request, then provide the request ID.
 	OpcRequestId *string `presentIn:"header" name:"opc-request-id"`
 
 	// For pagination of a list of items. When paging through a list, if this header appears in the response,

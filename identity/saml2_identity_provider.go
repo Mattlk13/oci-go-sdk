@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Identity and Access Management Service API
@@ -10,7 +11,7 @@ package identity
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // Saml2IdentityProvider A special type of IdentityProvider that
@@ -72,6 +73,9 @@ type Saml2IdentityProvider struct {
 	// For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
+
+	// The XML that contains the information required for federating Identity with SAML2 Identity Provider.
+	Metadata *string `mandatory:"false" json:"metadata"`
 
 	// Extra name value pairs associated with this identity provider.
 	// Example: `{"clientId": "app_sf3kdjf3"}`

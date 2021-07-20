@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Data Transfer Service API
@@ -11,7 +12,8 @@ package dts
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type TransferApplianceEntitlementClient struct {
 // NewTransferApplianceEntitlementClientWithConfigurationProvider Creates a new default TransferApplianceEntitlement client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewTransferApplianceEntitlementClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client TransferApplianceEntitlementClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newTransferApplianceEntitlementClientFromBaseClient(baseClient, provider)
+}
+
+// NewTransferApplianceEntitlementClientWithOboToken Creates a new default TransferApplianceEntitlement client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewTransferApplianceEntitlementClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client TransferApplianceEntitlementClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newTransferApplianceEntitlementClientFromBaseClient(baseClient, configProvider)
+}
+
+func newTransferApplianceEntitlementClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client TransferApplianceEntitlementClient, err error) {
 	client = TransferApplianceEntitlementClient{BaseClient: baseClient}
 	client.BasePath = "20171001"
 	err = client.setConfigurationProvider(configProvider)
@@ -37,7 +58,7 @@ func NewTransferApplianceEntitlementClientWithConfigurationProvider(configProvid
 
 // SetRegion overrides the region of this client.
 func (client *TransferApplianceEntitlementClient) SetRegion(region string) {
-	client.Host = common.StringToRegion(region).EndpointForTemplate("dts", "https://datatransfer.{region}.{secondLevelDomain}")
+	client.Host = common.StringToRegion(region).EndpointForTemplate("dts", "https://datatransfer.{region}.oci.{secondLevelDomain}")
 }
 
 // SetConfigurationProvider sets the configuration provider including the region, returns an error if is not valid
@@ -59,9 +80,16 @@ func (client *TransferApplianceEntitlementClient) ConfigurationProvider() *commo
 }
 
 // CreateTransferApplianceEntitlement Create the Entitlement to use a Transfer Appliance. It requires some offline process of review and signatures before request is granted.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/CreateTransferApplianceEntitlement.go.html to see an example of how to use CreateTransferApplianceEntitlement API.
 func (client TransferApplianceEntitlementClient) CreateTransferApplianceEntitlement(ctx context.Context, request CreateTransferApplianceEntitlementRequest) (response CreateTransferApplianceEntitlementResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -73,7 +101,12 @@ func (client TransferApplianceEntitlementClient) CreateTransferApplianceEntitlem
 	ociResponse, err = common.Retry(ctx, request, client.createTransferApplianceEntitlement, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateTransferApplianceEntitlementResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateTransferApplianceEntitlementResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateTransferApplianceEntitlementResponse{}
+			}
 		}
 		return
 	}
@@ -86,8 +119,9 @@ func (client TransferApplianceEntitlementClient) CreateTransferApplianceEntitlem
 }
 
 // createTransferApplianceEntitlement implements the OCIOperation interface (enables retrying operations)
-func (client TransferApplianceEntitlementClient) createTransferApplianceEntitlement(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferApplianceEntitlement")
+func (client TransferApplianceEntitlementClient) createTransferApplianceEntitlement(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/transferApplianceEntitlement", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -106,9 +140,16 @@ func (client TransferApplianceEntitlementClient) createTransferApplianceEntitlem
 }
 
 // GetTransferApplianceEntitlement Describes the Transfer Appliance Entitlement in detail
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/GetTransferApplianceEntitlement.go.html to see an example of how to use GetTransferApplianceEntitlement API.
 func (client TransferApplianceEntitlementClient) GetTransferApplianceEntitlement(ctx context.Context, request GetTransferApplianceEntitlementRequest) (response GetTransferApplianceEntitlementResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -120,7 +161,12 @@ func (client TransferApplianceEntitlementClient) GetTransferApplianceEntitlement
 	ociResponse, err = common.Retry(ctx, request, client.getTransferApplianceEntitlement, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetTransferApplianceEntitlementResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetTransferApplianceEntitlementResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetTransferApplianceEntitlementResponse{}
+			}
 		}
 		return
 	}
@@ -133,8 +179,9 @@ func (client TransferApplianceEntitlementClient) GetTransferApplianceEntitlement
 }
 
 // getTransferApplianceEntitlement implements the OCIOperation interface (enables retrying operations)
-func (client TransferApplianceEntitlementClient) getTransferApplianceEntitlement(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferApplianceEntitlement/{id}")
+func (client TransferApplianceEntitlementClient) getTransferApplianceEntitlement(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferApplianceEntitlement/{id}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -153,16 +200,28 @@ func (client TransferApplianceEntitlementClient) getTransferApplianceEntitlement
 }
 
 // ListTransferApplianceEntitlement Lists Transfer Transfer Appliance Entitlement
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dts/ListTransferApplianceEntitlement.go.html to see an example of how to use ListTransferApplianceEntitlement API.
 func (client TransferApplianceEntitlementClient) ListTransferApplianceEntitlement(ctx context.Context, request ListTransferApplianceEntitlementRequest) (response ListTransferApplianceEntitlementResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listTransferApplianceEntitlement, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListTransferApplianceEntitlementResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListTransferApplianceEntitlementResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListTransferApplianceEntitlementResponse{}
+			}
 		}
 		return
 	}
@@ -175,8 +234,9 @@ func (client TransferApplianceEntitlementClient) ListTransferApplianceEntitlemen
 }
 
 // listTransferApplianceEntitlement implements the OCIOperation interface (enables retrying operations)
-func (client TransferApplianceEntitlementClient) listTransferApplianceEntitlement(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferApplianceEntitlement")
+func (client TransferApplianceEntitlementClient) listTransferApplianceEntitlement(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/transferApplianceEntitlement", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

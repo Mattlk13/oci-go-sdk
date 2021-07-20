@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,7 +14,7 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // LetterOfAuthority The Letter of Authority for the cross-connect. You must submit this letter when
@@ -35,10 +36,10 @@ type LetterOfAuthority struct {
 	// The meet-me room port for this cross-connect.
 	PortName *string `mandatory:"false" json:"portName"`
 
-	// The date and time when the Letter of Authority expires, in the format defined by RFC3339.
+	// The date and time when the Letter of Authority expires, in the format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	TimeExpires *common.SDKTime `mandatory:"false" json:"timeExpires"`
 
-	// The date and time the Letter of Authority was created, in the format defined by RFC3339.
+	// The date and time the Letter of Authority was created, in the format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeIssued *common.SDKTime `mandatory:"false" json:"timeIssued"`
 }

@@ -1,10 +1,14 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Autoscaling API
 //
-// APIs for dynamically scaling Compute resources to meet application requirements.
-// For information about the Compute service, see Overview of the Compute Service (https://docs.cloud.oracle.com/Content/Compute/Concepts/computeoverview.htm).
+// APIs for dynamically scaling Compute resources to meet application requirements. For more information about
+// autoscaling, see Autoscaling (https://docs.cloud.oracle.com/Content/Compute/Tasks/autoscalinginstancepools.htm). For information about the
+// Compute service, see Overview of the Compute Service (https://docs.cloud.oracle.com/Content/Compute/Concepts/computeoverview.htm).
+// **Note:** Autoscaling is not available in US Government Cloud tenancies. For more information, see
+// Oracle Cloud Infrastructure US Government Cloud (https://docs.cloud.oracle.com/Content/General/Concepts/govoverview.htm).
 //
 
 package autoscaling
@@ -12,7 +16,8 @@ package autoscaling
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -25,11 +30,30 @@ type AutoScalingClient struct {
 // NewAutoScalingClientWithConfigurationProvider Creates a new default AutoScaling client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewAutoScalingClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client AutoScalingClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newAutoScalingClientFromBaseClient(baseClient, provider)
+}
+
+// NewAutoScalingClientWithOboToken Creates a new default AutoScaling client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewAutoScalingClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client AutoScalingClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newAutoScalingClientFromBaseClient(baseClient, configProvider)
+}
+
+func newAutoScalingClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client AutoScalingClient, err error) {
 	client = AutoScalingClient{BaseClient: baseClient}
 	client.BasePath = "20181001"
 	err = client.setConfigurationProvider(configProvider)
@@ -64,9 +88,16 @@ func (client *AutoScalingClient) ConfigurationProvider() *common.ConfigurationPr
 // Moving Resources to a Different Compartment (https://docs.cloud.oracle.com/iaas/Content/Identity/Tasks/managingcompartments.htm#moveRes).
 // When you move an autoscaling configuration to a different compartment, associated resources such as instance
 // pools are not moved.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/autoscaling/ChangeAutoScalingConfigurationCompartment.go.html to see an example of how to use ChangeAutoScalingConfigurationCompartment API.
 func (client AutoScalingClient) ChangeAutoScalingConfigurationCompartment(ctx context.Context, request ChangeAutoScalingConfigurationCompartmentRequest) (response ChangeAutoScalingConfigurationCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -78,7 +109,12 @@ func (client AutoScalingClient) ChangeAutoScalingConfigurationCompartment(ctx co
 	ociResponse, err = common.Retry(ctx, request, client.changeAutoScalingConfigurationCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeAutoScalingConfigurationCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeAutoScalingConfigurationCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeAutoScalingConfigurationCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -91,8 +127,9 @@ func (client AutoScalingClient) ChangeAutoScalingConfigurationCompartment(ctx co
 }
 
 // changeAutoScalingConfigurationCompartment implements the OCIOperation interface (enables retrying operations)
-func (client AutoScalingClient) changeAutoScalingConfigurationCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autoScalingConfigurations/{autoScalingConfigurationId}/actions/changeCompartment")
+func (client AutoScalingClient) changeAutoScalingConfigurationCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autoScalingConfigurations/{autoScalingConfigurationId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -111,9 +148,16 @@ func (client AutoScalingClient) changeAutoScalingConfigurationCompartment(ctx co
 }
 
 // CreateAutoScalingConfiguration Creates an autoscaling configuration.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/autoscaling/CreateAutoScalingConfiguration.go.html to see an example of how to use CreateAutoScalingConfiguration API.
 func (client AutoScalingClient) CreateAutoScalingConfiguration(ctx context.Context, request CreateAutoScalingConfigurationRequest) (response CreateAutoScalingConfigurationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -125,7 +169,12 @@ func (client AutoScalingClient) CreateAutoScalingConfiguration(ctx context.Conte
 	ociResponse, err = common.Retry(ctx, request, client.createAutoScalingConfiguration, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateAutoScalingConfigurationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateAutoScalingConfigurationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateAutoScalingConfigurationResponse{}
+			}
 		}
 		return
 	}
@@ -138,8 +187,9 @@ func (client AutoScalingClient) CreateAutoScalingConfiguration(ctx context.Conte
 }
 
 // createAutoScalingConfiguration implements the OCIOperation interface (enables retrying operations)
-func (client AutoScalingClient) createAutoScalingConfiguration(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autoScalingConfigurations")
+func (client AutoScalingClient) createAutoScalingConfiguration(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autoScalingConfigurations", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -158,9 +208,21 @@ func (client AutoScalingClient) createAutoScalingConfiguration(ctx context.Conte
 }
 
 // CreateAutoScalingPolicy Creates an autoscaling policy for the specified autoscaling configuration.
+// You can create the following types of autoscaling policies:
+// - **Schedule-based:** Autoscaling events take place at the specific times that you schedule.
+// - **Threshold-based:** An autoscaling action is triggered when a performance metric meets or exceeds a threshold.
+// An autoscaling configuration can either have multiple schedule-based autoscaling policies, or one
+// threshold-based autoscaling policy.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/autoscaling/CreateAutoScalingPolicy.go.html to see an example of how to use CreateAutoScalingPolicy API.
 func (client AutoScalingClient) CreateAutoScalingPolicy(ctx context.Context, request CreateAutoScalingPolicyRequest) (response CreateAutoScalingPolicyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -172,7 +234,12 @@ func (client AutoScalingClient) CreateAutoScalingPolicy(ctx context.Context, req
 	ociResponse, err = common.Retry(ctx, request, client.createAutoScalingPolicy, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateAutoScalingPolicyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateAutoScalingPolicyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateAutoScalingPolicyResponse{}
+			}
 		}
 		return
 	}
@@ -185,8 +252,9 @@ func (client AutoScalingClient) CreateAutoScalingPolicy(ctx context.Context, req
 }
 
 // createAutoScalingPolicy implements the OCIOperation interface (enables retrying operations)
-func (client AutoScalingClient) createAutoScalingPolicy(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autoScalingConfigurations/{autoScalingConfigurationId}/policies")
+func (client AutoScalingClient) createAutoScalingPolicy(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autoScalingConfigurations/{autoScalingConfigurationId}/policies", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -205,16 +273,28 @@ func (client AutoScalingClient) createAutoScalingPolicy(ctx context.Context, req
 }
 
 // DeleteAutoScalingConfiguration Deletes an autoscaling configuration.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/autoscaling/DeleteAutoScalingConfiguration.go.html to see an example of how to use DeleteAutoScalingConfiguration API.
 func (client AutoScalingClient) DeleteAutoScalingConfiguration(ctx context.Context, request DeleteAutoScalingConfigurationRequest) (response DeleteAutoScalingConfigurationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteAutoScalingConfiguration, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteAutoScalingConfigurationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteAutoScalingConfigurationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteAutoScalingConfigurationResponse{}
+			}
 		}
 		return
 	}
@@ -227,8 +307,9 @@ func (client AutoScalingClient) DeleteAutoScalingConfiguration(ctx context.Conte
 }
 
 // deleteAutoScalingConfiguration implements the OCIOperation interface (enables retrying operations)
-func (client AutoScalingClient) deleteAutoScalingConfiguration(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/autoScalingConfigurations/{autoScalingConfigurationId}")
+func (client AutoScalingClient) deleteAutoScalingConfiguration(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/autoScalingConfigurations/{autoScalingConfigurationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -247,16 +328,28 @@ func (client AutoScalingClient) deleteAutoScalingConfiguration(ctx context.Conte
 }
 
 // DeleteAutoScalingPolicy Deletes an autoscaling policy for the specified autoscaling configuration.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/autoscaling/DeleteAutoScalingPolicy.go.html to see an example of how to use DeleteAutoScalingPolicy API.
 func (client AutoScalingClient) DeleteAutoScalingPolicy(ctx context.Context, request DeleteAutoScalingPolicyRequest) (response DeleteAutoScalingPolicyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteAutoScalingPolicy, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteAutoScalingPolicyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteAutoScalingPolicyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteAutoScalingPolicyResponse{}
+			}
 		}
 		return
 	}
@@ -269,8 +362,9 @@ func (client AutoScalingClient) DeleteAutoScalingPolicy(ctx context.Context, req
 }
 
 // deleteAutoScalingPolicy implements the OCIOperation interface (enables retrying operations)
-func (client AutoScalingClient) deleteAutoScalingPolicy(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/autoScalingConfigurations/{autoScalingConfigurationId}/policies/{autoScalingPolicyId}")
+func (client AutoScalingClient) deleteAutoScalingPolicy(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/autoScalingConfigurations/{autoScalingConfigurationId}/policies/{autoScalingPolicyId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -289,16 +383,28 @@ func (client AutoScalingClient) deleteAutoScalingPolicy(ctx context.Context, req
 }
 
 // GetAutoScalingConfiguration Gets information about the specified autoscaling configuration.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/autoscaling/GetAutoScalingConfiguration.go.html to see an example of how to use GetAutoScalingConfiguration API.
 func (client AutoScalingClient) GetAutoScalingConfiguration(ctx context.Context, request GetAutoScalingConfigurationRequest) (response GetAutoScalingConfigurationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAutoScalingConfiguration, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAutoScalingConfigurationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAutoScalingConfigurationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAutoScalingConfigurationResponse{}
+			}
 		}
 		return
 	}
@@ -311,8 +417,9 @@ func (client AutoScalingClient) GetAutoScalingConfiguration(ctx context.Context,
 }
 
 // getAutoScalingConfiguration implements the OCIOperation interface (enables retrying operations)
-func (client AutoScalingClient) getAutoScalingConfiguration(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autoScalingConfigurations/{autoScalingConfigurationId}")
+func (client AutoScalingClient) getAutoScalingConfiguration(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autoScalingConfigurations/{autoScalingConfigurationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -331,16 +438,28 @@ func (client AutoScalingClient) getAutoScalingConfiguration(ctx context.Context,
 }
 
 // GetAutoScalingPolicy Gets information about the specified autoscaling policy in the specified autoscaling configuration.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/autoscaling/GetAutoScalingPolicy.go.html to see an example of how to use GetAutoScalingPolicy API.
 func (client AutoScalingClient) GetAutoScalingPolicy(ctx context.Context, request GetAutoScalingPolicyRequest) (response GetAutoScalingPolicyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAutoScalingPolicy, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAutoScalingPolicyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAutoScalingPolicyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAutoScalingPolicyResponse{}
+			}
 		}
 		return
 	}
@@ -353,8 +472,9 @@ func (client AutoScalingClient) GetAutoScalingPolicy(ctx context.Context, reques
 }
 
 // getAutoScalingPolicy implements the OCIOperation interface (enables retrying operations)
-func (client AutoScalingClient) getAutoScalingPolicy(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autoScalingConfigurations/{autoScalingConfigurationId}/policies/{autoScalingPolicyId}")
+func (client AutoScalingClient) getAutoScalingPolicy(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autoScalingConfigurations/{autoScalingConfigurationId}/policies/{autoScalingPolicyId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -373,16 +493,28 @@ func (client AutoScalingClient) getAutoScalingPolicy(ctx context.Context, reques
 }
 
 // ListAutoScalingConfigurations Lists autoscaling configurations in the specifed compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/autoscaling/ListAutoScalingConfigurations.go.html to see an example of how to use ListAutoScalingConfigurations API.
 func (client AutoScalingClient) ListAutoScalingConfigurations(ctx context.Context, request ListAutoScalingConfigurationsRequest) (response ListAutoScalingConfigurationsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAutoScalingConfigurations, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAutoScalingConfigurationsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutoScalingConfigurationsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutoScalingConfigurationsResponse{}
+			}
 		}
 		return
 	}
@@ -395,8 +527,9 @@ func (client AutoScalingClient) ListAutoScalingConfigurations(ctx context.Contex
 }
 
 // listAutoScalingConfigurations implements the OCIOperation interface (enables retrying operations)
-func (client AutoScalingClient) listAutoScalingConfigurations(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autoScalingConfigurations")
+func (client AutoScalingClient) listAutoScalingConfigurations(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autoScalingConfigurations", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -415,16 +548,28 @@ func (client AutoScalingClient) listAutoScalingConfigurations(ctx context.Contex
 }
 
 // ListAutoScalingPolicies Lists the autoscaling policies in the specified autoscaling configuration.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/autoscaling/ListAutoScalingPolicies.go.html to see an example of how to use ListAutoScalingPolicies API.
 func (client AutoScalingClient) ListAutoScalingPolicies(ctx context.Context, request ListAutoScalingPoliciesRequest) (response ListAutoScalingPoliciesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAutoScalingPolicies, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAutoScalingPoliciesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutoScalingPoliciesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutoScalingPoliciesResponse{}
+			}
 		}
 		return
 	}
@@ -437,8 +582,9 @@ func (client AutoScalingClient) ListAutoScalingPolicies(ctx context.Context, req
 }
 
 // listAutoScalingPolicies implements the OCIOperation interface (enables retrying operations)
-func (client AutoScalingClient) listAutoScalingPolicies(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autoScalingConfigurations/{autoScalingConfigurationId}/policies")
+func (client AutoScalingClient) listAutoScalingPolicies(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autoScalingConfigurations/{autoScalingConfigurationId}/policies", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -458,9 +604,16 @@ func (client AutoScalingClient) listAutoScalingPolicies(ctx context.Context, req
 
 // UpdateAutoScalingConfiguration Updates certain fields on the specified autoscaling configuration, such as the name, the cooldown period,
 // and whether the autoscaling configuration is enabled.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/autoscaling/UpdateAutoScalingConfiguration.go.html to see an example of how to use UpdateAutoScalingConfiguration API.
 func (client AutoScalingClient) UpdateAutoScalingConfiguration(ctx context.Context, request UpdateAutoScalingConfigurationRequest) (response UpdateAutoScalingConfigurationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -472,7 +625,12 @@ func (client AutoScalingClient) UpdateAutoScalingConfiguration(ctx context.Conte
 	ociResponse, err = common.Retry(ctx, request, client.updateAutoScalingConfiguration, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateAutoScalingConfigurationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAutoScalingConfigurationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAutoScalingConfigurationResponse{}
+			}
 		}
 		return
 	}
@@ -485,8 +643,9 @@ func (client AutoScalingClient) UpdateAutoScalingConfiguration(ctx context.Conte
 }
 
 // updateAutoScalingConfiguration implements the OCIOperation interface (enables retrying operations)
-func (client AutoScalingClient) updateAutoScalingConfiguration(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autoScalingConfigurations/{autoScalingConfigurationId}")
+func (client AutoScalingClient) updateAutoScalingConfiguration(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autoScalingConfigurations/{autoScalingConfigurationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -505,9 +664,16 @@ func (client AutoScalingClient) updateAutoScalingConfiguration(ctx context.Conte
 }
 
 // UpdateAutoScalingPolicy Updates an autoscaling policy in the specified autoscaling configuration.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/autoscaling/UpdateAutoScalingPolicy.go.html to see an example of how to use UpdateAutoScalingPolicy API.
 func (client AutoScalingClient) UpdateAutoScalingPolicy(ctx context.Context, request UpdateAutoScalingPolicyRequest) (response UpdateAutoScalingPolicyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -519,7 +685,12 @@ func (client AutoScalingClient) UpdateAutoScalingPolicy(ctx context.Context, req
 	ociResponse, err = common.Retry(ctx, request, client.updateAutoScalingPolicy, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateAutoScalingPolicyResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAutoScalingPolicyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAutoScalingPolicyResponse{}
+			}
 		}
 		return
 	}
@@ -532,8 +703,9 @@ func (client AutoScalingClient) UpdateAutoScalingPolicy(ctx context.Context, req
 }
 
 // updateAutoScalingPolicy implements the OCIOperation interface (enables retrying operations)
-func (client AutoScalingClient) updateAutoScalingPolicy(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autoScalingConfigurations/{autoScalingConfigurationId}/policies/{autoScalingPolicyId}")
+func (client AutoScalingClient) updateAutoScalingPolicy(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autoScalingConfigurations/{autoScalingConfigurationId}/policies/{autoScalingPolicyId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

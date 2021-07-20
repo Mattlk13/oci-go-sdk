@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2020, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 package transfer
 
@@ -7,8 +8,8 @@ import (
 	"context"
 	"io/ioutil"
 
-	"github.com/oracle/oci-go-sdk/common"
-	"github.com/oracle/oci-go-sdk/objectstorage"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/objectstorage"
 )
 
 // multipartUploader is an interface wrap the methods talk to object storage service
@@ -37,9 +38,20 @@ func (uploader *multipartUpload) createMultipartUpload(ctx context.Context, requ
 	multipartUploadRequest.ContentEncoding = request.ContentEncoding
 	multipartUploadRequest.ContentLanguage = request.ContentLanguage
 	multipartUploadRequest.Metadata = request.Metadata
+	switch request.StorageTier {
+	case objectstorage.PutObjectStorageTierStandard:
+		multipartUploadRequest.StorageTier = objectstorage.StorageTierStandard
+	case objectstorage.PutObjectStorageTierArchive:
+		multipartUploadRequest.StorageTier = objectstorage.StorageTierArchive
+	case objectstorage.PutObjectStorageTierInfrequentaccess:
+		multipartUploadRequest.StorageTier = objectstorage.StorageTierInfrequentAccess
+	}
 
 	resp, err := request.ObjectStorageClient.CreateMultipartUpload(ctx, multipartUploadRequest)
-	return *resp.UploadId, err
+	if err == nil {
+		return *resp.UploadId, nil
+	}
+	return "", err
 }
 
 func (uploader *multipartUpload) uploadParts(ctx context.Context, done <-chan struct{}, parts <-chan uploadPart, result chan<- uploadPart, request UploadRequest, uploadID string) {
@@ -55,6 +67,8 @@ func (uploader *multipartUpload) uploadParts(ctx context.Context, done <-chan st
 		if err != nil {
 			common.Debugf("upload error %v\n", err)
 			part.err = err
+		} else {
+			part.partBody = nil
 		}
 		part.etag = resp.ETag
 		select {
@@ -66,7 +80,8 @@ func (uploader *multipartUpload) uploadParts(ctx context.Context, done <-chan st
 					TotalParts: part.totalParts,
 					Offset:     part.offset,
 					Hash:       part.hash,
-					Err:        part.err}
+					Err:        part.err,
+					OpcMD5:     part.opcMD5}
 
 				request.CallBack(uploadedPart)
 			}
@@ -92,6 +107,7 @@ func (uploader *multipartUpload) uploadPart(ctx context.Context, request UploadR
 		IfNoneMatch:        request.IfNoneMatch,
 		OpcClientRequestId: request.OpcClientRequestID,
 		RequestMetadata:    request.RequestMetadata,
+		ContentMD5:         part.opcMD5,
 	}
 
 	resp, err := request.ObjectStorageClient.UploadPart(ctx, req)

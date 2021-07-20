@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Web Application Acceleration and Security Services API
@@ -9,7 +10,7 @@
 package waas
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CachingRuleSummary The caching rule settings.
@@ -23,7 +24,7 @@ type CachingRuleSummary struct {
 	// - **BYPASS_CACHE:** Allows requests to bypass the cache and be directed to the origin when the criteria of the rule is met.
 	Action CachingRuleSummaryActionEnum `mandatory:"true" json:"action"`
 
-	// The array of the rule criteria with condition and value.
+	// The array of the rule criteria with condition and value. The caching rule would be applied for the requests that matched any of the listed conditions.
 	Criteria []CachingRuleCriteria `mandatory:"true" json:"criteria"`
 
 	// The unique key for the caching rule.

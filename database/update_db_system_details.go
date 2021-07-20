@@ -1,15 +1,16 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // UpdateDbSystemDetails Describes the parameters for updating the DB system.
@@ -36,13 +37,48 @@ type UpdateDbSystemDetails struct {
 	// For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
-	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that this DB system belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm).
+	// The shape of the DB system. The shape determines resources allocated to the DB system.
+	// - For virtual machine shapes, the number of CPU cores and memory
+	// To get a list of shapes, use the ListDbSystemShapes operation.
+	Shape *string `mandatory:"false" json:"shape"`
+
+	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that this resource belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm).
+	// **NsgIds restrictions:**
+	// - Autonomous Databases with private access require at least 1 Network Security Group (NSG). The nsgIds array cannot be empty.
 	NsgIds []string `mandatory:"false" json:"nsgIds"`
 
-	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that the backup network of this DB system belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm). Applicable only to Exadata DB systems.
+	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that the backup network of this DB system belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm). Applicable only to Exadata systems.
 	BackupNetworkNsgIds []string `mandatory:"false" json:"backupNetworkNsgIds"`
+
+	// The Oracle Database license model that applies to all databases on the DB system. The default is LICENSE_INCLUDED.
+	LicenseModel UpdateDbSystemDetailsLicenseModelEnum `mandatory:"false" json:"licenseModel,omitempty"`
+
+	MaintenanceWindowDetails *MaintenanceWindow `mandatory:"false" json:"maintenanceWindowDetails"`
 }
 
 func (m UpdateDbSystemDetails) String() string {
 	return common.PointerString(m)
+}
+
+// UpdateDbSystemDetailsLicenseModelEnum Enum with underlying type: string
+type UpdateDbSystemDetailsLicenseModelEnum string
+
+// Set of constants representing the allowable values for UpdateDbSystemDetailsLicenseModelEnum
+const (
+	UpdateDbSystemDetailsLicenseModelLicenseIncluded     UpdateDbSystemDetailsLicenseModelEnum = "LICENSE_INCLUDED"
+	UpdateDbSystemDetailsLicenseModelBringYourOwnLicense UpdateDbSystemDetailsLicenseModelEnum = "BRING_YOUR_OWN_LICENSE"
+)
+
+var mappingUpdateDbSystemDetailsLicenseModel = map[string]UpdateDbSystemDetailsLicenseModelEnum{
+	"LICENSE_INCLUDED":       UpdateDbSystemDetailsLicenseModelLicenseIncluded,
+	"BRING_YOUR_OWN_LICENSE": UpdateDbSystemDetailsLicenseModelBringYourOwnLicense,
+}
+
+// GetUpdateDbSystemDetailsLicenseModelEnumValues Enumerates the set of values for UpdateDbSystemDetailsLicenseModelEnum
+func GetUpdateDbSystemDetailsLicenseModelEnumValues() []UpdateDbSystemDetailsLicenseModelEnum {
+	values := make([]UpdateDbSystemDetailsLicenseModelEnum, 0)
+	for _, v := range mappingUpdateDbSystemDetailsLicenseModel {
+		values = append(values, v)
+	}
+	return values
 }

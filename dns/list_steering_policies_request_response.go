@@ -1,18 +1,28 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package dns
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // ListSteeringPoliciesRequest wrapper for the ListSteeringPolicies operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dns/ListSteeringPolicies.go.html to see an example of how to use ListSteeringPoliciesRequest.
 type ListSteeringPoliciesRequest struct {
 
 	// The OCID of the compartment the resource belongs to.
 	CompartmentId *string `mandatory:"true" contributesTo:"query" name:"compartmentId"`
+
+	// Unique Oracle-assigned identifier for the request. If you need
+	// to contact Oracle about a particular request, please provide
+	// the request ID.
+	OpcRequestId *string `mandatory:"false" contributesTo:"header" name:"opc-request-id"`
 
 	// The maximum number of items to return in a page of the collection.
 	Limit *int64 `mandatory:"false" contributesTo:"query" name:"limit"`
@@ -55,9 +65,8 @@ type ListSteeringPoliciesRequest struct {
 	// The order to sort the resources.
 	SortOrder ListSteeringPoliciesSortOrderEnum `mandatory:"false" contributesTo:"query" name:"sortOrder" omitEmpty:"true"`
 
-	// Unique Oracle-assigned identifier for the request.
-	// If you need to contact Oracle about a particular request, please provide the request ID.
-	OpcRequestId *string `mandatory:"false" contributesTo:"header" name:"opc-request-id"`
+	// Specifies to operate only on resources that have a matching DNS scope.
+	Scope ListSteeringPoliciesScopeEnum `mandatory:"false" contributesTo:"query" name:"scope" omitEmpty:"true"`
 
 	// Metadata about the request. This information will not be transmitted to the service, but
 	// represents information that the SDK will consume to drive retry behavior.
@@ -69,8 +78,16 @@ func (request ListSteeringPoliciesRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request ListSteeringPoliciesRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request ListSteeringPoliciesRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request ListSteeringPoliciesRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.
@@ -96,8 +113,7 @@ type ListSteeringPoliciesResponse struct {
 	OpcTotalItems *int `presentIn:"header" name:"opc-total-items"`
 
 	// Unique Oracle-assigned identifier for the request. If you need to
-	// contact Oracle about a particular request, please provide the request
-	// ID.
+	// contact Oracle about a particular request, please provide the request ID.
 	OpcRequestId *string `presentIn:"header" name:"opc-request-id"`
 }
 
@@ -153,6 +169,29 @@ var mappingListSteeringPoliciesSortOrder = map[string]ListSteeringPoliciesSortOr
 func GetListSteeringPoliciesSortOrderEnumValues() []ListSteeringPoliciesSortOrderEnum {
 	values := make([]ListSteeringPoliciesSortOrderEnum, 0)
 	for _, v := range mappingListSteeringPoliciesSortOrder {
+		values = append(values, v)
+	}
+	return values
+}
+
+// ListSteeringPoliciesScopeEnum Enum with underlying type: string
+type ListSteeringPoliciesScopeEnum string
+
+// Set of constants representing the allowable values for ListSteeringPoliciesScopeEnum
+const (
+	ListSteeringPoliciesScopeGlobal  ListSteeringPoliciesScopeEnum = "GLOBAL"
+	ListSteeringPoliciesScopePrivate ListSteeringPoliciesScopeEnum = "PRIVATE"
+)
+
+var mappingListSteeringPoliciesScope = map[string]ListSteeringPoliciesScopeEnum{
+	"GLOBAL":  ListSteeringPoliciesScopeGlobal,
+	"PRIVATE": ListSteeringPoliciesScopePrivate,
+}
+
+// GetListSteeringPoliciesScopeEnumValues Enumerates the set of values for ListSteeringPoliciesScopeEnum
+func GetListSteeringPoliciesScopeEnumValues() []ListSteeringPoliciesScopeEnum {
+	values := make([]ListSteeringPoliciesScopeEnum, 0)
+	for _, v := range mappingListSteeringPoliciesScope {
 		values = append(values, v)
 	}
 	return values

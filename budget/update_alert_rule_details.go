@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Budgets API
@@ -9,7 +10,7 @@
 package budget
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // UpdateAlertRuleDetails The update alert rule details.
@@ -30,7 +31,7 @@ type UpdateAlertRuleDetails struct {
 	// The type of threshold.
 	ThresholdType ThresholdTypeEnum `mandatory:"false" json:"thresholdType,omitempty"`
 
-	// The audience that will received the alert when it triggers.
+	// The audience that will receive the alert when it triggers. If you need to clear out this value, please pass in an empty string instead of null.
 	Recipients *string `mandatory:"false" json:"recipients"`
 
 	// The description of the alert rule

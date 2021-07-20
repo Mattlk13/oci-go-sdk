@@ -1,9 +1,10 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
-// Service limits APIs
+// Service Limits APIs
 //
-// APIs that interact with the resource limits of a specific resource type
+// APIs that interact with the resource limits of a specific resource type.
 //
 
 package limits
@@ -11,7 +12,8 @@ package limits
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type QuotasClient struct {
 // NewQuotasClientWithConfigurationProvider Creates a new default Quotas client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewQuotasClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client QuotasClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newQuotasClientFromBaseClient(baseClient, provider)
+}
+
+// NewQuotasClientWithOboToken Creates a new default Quotas client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewQuotasClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client QuotasClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newQuotasClientFromBaseClient(baseClient, configProvider)
+}
+
+func newQuotasClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client QuotasClient, err error) {
 	client = QuotasClient{BaseClient: baseClient}
 	client.BasePath = ""
 	err = client.setConfigurationProvider(configProvider)
@@ -59,9 +80,16 @@ func (client *QuotasClient) ConfigurationProvider() *common.ConfigurationProvide
 }
 
 // CreateQuota Creates a new quota with the details supplied.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/limits/CreateQuota.go.html to see an example of how to use CreateQuota API.
 func (client QuotasClient) CreateQuota(ctx context.Context, request CreateQuotaRequest) (response CreateQuotaResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -73,7 +101,12 @@ func (client QuotasClient) CreateQuota(ctx context.Context, request CreateQuotaR
 	ociResponse, err = common.Retry(ctx, request, client.createQuota, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateQuotaResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateQuotaResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateQuotaResponse{}
+			}
 		}
 		return
 	}
@@ -86,8 +119,9 @@ func (client QuotasClient) CreateQuota(ctx context.Context, request CreateQuotaR
 }
 
 // createQuota implements the OCIOperation interface (enables retrying operations)
-func (client QuotasClient) createQuota(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/20181025/quotas/")
+func (client QuotasClient) createQuota(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/20181025/quotas", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -106,16 +140,28 @@ func (client QuotasClient) createQuota(ctx context.Context, request common.OCIRe
 }
 
 // DeleteQuota Deletes the quota corresponding to the given OCID.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/limits/DeleteQuota.go.html to see an example of how to use DeleteQuota API.
 func (client QuotasClient) DeleteQuota(ctx context.Context, request DeleteQuotaRequest) (response DeleteQuotaResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteQuota, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteQuotaResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteQuotaResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteQuotaResponse{}
+			}
 		}
 		return
 	}
@@ -128,8 +174,9 @@ func (client QuotasClient) DeleteQuota(ctx context.Context, request DeleteQuotaR
 }
 
 // deleteQuota implements the OCIOperation interface (enables retrying operations)
-func (client QuotasClient) deleteQuota(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/20181025/quotas/{quotaId}")
+func (client QuotasClient) deleteQuota(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/20181025/quotas/{quotaId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -148,16 +195,28 @@ func (client QuotasClient) deleteQuota(ctx context.Context, request common.OCIRe
 }
 
 // GetQuota Gets the quota for the OCID specified.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/limits/GetQuota.go.html to see an example of how to use GetQuota API.
 func (client QuotasClient) GetQuota(ctx context.Context, request GetQuotaRequest) (response GetQuotaResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getQuota, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetQuotaResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetQuotaResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetQuotaResponse{}
+			}
 		}
 		return
 	}
@@ -170,8 +229,9 @@ func (client QuotasClient) GetQuota(ctx context.Context, request GetQuotaRequest
 }
 
 // getQuota implements the OCIOperation interface (enables retrying operations)
-func (client QuotasClient) getQuota(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/20181025/quotas/{quotaId}")
+func (client QuotasClient) getQuota(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/20181025/quotas/{quotaId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -189,17 +249,29 @@ func (client QuotasClient) getQuota(ctx context.Context, request common.OCIReque
 	return response, err
 }
 
-// ListQuotas Lists all quotas on resources from the given compartment
+// ListQuotas Lists all quotas on resources from the given compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/limits/ListQuotas.go.html to see an example of how to use ListQuotas API.
 func (client QuotasClient) ListQuotas(ctx context.Context, request ListQuotasRequest) (response ListQuotasResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listQuotas, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListQuotasResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListQuotasResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListQuotasResponse{}
+			}
 		}
 		return
 	}
@@ -212,8 +284,9 @@ func (client QuotasClient) ListQuotas(ctx context.Context, request ListQuotasReq
 }
 
 // listQuotas implements the OCIOperation interface (enables retrying operations)
-func (client QuotasClient) listQuotas(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/20181025/quotas/")
+func (client QuotasClient) listQuotas(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/20181025/quotas", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -232,16 +305,28 @@ func (client QuotasClient) listQuotas(ctx context.Context, request common.OCIReq
 }
 
 // UpdateQuota Updates the quota corresponding to given OCID with the details supplied.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/limits/UpdateQuota.go.html to see an example of how to use UpdateQuota API.
 func (client QuotasClient) UpdateQuota(ctx context.Context, request UpdateQuotaRequest) (response UpdateQuotaResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateQuota, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateQuotaResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateQuotaResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateQuotaResponse{}
+			}
 		}
 		return
 	}
@@ -254,8 +339,9 @@ func (client QuotasClient) UpdateQuota(ctx context.Context, request UpdateQuotaR
 }
 
 // updateQuota implements the OCIOperation interface (enables retrying operations)
-func (client QuotasClient) updateQuota(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/20181025/quotas/{quotaId}")
+func (client QuotasClient) updateQuota(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/20181025/quotas/{quotaId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

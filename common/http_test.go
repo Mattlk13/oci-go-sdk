@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 package common
 
@@ -16,8 +17,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"math"
+
+	"github.com/stretchr/testify/assert"
 )
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,6 +79,13 @@ type KVRequest struct {
 	KVList `contributesTo:"body"`
 }
 
+type UniqueHeader struct {
+	Namespace            string `mandatory:"true" contributesTo:"body"`
+	Bucket               string `mandatory:"true" contributesTo:"body"`
+	Content              string `mandatory:"true" contributesTo:"body"`
+	UniqueHeaderValueOne string `mandatory:"false" contributesTo:"header" name:"Content-Type"`
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func TestHttpMarshallerInvalidStruct(t *testing.T) {
@@ -126,6 +135,19 @@ func TestHttpMarshallerSimpleStruct(t *testing.T) {
 	request := MakeDefaultHTTPRequest(http.MethodPost, "/random")
 	HTTPRequestMarshaller(s, &request)
 	assert.True(t, strings.Contains(request.URL.Path, "111"))
+}
+
+func TestHttpMarshallerDuplicateOnUniqueHeader(t *testing.T) {
+	s := UniqueHeader{
+		Namespace:            "bmcinfrachef",
+		Bucket:               "stack-deployments",
+		Content:              "Hello World!",
+		UniqueHeaderValueOne: "application/json_1",
+	}
+	request := MakeDefaultHTTPRequest(http.MethodPost, "/random")
+	HTTPRequestMarshaller(s, &request)
+	header := request.Header
+	assert.True(t, header.Get(requestHeaderContentType) == "application/json_1")
 }
 
 func TestHttpMarshallerSimpleBody(t *testing.T) {
@@ -222,7 +244,7 @@ func TestHttpMarshalerAll(t *testing.T) {
 	when := s.When.Format(time.RFC3339Nano)
 	assert.True(t, request.URL.Path == "//101")
 	assert.True(t, request.URL.Query().Get("name") == s.Name)
-	assert.True(t, request.URL.Query().Get("income") == strconv.FormatFloat(float64(s.Income), 'f', 6, 32))
+	assert.True(t, request.URL.Query().Get("income") == strconv.FormatFloat(float64(s.Income), 'f', 2, 32))
 	assert.True(t, request.URL.Query().Get("when") == when)
 	assert.True(t, request.URL.Query().Get("includes") == "One,Two")
 	assert.True(t, reflect.DeepEqual(request.URL.Query()["includesMulti"], []string{"One", "Two"}))
@@ -418,13 +440,49 @@ type listRegionsResponse struct {
 }
 
 type listUsersResponse struct {
-	Items        []int   `presentIn:"body"`
-	OpcRequestID string  `presentIn:"header" name:"opcrequestid"`
-	OpcNextPage  int     `presentIn:"header" name:"opcnextpage"`
-	SomeUint     uint    `presentIn:"header" name:"someuint"`
-	SomeBool     bool    `presentIn:"header" name:"somebool"`
-	SomeTime     SDKTime `presentIn:"header" name:"sometime"`
-	SomeFloat    float64 `presentIn:"header" name:"somefloat"`
+	Items        []int           `presentIn:"body"`
+	OpcRequestID string          `presentIn:"header" name:"opcrequestid"`
+	OpcNextPage  int             `presentIn:"header" name:"opcnextpage"`
+	SomeUint     uint            `presentIn:"header" name:"someuint"`
+	SomeBool     bool            `presentIn:"header" name:"somebool"`
+	SomeTime     SDKTime         `presentIn:"header" name:"sometime"`
+	SomeFloat    float64         `presentIn:"header" name:"somefloat"`
+	SomeEnum     GetSomeEnumType `presentIn:"header" name:"someenum"`
+}
+
+// GetSomeEnumType Enum with underlying type: string
+type GetSomeEnumType string
+
+// Set of constants representing the allowable values for GetSomeEnum
+const (
+	SomeEnumVal1 GetSomeEnumType = "EnumVal1"
+	SomeEnumVal2 GetSomeEnumType = "EnumVal2"
+	SomeEnumVal3 GetSomeEnumType = "EnumVal3"
+)
+
+var mappingGetSomeEnum = map[string]GetSomeEnumType{
+	"EnumVal1": SomeEnumVal1,
+	"EnumVal2": SomeEnumVal2,
+	"EnumVal3": SomeEnumVal3,
+}
+
+// GetSomeEnumValues Enumerates the set of values for GetSomeEnum
+func GetSomeEnumValues() []GetSomeEnumType {
+	values := make([]GetSomeEnumType, 0)
+	for _, v := range mappingGetSomeEnum {
+		values = append(values, v)
+	}
+	return values
+}
+
+func TestUnmarshalResponse_EnumHeader(t *testing.T) {
+	header := http.Header{}
+	header.Set("someenum", "EnumVal2")
+	r := http.Response{Header: header}
+	s := listUsersResponse{}
+	err := UnmarshalResponse(&r, &s)
+	assert.NoError(t, err)
+	assert.Equal(t, s.SomeEnum, SomeEnumVal2)
 }
 
 func TestUnmarshalResponse_StringHeader(t *testing.T) {
@@ -638,6 +696,11 @@ func TestUnmarshalResponse_BodyAndHeaderPtr(t *testing.T) {
 }
 
 type reqWithBinaryFiled struct {
+	ContentLength *int64    `mandatory:"true" contributesTo:"header" name:"Content-Length"`
+	Content       io.Reader `mandatory:"true" contributesTo:"body" encoding:"binary"`
+}
+
+type reqWithBinaryFiledButNoContentLengthField struct {
 	Content io.Reader `mandatory:"true" contributesTo:"body" encoding:"binary"`
 }
 
@@ -648,7 +711,19 @@ type reqWithNonMandatoryBinaryField struct {
 func TestMarshalBinaryRequest(t *testing.T) {
 	data := "some data in a file"
 	buffer := bytes.NewBufferString(data)
-	r := reqWithBinaryFiled{Content: ioutil.NopCloser(buffer)}
+	length := int64(buffer.Len())
+	r := reqWithBinaryFiled{Content: ioutil.NopCloser(buffer), ContentLength: &length}
+	httpRequest, err := MakeDefaultHTTPRequestWithTaggedStruct("PUT", "/obj", r)
+	assert.NoError(t, err)
+	all, err := ioutil.ReadAll(httpRequest.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, data, string(all))
+}
+
+func TestMarshalBinaryRequestWithoutContentLengthSetting(t *testing.T) {
+	data := "some data in a file"
+	buffer := bytes.NewBufferString(data)
+	r := reqWithBinaryFiledButNoContentLengthField{Content: ioutil.NopCloser(buffer)}
 	httpRequest, err := MakeDefaultHTTPRequestWithTaggedStruct("PUT", "/obj", r)
 	assert.NoError(t, err)
 	all, err := ioutil.ReadAll(httpRequest.Body)
@@ -684,7 +759,8 @@ func TestMarshalBinaryRequestIsSigned(t *testing.T) {
 	}
 	data := "some data in a file"
 	buffer := bytes.NewBufferString(data)
-	r := reqWithBinaryFiled{Content: ioutil.NopCloser(buffer)}
+	length := int64(buffer.Len())
+	r := reqWithBinaryFiled{Content: ioutil.NopCloser(buffer), ContentLength: &length}
 	httpRequest, err := MakeDefaultHTTPRequestWithTaggedStruct("POST", "/obj", r)
 	assert.NoError(t, err)
 	err = signer.Sign(&httpRequest)

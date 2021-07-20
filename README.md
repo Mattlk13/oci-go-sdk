@@ -2,30 +2,43 @@
 [![wercker status](https://app.wercker.com/status/09bc4818e7b1d70b04285331a9bdbc41/s/master "wercker status")](https://app.wercker.com/project/byKey/09bc4818e7b1d70b04285331a9bdbc41)
 
 This is the Go SDK for Oracle Cloud Infrastructure. This project is open source and maintained by Oracle Corp. 
-The home page for the project is [here](https://godoc.org/github.com/oracle/oci-go-sdk/).
->***WARNING:***: To avoid automatically consuming breaking changes if we have to rev the major version of the Go SDK, 
-please consider using the  [Go dependency management tool](https://github.com/golang/dep), or vendoring the SDK. 
-This will allow you to pin to a specific version of the Go SDK in your project, letting you control how and when you move to the next major version.
+The home page for the project is [here](https://godoc.org/github.com/oracle/oci-go-sdk/v45/).
+
+## Survey
+Are you a Developer using the OCI SDK? If so, please fill out our survey to help us make the OCI SDK better for you. Click [here](https://oracle.questionpro.com/t/APeMlZka26?custom3=pkg) for the survey page.
+
 
 ## Dependencies
-- Install [Go programming language](https://golang.org/dl/).
+- Install [Go programming language](https://golang.org/dl/), Go1.14, 1.15 and 1.16 is supported By OCI Go SDK.
 - Install [GNU Make](https://www.gnu.org/software/make/), using the package manager or binary distribution tool appropriate for your platform.
  
 
 
 ## Installing
-Use the following command to install this SDK:
-
+If you want to install the SDK under $GOPATH, you can use `go get` to retrieve the SDK:
 ```
 go get -u github.com/oracle/oci-go-sdk
 ```
-Alternatively you can git clone this repo.
+If you are using Go modules, you can install by running the following command within a folder containing a `go.mod` file:
+```
+go get -d github.com/oracle/oci-go-sdk/@latest
+```
+Alternatively, you can install a specific version(supported from `v25.0.0` on):
+```
+go get -d github.com/oracle/oci-go-sdk/@v41.0.0
+```
+Run `go mod tidy`
+
+In your project, you also need to ensure the import paths contain the correct major-version:
+```
+import "github.com/oracle/oci-go-sdk/v41/common"  // or whatever major version you're using
+```
 
 ## Working with the Go SDK
 To start working with the Go SDK, you import the service package, create a client, and then use that client to make calls.
 
 ### Configuring 
-Before using the SDK, set up a config file with the required credentials. See [SDK and Tool Configuration](https://docs.us-phoenix-1.oraclecloud.com/Content/API/Concepts/sdkconfig.htm) for instructions.
+Before using the SDK, set up a config file with the required credentials. See [SDK and Tool Configuration](https://docs.cloud.oracle.com/Content/API/Concepts/sdkconfig.htm) for instructions.
 
 Note that the Go SDK does not support profile inheritance or defining custom values in the configuration file.
 
@@ -34,8 +47,8 @@ Once a config file has been setup, call `common.DefaultConfigProvider()` functio
  ```go
  // Import necessary packages
  import (
-	"github.com/oracle/oci-go-sdk/common"
-	"github.com/oracle/oci-go-sdk/identity" // Identity or any other service you wish to make requests to
+	"github.com/oracle/oci-go-sdk/v41/common"
+	"github.com/oracle/oci-go-sdk/v41/identity" // Identity or any other service you wish to make requests to
 )
  
  //...
@@ -52,9 +65,11 @@ type ConfigurationProvider interface {
 	UserOCID() (string, error)
 	KeyFingerprint() (string, error)
 	Region() (string, error)
+	// AuthType() is used for specify the needed auth type, like UserPrincipal, InstancePrincipal, etc. AuthConfig is used for getting auth related paras in config file.
+	AuthType() (AuthConfig, error)
 }
 ```
-Or simply use one of  structs exposed by the `oci-go-sdk` that already implement the above [interface](https://godoc.org/github.com/oracle/oci-go-sdk/common#ConfigurationProvider)
+Or simply use one of  structs exposed by the `oci-go-sdk` that already implement the above [interface](https://godoc.org/github.com/oracle/oci-go-sdk/v45/common#ConfigurationProvider)
 
 ### Making a Request
 To make a request to an Oracle Cloud Infrastructure service, create a client for the service and then use the client to call a function from the service.
@@ -88,6 +103,11 @@ if err != nil {
 fmt.Println("Group's name is:", response.Name)
 ```
 
+- *Expect header*: By default, "PUT/POST" request would add Expect 100-continue header, if it is not expected, please explicitly set the env var:
+```sh
+export OCI_GOSDK_USING_EXPECT_HEADER=FALSE
+```
+
 ## Organization of the SDK
 The `oci-go-sdk` contains the following:
 - **Service packages**: All packages except `common` and any other package found inside `cmd`. These packages represent 
@@ -105,7 +125,7 @@ in this package are meant to be used by the service packages.
 Examples can be found [here](https://github.com/oracle/oci-go-sdk/tree/master/example)
 
 ## Documentation
-Full documentation can be found [on the godocs site](https://godoc.org/github.com/oracle/oci-go-sdk/).
+Full documentation can be found [on the godocs site](https://godoc.org/github.com/oracle/oci-go-sdk/v45/).
 
 ## Help
 * The [Issues](https://github.com/oracle/oci-go-sdk/issues) page of this GitHub repository.
@@ -121,9 +141,9 @@ Oracle gratefully acknowledges the contributions to oci-go-sdk that have been ma
 
 
 ## License
-Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
-
-This SDK and sample is dual licensed under the Universal Permissive License 1.0 and the Apache License 2.0.
+Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl
+or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 See [LICENSE](/LICENSE.txt) for more details.
 
@@ -141,7 +161,7 @@ go get github.com/stretchr/testify
 ```
 - Install [go lint](https://github.com/golang/lint) with the command:
 ```
-go get -u github.com/golang/lint/golint
+go get -u golang.org/x/lint/golint
 ```
 ### Build
 Building is provided by the make file at the root of the project. To build the project execute.

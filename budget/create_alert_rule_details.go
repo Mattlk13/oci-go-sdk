@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Budgets API
@@ -9,7 +10,7 @@
 package budget
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateAlertRuleDetails The create alert rule details. This is a batch-create.
@@ -27,14 +28,14 @@ type CreateAlertRuleDetails struct {
 	// The type of threshold.
 	ThresholdType ThresholdTypeEnum `mandatory:"true" json:"thresholdType"`
 
-	// The audience that will received the alert when it triggers.
-	Recipients *string `mandatory:"true" json:"recipients"`
-
 	// The name of the alert rule.
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// The description of the alert rule.
 	Description *string `mandatory:"false" json:"description"`
+
+	// The audience that will receive the alert when it triggers. An empty string is interpreted as null.
+	Recipients *string `mandatory:"false" json:"recipients"`
 
 	// The message to be sent to the recipients when alert rule is triggered.
 	Message *string `mandatory:"false" json:"message"`

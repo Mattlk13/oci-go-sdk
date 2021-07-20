@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Identity and Access Management Service API
@@ -10,7 +11,7 @@ package identity
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // UpdateTagDetails The representation of UpdateTagDetails
@@ -36,9 +37,6 @@ type UpdateTagDetails struct {
 	// Indicates whether the tag is enabled for cost tracking.
 	IsCostTracking *bool `mandatory:"false" json:"isCostTracking"`
 
-	// Additional validation rule for values specified for the tag definition.
-	// If no validator is defined for a tag definition, then any (valid) value will be accepted.
-	// The default value for `validator` is an empty map (no additional validation).
 	Validator BaseTagDefinitionValidator `mandatory:"false" json:"validator"`
 }
 
@@ -61,12 +59,18 @@ func (m *UpdateTagDetails) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.Description = model.Description
+
 	m.IsRetired = model.IsRetired
+
 	m.FreeformTags = model.FreeformTags
+
 	m.DefinedTags = model.DefinedTags
+
 	m.IsCostTracking = model.IsCostTracking
-	nn, e := model.Validator.UnmarshalPolymorphicJSON(model.Validator.JsonData)
+
+	nn, e = model.Validator.UnmarshalPolymorphicJSON(model.Validator.JsonData)
 	if e != nil {
 		return
 	}
@@ -75,5 +79,6 @@ func (m *UpdateTagDetails) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.Validator = nil
 	}
+
 	return
 }

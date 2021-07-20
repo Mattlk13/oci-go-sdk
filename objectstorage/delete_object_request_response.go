@@ -1,14 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package objectstorage
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // DeleteObjectRequest wrapper for the DeleteObject operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/objectstorage/DeleteObject.go.html to see an example of how to use DeleteObjectRequest.
 type DeleteObjectRequest struct {
 
 	// The Object Storage namespace used for the request.
@@ -22,12 +27,16 @@ type DeleteObjectRequest struct {
 	// Example: `test/object1.log`
 	ObjectName *string `mandatory:"true" contributesTo:"path" name:"objectName"`
 
-	// The entity tag (ETag) to match. For creating and committing a multipart upload to an object, this is the entity tag of the target object.
-	// For uploading a part, this is the entity tag of the target part.
+	// The entity tag (ETag) to match with the ETag of an existing resource. If the specified ETag matches the ETag of
+	// the existing resource, GET and HEAD requests will return the resource and PUT and POST requests will upload
+	// the resource.
 	IfMatch *string `mandatory:"false" contributesTo:"header" name:"if-match"`
 
 	// The client request ID for tracing.
 	OpcClientRequestId *string `mandatory:"false" contributesTo:"header" name:"opc-client-request-id"`
+
+	// VersionId used to identify a particular version of the object
+	VersionId *string `mandatory:"false" contributesTo:"query" name:"versionId"`
 
 	// Metadata about the request. This information will not be transmitted to the service, but
 	// represents information that the SDK will consume to drive retry behavior.
@@ -39,8 +48,16 @@ func (request DeleteObjectRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request DeleteObjectRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request DeleteObjectRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request DeleteObjectRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.
@@ -61,8 +78,15 @@ type DeleteObjectResponse struct {
 	// request, provide this request ID.
 	OpcRequestId *string `presentIn:"header" name:"opc-request-id"`
 
-	// The time the object was deleted, as described in RFC 2616 (https://tools.ietf.org/rfc/rfc2616), section 14.29.
+	// The time the object was deleted, as described in RFC 2616 (https://tools.ietf.org/html/rfc2616#section-14.29).
 	LastModified *common.SDKTime `presentIn:"header" name:"last-modified"`
+
+	// The `versionId` of the delete marker created as a result of the DELETE Object.
+	// If the request contains a specific `versionId`, then this response header will be the same as the requested `versionId` of the object that was deleted.
+	VersionId *string `presentIn:"header" name:"version-id"`
+
+	// This is `true` if the deleted object is a delete marker, otherwise `false`
+	IsDeleteMarker *bool `presentIn:"header" name:"is-delete-marker"`
 }
 
 func (response DeleteObjectResponse) String() string {

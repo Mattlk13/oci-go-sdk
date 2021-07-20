@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Notifications API
@@ -10,7 +11,7 @@
 package ons
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateSubscriptionDetails The configuration details for creating the subscription.
@@ -27,8 +28,10 @@ type CreateSubscriptionDetails struct {
 	//   * `CUSTOM_HTTPS`
 	//   * `EMAIL`
 	//   * `HTTPS` (deprecated; for PagerDuty endpoints, use `PAGERDUTY`)
+	//   * `ORACLE_FUNCTIONS`
 	//   * `PAGERDUTY`
 	//   * `SLACK`
+	//   * `SMS`
 	// For information about subscription protocols, see
 	// To create a subscription (https://docs.cloud.oracle.com/iaas/Content/Notification/Tasks/managingtopicsandsubscriptions.htm#createSub).
 	Protocol *string `mandatory:"true" json:"protocol"`

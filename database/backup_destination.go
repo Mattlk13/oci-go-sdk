@@ -1,15 +1,16 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // BackupDestination Backup destination details.
@@ -38,6 +39,15 @@ type BackupDestination struct {
 
 	// The local directory path on each VM cluster node where the NFS server location is mounted. The local directory path and the NFS server location must each be the same across all of the VM cluster nodes. Ensure that the NFS mount is maintained continuously on all of the VM cluster nodes.
 	LocalMountPointPath *string `mandatory:"false" json:"localMountPointPath"`
+
+	// NFS Mount type for backup destination.
+	NfsMountType BackupDestinationNfsMountTypeEnum `mandatory:"false" json:"nfsMountType,omitempty"`
+
+	// Host names or IP addresses for NFS Auto mount.
+	NfsServer []string `mandatory:"false" json:"nfsServer"`
+
+	// Specifies the directory on which to mount the file system
+	NfsServerExport *string `mandatory:"false" json:"nfsServerExport"`
 
 	// The current lifecycle state of the backup destination.
 	LifecycleState BackupDestinationLifecycleStateEnum `mandatory:"false" json:"lifecycleState,omitempty"`
@@ -81,6 +91,29 @@ var mappingBackupDestinationType = map[string]BackupDestinationTypeEnum{
 func GetBackupDestinationTypeEnumValues() []BackupDestinationTypeEnum {
 	values := make([]BackupDestinationTypeEnum, 0)
 	for _, v := range mappingBackupDestinationType {
+		values = append(values, v)
+	}
+	return values
+}
+
+// BackupDestinationNfsMountTypeEnum Enum with underlying type: string
+type BackupDestinationNfsMountTypeEnum string
+
+// Set of constants representing the allowable values for BackupDestinationNfsMountTypeEnum
+const (
+	BackupDestinationNfsMountTypeSelfMount      BackupDestinationNfsMountTypeEnum = "SELF_MOUNT"
+	BackupDestinationNfsMountTypeAutomatedMount BackupDestinationNfsMountTypeEnum = "AUTOMATED_MOUNT"
+)
+
+var mappingBackupDestinationNfsMountType = map[string]BackupDestinationNfsMountTypeEnum{
+	"SELF_MOUNT":      BackupDestinationNfsMountTypeSelfMount,
+	"AUTOMATED_MOUNT": BackupDestinationNfsMountTypeAutomatedMount,
+}
+
+// GetBackupDestinationNfsMountTypeEnumValues Enumerates the set of values for BackupDestinationNfsMountTypeEnum
+func GetBackupDestinationNfsMountTypeEnumValues() []BackupDestinationNfsMountTypeEnum {
+	values := make([]BackupDestinationNfsMountTypeEnum, 0)
+	for _, v := range mappingBackupDestinationNfsMountType {
 		values = append(values, v)
 	}
 	return values

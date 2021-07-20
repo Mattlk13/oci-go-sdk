@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -14,7 +15,7 @@ package core
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // LaunchInstanceDetails Instance launch details.
@@ -33,15 +34,18 @@ type LaunchInstanceDetails struct {
 	// You can enumerate all available shapes by calling ListShapes.
 	Shape *string `mandatory:"true" json:"shape"`
 
-	// Details for the primary VNIC, which is automatically created and attached when
-	// the instance is launched.
+	// The OCID of the compute capacity reservation this instance is launched under.
+	// You can opt out of all default reservations by specifying an empty string as input for this field.
+	// For more information, see Capacity Reservations (https://docs.cloud.oracle.com/iaas/Content/Compute/Tasks/reserve-capacity.htm#default).
+	CapacityReservationId *string `mandatory:"false" json:"capacityReservationId"`
+
 	CreateVnicDetails *CreateVnicDetails `mandatory:"false" json:"createVnicDetails"`
 
-	// The OCID of dedicated VM host.
+	// The OCID of the dedicated VM host.
 	DedicatedVmHostId *string `mandatory:"false" json:"dedicatedVmHostId"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
@@ -50,8 +54,12 @@ type LaunchInstanceDetails struct {
 	// Example: `My bare metal instance`
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
-	// Additional metadata key/value pairs that you provide. They serve the same purpose and functionality as fields in the 'metadata' object.
-	// They are distinguished from 'metadata' fields in that these can be nested JSON objects (whereas 'metadata' fields are string/string maps only).
+	// Additional metadata key/value pairs that you provide. They serve the same purpose and
+	// functionality as fields in the `metadata` object.
+	// They are distinguished from `metadata` fields in that these can be nested JSON objects
+	// (whereas `metadata` fields are string/string maps only).
+	// The combined size of the `metadata` and `extendedMetadata` objects can be a maximum of
+	// 32,000 bytes.
 	ExtendedMetadata map[string]interface{} `mandatory:"false" json:"extendedMetadata"`
 
 	// A fault domain is a grouping of hardware and infrastructure within an availability domain.
@@ -59,8 +67,8 @@ type LaunchInstanceDetails struct {
 	// instances so that they are not on the same physical hardware within a single availability domain.
 	// A hardware failure or Compute hardware maintenance that affects one fault domain does not affect
 	// instances in other fault domains.
-	// If you do not specify the fault domain, the system selects one for you. To change the fault
-	// domain for an instance, terminate it and launch a new instance in the preferred fault domain.
+	// If you do not specify the fault domain, the system selects one for you.
+	//
 	// To get a list of fault domains, use the
 	// ListFaultDomains operation in the
 	// Identity and Access Management Service API.
@@ -68,7 +76,7 @@ type LaunchInstanceDetails struct {
 	FaultDomain *string `mandatory:"false" json:"faultDomain"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
@@ -98,11 +106,17 @@ type LaunchInstanceDetails struct {
 	// iqn.2015-02.oracle.boot.
 	// For more information about the Bring Your Own Image feature of
 	// Oracle Cloud Infrastructure, see
-	// Bring Your Own Image (https://docs.cloud.oracle.com/Content/Compute/References/bringyourownimage.htm).
+	// Bring Your Own Image (https://docs.cloud.oracle.com/iaas/Content/Compute/References/bringyourownimage.htm).
 	// For more information about iPXE, see http://ipxe.org.
 	IpxeScript *string `mandatory:"false" json:"ipxeScript"`
 
 	LaunchOptions *LaunchOptions `mandatory:"false" json:"launchOptions"`
+
+	InstanceOptions *InstanceOptions `mandatory:"false" json:"instanceOptions"`
+
+	AvailabilityConfig *LaunchInstanceAvailabilityConfigDetails `mandatory:"false" json:"availabilityConfig"`
+
+	PreemptibleInstanceConfig *PreemptibleInstanceConfigDetails `mandatory:"false" json:"preemptibleInstanceConfig"`
 
 	// Custom metadata key/value pairs that you provide, such as the SSH public key
 	// required to connect to the instance.
@@ -124,35 +138,27 @@ type LaunchInstanceDetails struct {
 	//  Cloud-Init to run custom scripts or provide custom Cloud-Init configuration. For
 	//  information about how to take advantage of user data, see the
 	//  Cloud-Init Documentation (http://cloudinit.readthedocs.org/en/latest/topics/format.html).
-	//  **Note:** Cloud-Init does not pull this data from the `http://169.254.169.254/opc/v1/instance/metadata/`
-	//  path. When the instance launches and either of these keys are provided, the key values are formatted as
-	//  OpenStack metadata and copied to the following locations, which are recognized by Cloud-Init:
-	//  `http://169.254.169.254/openstack/latest/meta_data.json` - This JSON blob
-	//  contains, among other things, the SSH keys that you provided for
-	//   **"ssh_authorized_keys"**.
-	//  `http://169.254.169.254/openstack/latest/user_data` - Contains the
-	//  base64-decoded data that you provided for **"user_data"**.
 	//  **Metadata Example**
 	//       "metadata" : {
 	//          "quake_bot_level" : "Severe",
-	//          "ssh_authorized_keys" : "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCZ06fccNTQfq+xubFlJ5ZR3kt+uzspdH9tXL+lAejSM1NXM+CFZev7MIxfEjas06y80ZBZ7DUTQO0GxJPeD8NCOb1VorF8M4xuLwrmzRtkoZzU16umt4y1W0Q4ifdp3IiiU0U8/WxczSXcUVZOLqkz5dc6oMHdMVpkimietWzGZ4LBBsH/LjEVY7E0V+a0sNchlVDIZcm7ErReBLcdTGDq0uLBiuChyl6RUkX1PNhusquTGwK7zc8OBXkRuubn5UKXhI3Ul9Nyk4XESkVWIGNKmw8mSpoJSjR8P9ZjRmcZVo8S+x4KVPMZKQEor== ryan.smith@company.com
-	//          ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAzJSAtwEPoB3Jmr58IXrDGzLuDYkWAYg8AsLYlo6JZvKpjY1xednIcfEVQJm4T2DhVmdWhRrwQ8DmayVZvBkLt+zs2LdoAJEVimKwXcJFD/7wtH8Lnk17HiglbbbNXsemjDY0hea4JUE5CfvkIdZBITuMrfqSmA4n3VNoorXYdvtTMoGG8fxMub46RPtuxtqi9bG9Zqenordkg5FJt2mVNfQRqf83CWojcOkklUWq4CjyxaeLf5i9gv1fRoBo4QhiA8I6NCSppO8GnoV/6Ox6TNoh9BiifqGKC9VGYuC89RvUajRBTZSK2TK4DPfaT+2R+slPsFrwiT/oPEhhEK1S5Q== rsa-key-20160227",
-	//          "user_data" : "SWYgeW91IGNhbiBzZWUgdGhpcywgdGhlbiBpdCB3b3JrZWQgbWF5YmUuCg=="
+	//          "ssh_authorized_keys" : "ssh-rsa <your_public_SSH_key>== rsa-key-20160227",
+	//          "user_data" : "<your_public_SSH_key>=="
 	//       }
 	//  **Getting Metadata on the Instance**
 	//  To get information about your instance, connect to the instance using SSH and issue any of the
 	//  following GET requests:
-	//      curl http://169.254.169.254/opc/v1/instance/
-	//      curl http://169.254.169.254/opc/v1/instance/metadata/
-	//      curl http://169.254.169.254/opc/v1/instance/metadata/<any-key-name>
+	//      curl -H "Authorization: Bearer Oracle" http://169.254.169.254/opc/v2/instance/
+	//      curl -H "Authorization: Bearer Oracle" http://169.254.169.254/opc/v2/instance/metadata/
+	//      curl -H "Authorization: Bearer Oracle" http://169.254.169.254/opc/v2/instance/metadata/<any-key-name>
 	//  You'll get back a response that includes all the instance information; only the metadata information; or
 	//  the metadata information for the specified key name, respectively.
+	//  The combined size of the `metadata` and `extendedMetadata` objects can be a maximum of 32,000 bytes.
 	Metadata map[string]string `mandatory:"false" json:"metadata"`
 
 	AgentConfig *LaunchInstanceAgentConfigDetails `mandatory:"false" json:"agentConfig"`
 
-	// Details for creating an instance.
-	// Use this parameter to specify whether a boot volume or an image should be used to launch a new instance.
+	ShapeConfig *LaunchInstanceShapeConfigDetails `mandatory:"false" json:"shapeConfig"`
+
 	SourceDetails InstanceSourceDetails `mandatory:"false" json:"sourceDetails"`
 
 	// Deprecated. Instead use `subnetId` in
@@ -160,8 +166,10 @@ type LaunchInstanceDetails struct {
 	// At least one of them is required; if you provide both, the values must match.
 	SubnetId *string `mandatory:"false" json:"subnetId"`
 
-	// Whether to enable in-transit encryption for the data volume's paravirtualized attachment. The default value is false.
+	// Whether to enable in-transit encryption for the data volume's paravirtualized attachment. This field applies to both block volumes and boot volumes. The default value is false.
 	IsPvEncryptionInTransitEnabled *bool `mandatory:"false" json:"isPvEncryptionInTransitEnabled"`
+
+	PlatformConfig LaunchInstancePlatformConfig `mandatory:"false" json:"platformConfig"`
 }
 
 func (m LaunchInstanceDetails) String() string {
@@ -171,45 +179,75 @@ func (m LaunchInstanceDetails) String() string {
 // UnmarshalJSON unmarshals from json
 func (m *LaunchInstanceDetails) UnmarshalJSON(data []byte) (e error) {
 	model := struct {
-		CreateVnicDetails              *CreateVnicDetails                `json:"createVnicDetails"`
-		DedicatedVmHostId              *string                           `json:"dedicatedVmHostId"`
-		DefinedTags                    map[string]map[string]interface{} `json:"definedTags"`
-		DisplayName                    *string                           `json:"displayName"`
-		ExtendedMetadata               map[string]interface{}            `json:"extendedMetadata"`
-		FaultDomain                    *string                           `json:"faultDomain"`
-		FreeformTags                   map[string]string                 `json:"freeformTags"`
-		HostnameLabel                  *string                           `json:"hostnameLabel"`
-		ImageId                        *string                           `json:"imageId"`
-		IpxeScript                     *string                           `json:"ipxeScript"`
-		LaunchOptions                  *LaunchOptions                    `json:"launchOptions"`
-		Metadata                       map[string]string                 `json:"metadata"`
-		AgentConfig                    *LaunchInstanceAgentConfigDetails `json:"agentConfig"`
-		SourceDetails                  instancesourcedetails             `json:"sourceDetails"`
-		SubnetId                       *string                           `json:"subnetId"`
-		IsPvEncryptionInTransitEnabled *bool                             `json:"isPvEncryptionInTransitEnabled"`
-		AvailabilityDomain             *string                           `json:"availabilityDomain"`
-		CompartmentId                  *string                           `json:"compartmentId"`
-		Shape                          *string                           `json:"shape"`
+		CapacityReservationId          *string                                  `json:"capacityReservationId"`
+		CreateVnicDetails              *CreateVnicDetails                       `json:"createVnicDetails"`
+		DedicatedVmHostId              *string                                  `json:"dedicatedVmHostId"`
+		DefinedTags                    map[string]map[string]interface{}        `json:"definedTags"`
+		DisplayName                    *string                                  `json:"displayName"`
+		ExtendedMetadata               map[string]interface{}                   `json:"extendedMetadata"`
+		FaultDomain                    *string                                  `json:"faultDomain"`
+		FreeformTags                   map[string]string                        `json:"freeformTags"`
+		HostnameLabel                  *string                                  `json:"hostnameLabel"`
+		ImageId                        *string                                  `json:"imageId"`
+		IpxeScript                     *string                                  `json:"ipxeScript"`
+		LaunchOptions                  *LaunchOptions                           `json:"launchOptions"`
+		InstanceOptions                *InstanceOptions                         `json:"instanceOptions"`
+		AvailabilityConfig             *LaunchInstanceAvailabilityConfigDetails `json:"availabilityConfig"`
+		PreemptibleInstanceConfig      *PreemptibleInstanceConfigDetails        `json:"preemptibleInstanceConfig"`
+		Metadata                       map[string]string                        `json:"metadata"`
+		AgentConfig                    *LaunchInstanceAgentConfigDetails        `json:"agentConfig"`
+		ShapeConfig                    *LaunchInstanceShapeConfigDetails        `json:"shapeConfig"`
+		SourceDetails                  instancesourcedetails                    `json:"sourceDetails"`
+		SubnetId                       *string                                  `json:"subnetId"`
+		IsPvEncryptionInTransitEnabled *bool                                    `json:"isPvEncryptionInTransitEnabled"`
+		PlatformConfig                 launchinstanceplatformconfig             `json:"platformConfig"`
+		AvailabilityDomain             *string                                  `json:"availabilityDomain"`
+		CompartmentId                  *string                                  `json:"compartmentId"`
+		Shape                          *string                                  `json:"shape"`
 	}{}
 
 	e = json.Unmarshal(data, &model)
 	if e != nil {
 		return
 	}
+	var nn interface{}
+	m.CapacityReservationId = model.CapacityReservationId
+
 	m.CreateVnicDetails = model.CreateVnicDetails
+
 	m.DedicatedVmHostId = model.DedicatedVmHostId
+
 	m.DefinedTags = model.DefinedTags
+
 	m.DisplayName = model.DisplayName
+
 	m.ExtendedMetadata = model.ExtendedMetadata
+
 	m.FaultDomain = model.FaultDomain
+
 	m.FreeformTags = model.FreeformTags
+
 	m.HostnameLabel = model.HostnameLabel
+
 	m.ImageId = model.ImageId
+
 	m.IpxeScript = model.IpxeScript
+
 	m.LaunchOptions = model.LaunchOptions
+
+	m.InstanceOptions = model.InstanceOptions
+
+	m.AvailabilityConfig = model.AvailabilityConfig
+
+	m.PreemptibleInstanceConfig = model.PreemptibleInstanceConfig
+
 	m.Metadata = model.Metadata
+
 	m.AgentConfig = model.AgentConfig
-	nn, e := model.SourceDetails.UnmarshalPolymorphicJSON(model.SourceDetails.JsonData)
+
+	m.ShapeConfig = model.ShapeConfig
+
+	nn, e = model.SourceDetails.UnmarshalPolymorphicJSON(model.SourceDetails.JsonData)
 	if e != nil {
 		return
 	}
@@ -218,10 +256,26 @@ func (m *LaunchInstanceDetails) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.SourceDetails = nil
 	}
+
 	m.SubnetId = model.SubnetId
+
 	m.IsPvEncryptionInTransitEnabled = model.IsPvEncryptionInTransitEnabled
+
+	nn, e = model.PlatformConfig.UnmarshalPolymorphicJSON(model.PlatformConfig.JsonData)
+	if e != nil {
+		return
+	}
+	if nn != nil {
+		m.PlatformConfig = nn.(LaunchInstancePlatformConfig)
+	} else {
+		m.PlatformConfig = nil
+	}
+
 	m.AvailabilityDomain = model.AvailabilityDomain
+
 	m.CompartmentId = model.CompartmentId
+
 	m.Shape = model.Shape
+
 	return
 }

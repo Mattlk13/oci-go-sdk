@@ -1,18 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// AutonomousDbPreviewVersionSummary The Autonomous Database preview version. Note that preview version software is only available for serverless deployments (https://docs.cloud.oracle.com/Content/Database/Concepts/adboverview.htm#AEI).
+// AutonomousDbPreviewVersionSummary The Autonomous Database preview version. Note that preview version software is only available for databases on shared Exadata infrastructure (https://docs.cloud.oracle.com/Content/Database/Concepts/adboverview.htm#AEI).
 type AutonomousDbPreviewVersionSummary struct {
 
 	// A valid Autonomous Database preview version.
@@ -24,7 +25,11 @@ type AutonomousDbPreviewVersionSummary struct {
 	// The date and time when the preview version availability ends.
 	TimePreviewEnd *common.SDKTime `mandatory:"false" json:"timePreviewEnd"`
 
-	// The Autonomous Database workload type. OLTP indicates an Autonomous Transaction Processing database and DW indicates an Autonomous Data Warehouse database.
+	// The Autonomous Database workload type. The following values are valid:
+	// - OLTP - indicates an Autonomous Transaction Processing database
+	// - DW - indicates an Autonomous Data Warehouse database
+	// - AJD - indicates an Autonomous JSON Database
+	// - APEX - indicates an Autonomous Database with the Oracle APEX Application Development workload type.
 	DbWorkload AutonomousDbPreviewVersionSummaryDbWorkloadEnum `mandatory:"false" json:"dbWorkload,omitempty"`
 
 	// A URL that points to a detailed description of the preview version.
@@ -42,11 +47,15 @@ type AutonomousDbPreviewVersionSummaryDbWorkloadEnum string
 const (
 	AutonomousDbPreviewVersionSummaryDbWorkloadOltp AutonomousDbPreviewVersionSummaryDbWorkloadEnum = "OLTP"
 	AutonomousDbPreviewVersionSummaryDbWorkloadDw   AutonomousDbPreviewVersionSummaryDbWorkloadEnum = "DW"
+	AutonomousDbPreviewVersionSummaryDbWorkloadAjd  AutonomousDbPreviewVersionSummaryDbWorkloadEnum = "AJD"
+	AutonomousDbPreviewVersionSummaryDbWorkloadApex AutonomousDbPreviewVersionSummaryDbWorkloadEnum = "APEX"
 )
 
 var mappingAutonomousDbPreviewVersionSummaryDbWorkload = map[string]AutonomousDbPreviewVersionSummaryDbWorkloadEnum{
 	"OLTP": AutonomousDbPreviewVersionSummaryDbWorkloadOltp,
 	"DW":   AutonomousDbPreviewVersionSummaryDbWorkloadDw,
+	"AJD":  AutonomousDbPreviewVersionSummaryDbWorkloadAjd,
+	"APEX": AutonomousDbPreviewVersionSummaryDbWorkloadApex,
 }
 
 // GetAutonomousDbPreviewVersionSummaryDbWorkloadEnumValues Enumerates the set of values for AutonomousDbPreviewVersionSummaryDbWorkloadEnum

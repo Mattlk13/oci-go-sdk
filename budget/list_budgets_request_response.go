@@ -1,14 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package budget
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // ListBudgetsRequest wrapper for the ListBudgets operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/budget/ListBudgets.go.html to see an example of how to use ListBudgetsRequest.
 type ListBudgetsRequest struct {
 
 	// The ID of the compartment in which to list resources.
@@ -26,10 +31,10 @@ type ListBudgetsRequest struct {
 	// The field to sort by. If not specified, the default is timeCreated.
 	// The default sort order for timeCreated is DESC.
 	// The default sort order for displayName is ASC in alphanumeric order.
-	SortBy *string `mandatory:"false" contributesTo:"query" name:"sortBy"`
+	SortBy ListBudgetsSortByEnum `mandatory:"false" contributesTo:"query" name:"sortBy" omitEmpty:"true"`
 
 	// The current state of the resource to filter by.
-	LifecycleState *string `mandatory:"false" contributesTo:"query" name:"lifecycleState"`
+	LifecycleState ListBudgetsLifecycleStateEnum `mandatory:"false" contributesTo:"query" name:"lifecycleState" omitEmpty:"true"`
 
 	// A user-friendly name. Does not have to be unique, and it's changeable.
 	// Example: `My new resource`
@@ -54,8 +59,16 @@ func (request ListBudgetsRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request ListBudgetsRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request ListBudgetsRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request ListBudgetsRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.
@@ -110,6 +123,52 @@ var mappingListBudgetsSortOrder = map[string]ListBudgetsSortOrderEnum{
 func GetListBudgetsSortOrderEnumValues() []ListBudgetsSortOrderEnum {
 	values := make([]ListBudgetsSortOrderEnum, 0)
 	for _, v := range mappingListBudgetsSortOrder {
+		values = append(values, v)
+	}
+	return values
+}
+
+// ListBudgetsSortByEnum Enum with underlying type: string
+type ListBudgetsSortByEnum string
+
+// Set of constants representing the allowable values for ListBudgetsSortByEnum
+const (
+	ListBudgetsSortByTimecreated ListBudgetsSortByEnum = "timeCreated"
+	ListBudgetsSortByDisplayname ListBudgetsSortByEnum = "displayName"
+)
+
+var mappingListBudgetsSortBy = map[string]ListBudgetsSortByEnum{
+	"timeCreated": ListBudgetsSortByTimecreated,
+	"displayName": ListBudgetsSortByDisplayname,
+}
+
+// GetListBudgetsSortByEnumValues Enumerates the set of values for ListBudgetsSortByEnum
+func GetListBudgetsSortByEnumValues() []ListBudgetsSortByEnum {
+	values := make([]ListBudgetsSortByEnum, 0)
+	for _, v := range mappingListBudgetsSortBy {
+		values = append(values, v)
+	}
+	return values
+}
+
+// ListBudgetsLifecycleStateEnum Enum with underlying type: string
+type ListBudgetsLifecycleStateEnum string
+
+// Set of constants representing the allowable values for ListBudgetsLifecycleStateEnum
+const (
+	ListBudgetsLifecycleStateActive   ListBudgetsLifecycleStateEnum = "ACTIVE"
+	ListBudgetsLifecycleStateInactive ListBudgetsLifecycleStateEnum = "INACTIVE"
+)
+
+var mappingListBudgetsLifecycleState = map[string]ListBudgetsLifecycleStateEnum{
+	"ACTIVE":   ListBudgetsLifecycleStateActive,
+	"INACTIVE": ListBudgetsLifecycleStateInactive,
+}
+
+// GetListBudgetsLifecycleStateEnumValues Enumerates the set of values for ListBudgetsLifecycleStateEnum
+func GetListBudgetsLifecycleStateEnumValues() []ListBudgetsLifecycleStateEnum {
+	values := make([]ListBudgetsLifecycleStateEnum, 0)
+	for _, v := range mappingListBudgetsLifecycleState {
 		values = append(values, v)
 	}
 	return values

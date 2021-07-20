@@ -1,18 +1,20 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
-//
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
+
 // Example code for Container Engine API
-//
+
 package example
 
 import (
 	"context"
 	"fmt"
+	"github.com/oracle/oci-go-sdk/v45/core"
 	"strings"
 
-	"github.com/oracle/oci-go-sdk/common"
-	"github.com/oracle/oci-go-sdk/containerengine"
-	"github.com/oracle/oci-go-sdk/example/helpers"
-	"github.com/oracle/oci-go-sdk/identity"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/containerengine"
+	"github.com/oracle/oci-go-sdk/v45/example/helpers"
+	"github.com/oracle/oci-go-sdk/v45/identity"
 )
 
 // Example for how to do CRUD on cluster, how to get kubernets config and
@@ -88,6 +90,9 @@ func ExampleNodePoolCRUD() {
 	c, clerr := containerengine.NewContainerEngineClientWithConfigurationProvider(common.DefaultConfigProvider())
 	helpers.FatalIfError(clerr)
 
+	compute, err := core.NewComputeClientWithConfigurationProvider(common.DefaultConfigProvider())
+	helpers.FatalIfError(err)
+
 	identityClient, err := identity.NewIdentityClientWithConfigurationProvider(common.DefaultConfigProvider())
 	helpers.FatalIfError(err)
 	req := identity.ListAvailabilityDomainsRequest{}
@@ -107,13 +112,16 @@ func ExampleNodePoolCRUD() {
 	fmt.Println("cluster created")
 	clusterID := getResourceID(workReqResp.Resources, containerengine.WorkRequestResourceActionTypeCreated, "CLUSTER")
 
+	// get Image Id
+	image := getImageID(ctx, compute)
+
 	// create NodePool
 	createNodePoolReq := containerengine.CreateNodePoolRequest{}
 	createNodePoolReq.CompartmentId = helpers.CompartmentID()
 	createNodePoolReq.Name = common.String("GOSDK_SAMPLE_NP")
 	createNodePoolReq.ClusterId = clusterID
 	createNodePoolReq.KubernetesVersion = common.String(kubeVersion)
-	createNodePoolReq.NodeImageName = common.String("Oracle-Linux-7.4")
+	createNodePoolReq.NodeSourceDetails = containerengine.NodeSourceViaImageDetails{ImageId: image.Id}
 	createNodePoolReq.NodeShape = common.String("VM.Standard1.1")
 	createNodePoolReq.InitialNodeLabels = []containerengine.KeyValue{{Key: common.String("foo"), Value: common.String("bar")}}
 	createNodePoolReq.NodeConfigDetails = &containerengine.CreateNodePoolNodeConfigDetails{
@@ -179,8 +187,6 @@ func ExampleKubeConfig() {
 	req := containerengine.CreateKubeconfigRequest{
 		ClusterId: clusterID,
 	}
-
-	req.Expiration = common.Int(360)
 
 	_, err := c.CreateKubeconfig(ctx, req)
 	helpers.FatalIfError(err)
@@ -320,4 +326,17 @@ func getResourceID(resources []containerengine.WorkRequestResource, actionType c
 
 	fmt.Println("cannot find matched resources")
 	return nil
+}
+
+func getImageID(ctx context.Context, c core.ComputeClient) core.Image {
+	request := core.ListImagesRequest{
+		CompartmentId:   helpers.CompartmentID(),
+		OperatingSystem: common.String("Oracle Linux"),
+		Shape:           common.String("VM.Standard1.1"),
+	}
+
+	r, err := c.ListImages(ctx, request)
+	helpers.FatalIfError(err)
+
+	return r.Items[0]
 }

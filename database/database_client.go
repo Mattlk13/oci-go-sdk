@@ -1,9 +1,10 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
@@ -11,7 +12,8 @@ package database
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type DatabaseClient struct {
 // NewDatabaseClientWithConfigurationProvider Creates a new default Database client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewDatabaseClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client DatabaseClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newDatabaseClientFromBaseClient(baseClient, provider)
+}
+
+// NewDatabaseClientWithOboToken Creates a new default Database client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewDatabaseClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client DatabaseClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newDatabaseClientFromBaseClient(baseClient, configProvider)
+}
+
+func newDatabaseClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client DatabaseClient, err error) {
 	client = DatabaseClient{BaseClient: baseClient}
 	client.BasePath = "20160918"
 	err = client.setConfigurationProvider(configProvider)
@@ -58,10 +79,17 @@ func (client *DatabaseClient) ConfigurationProvider() *common.ConfigurationProvi
 	return client.config
 }
 
-// ActivateExadataInfrastructure Activates the specified Exadata infrastructure.
+// ActivateExadataInfrastructure Activates the specified Exadata infrastructure resource. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ActivateExadataInfrastructure.go.html to see an example of how to use ActivateExadataInfrastructure API.
 func (client DatabaseClient) ActivateExadataInfrastructure(ctx context.Context, request ActivateExadataInfrastructureRequest) (response ActivateExadataInfrastructureResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -73,7 +101,12 @@ func (client DatabaseClient) ActivateExadataInfrastructure(ctx context.Context, 
 	ociResponse, err = common.Retry(ctx, request, client.activateExadataInfrastructure, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ActivateExadataInfrastructureResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ActivateExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ActivateExadataInfrastructureResponse{}
+			}
 		}
 		return
 	}
@@ -86,8 +119,9 @@ func (client DatabaseClient) ActivateExadataInfrastructure(ctx context.Context, 
 }
 
 // activateExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) activateExadataInfrastructure(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/actions/activate")
+func (client DatabaseClient) activateExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/actions/activate", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -105,12 +139,139 @@ func (client DatabaseClient) activateExadataInfrastructure(ctx context.Context, 
 	return response, err
 }
 
+// AddStorageCapacityExadataInfrastructure Makes the storage capacity from additional storage servers available for VM Cluster consumption. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/AddStorageCapacityExadataInfrastructure.go.html to see an example of how to use AddStorageCapacityExadataInfrastructure API.
+func (client DatabaseClient) AddStorageCapacityExadataInfrastructure(ctx context.Context, request AddStorageCapacityExadataInfrastructureRequest) (response AddStorageCapacityExadataInfrastructureResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.addStorageCapacityExadataInfrastructure, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = AddStorageCapacityExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = AddStorageCapacityExadataInfrastructureResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(AddStorageCapacityExadataInfrastructureResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into AddStorageCapacityExadataInfrastructureResponse")
+	}
+	return
+}
+
+// addStorageCapacityExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) addStorageCapacityExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/actions/addStorageCapacity", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response AddStorageCapacityExadataInfrastructureResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// AutonomousDatabaseManualRefresh Initiates a data refresh for an Autonomous Database refreshable clone. Data is refreshed from the source database to the point of a specified timestamp.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/AutonomousDatabaseManualRefresh.go.html to see an example of how to use AutonomousDatabaseManualRefresh API.
+func (client DatabaseClient) AutonomousDatabaseManualRefresh(ctx context.Context, request AutonomousDatabaseManualRefreshRequest) (response AutonomousDatabaseManualRefreshResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.autonomousDatabaseManualRefresh, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = AutonomousDatabaseManualRefreshResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = AutonomousDatabaseManualRefreshResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(AutonomousDatabaseManualRefreshResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into AutonomousDatabaseManualRefreshResponse")
+	}
+	return
+}
+
+// autonomousDatabaseManualRefresh implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) autonomousDatabaseManualRefresh(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/refresh", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response AutonomousDatabaseManualRefreshResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // ChangeAutonomousContainerDatabaseCompartment Move the Autonomous Container Database and its dependent resources to the specified compartment.
 // For more information about moving Autonomous Container Databases, see
 // Moving Database Resources to a Different Compartment (https://docs.cloud.oracle.com/Content/Database/Concepts/databaseoverview.htm#moveRes).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeAutonomousContainerDatabaseCompartment.go.html to see an example of how to use ChangeAutonomousContainerDatabaseCompartment API.
 func (client DatabaseClient) ChangeAutonomousContainerDatabaseCompartment(ctx context.Context, request ChangeAutonomousContainerDatabaseCompartmentRequest) (response ChangeAutonomousContainerDatabaseCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -122,7 +283,12 @@ func (client DatabaseClient) ChangeAutonomousContainerDatabaseCompartment(ctx co
 	ociResponse, err = common.Retry(ctx, request, client.changeAutonomousContainerDatabaseCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeAutonomousContainerDatabaseCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeAutonomousContainerDatabaseCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeAutonomousContainerDatabaseCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -135,8 +301,9 @@ func (client DatabaseClient) ChangeAutonomousContainerDatabaseCompartment(ctx co
 }
 
 // changeAutonomousContainerDatabaseCompartment implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) changeAutonomousContainerDatabaseCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}/actions/changeCompartment")
+func (client DatabaseClient) changeAutonomousContainerDatabaseCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -157,9 +324,16 @@ func (client DatabaseClient) changeAutonomousContainerDatabaseCompartment(ctx co
 // ChangeAutonomousDatabaseCompartment Move the Autonomous Database and its dependent resources to the specified compartment.
 // For more information about moving Autonomous Databases, see
 // Moving Database Resources to a Different Compartment (https://docs.cloud.oracle.com/Content/Database/Concepts/databaseoverview.htm#moveRes).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeAutonomousDatabaseCompartment.go.html to see an example of how to use ChangeAutonomousDatabaseCompartment API.
 func (client DatabaseClient) ChangeAutonomousDatabaseCompartment(ctx context.Context, request ChangeAutonomousDatabaseCompartmentRequest) (response ChangeAutonomousDatabaseCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -171,7 +345,12 @@ func (client DatabaseClient) ChangeAutonomousDatabaseCompartment(ctx context.Con
 	ociResponse, err = common.Retry(ctx, request, client.changeAutonomousDatabaseCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeAutonomousDatabaseCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeAutonomousDatabaseCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeAutonomousDatabaseCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -184,8 +363,9 @@ func (client DatabaseClient) ChangeAutonomousDatabaseCompartment(ctx context.Con
 }
 
 // changeAutonomousDatabaseCompartment implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) changeAutonomousDatabaseCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/changeCompartment")
+func (client DatabaseClient) changeAutonomousDatabaseCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -203,12 +383,19 @@ func (client DatabaseClient) changeAutonomousDatabaseCompartment(ctx context.Con
 	return response, err
 }
 
-// ChangeAutonomousExadataInfrastructureCompartment Move the Autonomous Exadata Infrastructure and its dependent resources to the specified compartment.
-// For more information about moving Autonomous Exadata Infrastructures, see
+// ChangeAutonomousExadataInfrastructureCompartment Moves the Autonomous Exadata Infrastructure resource and its dependent resources to the specified compartment.
+// For more information, see
 // Moving Database Resources to a Different Compartment (https://docs.cloud.oracle.com/Content/Database/Concepts/databaseoverview.htm#moveRes).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeAutonomousExadataInfrastructureCompartment.go.html to see an example of how to use ChangeAutonomousExadataInfrastructureCompartment API.
 func (client DatabaseClient) ChangeAutonomousExadataInfrastructureCompartment(ctx context.Context, request ChangeAutonomousExadataInfrastructureCompartmentRequest) (response ChangeAutonomousExadataInfrastructureCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -220,7 +407,12 @@ func (client DatabaseClient) ChangeAutonomousExadataInfrastructureCompartment(ct
 	ociResponse, err = common.Retry(ctx, request, client.changeAutonomousExadataInfrastructureCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeAutonomousExadataInfrastructureCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeAutonomousExadataInfrastructureCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeAutonomousExadataInfrastructureCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -233,8 +425,9 @@ func (client DatabaseClient) ChangeAutonomousExadataInfrastructureCompartment(ct
 }
 
 // changeAutonomousExadataInfrastructureCompartment implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) changeAutonomousExadataInfrastructureCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousExadataInfrastructures/{autonomousExadataInfrastructureId}/actions/changeCompartment")
+func (client DatabaseClient) changeAutonomousExadataInfrastructureCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousExadataInfrastructures/{autonomousExadataInfrastructureId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -252,12 +445,80 @@ func (client DatabaseClient) changeAutonomousExadataInfrastructureCompartment(ct
 	return response, err
 }
 
+// ChangeAutonomousVmClusterCompartment To move an Autonomous VM cluster and its dependent resources to another compartment, use the
+// ChangeAutonomousVmClusterCompartment operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeAutonomousVmClusterCompartment.go.html to see an example of how to use ChangeAutonomousVmClusterCompartment API.
+func (client DatabaseClient) ChangeAutonomousVmClusterCompartment(ctx context.Context, request ChangeAutonomousVmClusterCompartmentRequest) (response ChangeAutonomousVmClusterCompartmentResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.changeAutonomousVmClusterCompartment, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeAutonomousVmClusterCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeAutonomousVmClusterCompartmentResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ChangeAutonomousVmClusterCompartmentResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ChangeAutonomousVmClusterCompartmentResponse")
+	}
+	return
+}
+
+// changeAutonomousVmClusterCompartment implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) changeAutonomousVmClusterCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousVmClusters/{autonomousVmClusterId}/actions/changeCompartment", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ChangeAutonomousVmClusterCompartmentResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // ChangeBackupDestinationCompartment Move the backup destination and its dependent resources to the specified compartment.
-// For more information about moving backup destinations, see
+// For more information, see
 // Moving Database Resources to a Different Compartment (https://docs.cloud.oracle.com/Content/Database/Concepts/databaseoverview.htm#moveRes).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeBackupDestinationCompartment.go.html to see an example of how to use ChangeBackupDestinationCompartment API.
 func (client DatabaseClient) ChangeBackupDestinationCompartment(ctx context.Context, request ChangeBackupDestinationCompartmentRequest) (response ChangeBackupDestinationCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -269,7 +530,12 @@ func (client DatabaseClient) ChangeBackupDestinationCompartment(ctx context.Cont
 	ociResponse, err = common.Retry(ctx, request, client.changeBackupDestinationCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeBackupDestinationCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeBackupDestinationCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeBackupDestinationCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -282,8 +548,9 @@ func (client DatabaseClient) ChangeBackupDestinationCompartment(ctx context.Cont
 }
 
 // changeBackupDestinationCompartment implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) changeBackupDestinationCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/backupDestinations/{backupDestinationId}/actions/changeCompartment")
+func (client DatabaseClient) changeBackupDestinationCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/backupDestinations/{backupDestinationId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -301,12 +568,201 @@ func (client DatabaseClient) changeBackupDestinationCompartment(ctx context.Cont
 	return response, err
 }
 
-// ChangeDbSystemCompartment Move the DB system and its dependent resources to the specified compartment.
+// ChangeCloudExadataInfrastructureCompartment Moves a cloud Exadata infrastructure resource and its dependent resources to another compartment. Applies to Exadata Cloud Service instances only. For more information about moving resources to a different compartment, see Moving Database Resources to a Different Compartment (https://docs.cloud.oracle.com/Content/Database/Concepts/databaseoverview.htm#moveRes).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeCloudExadataInfrastructureCompartment.go.html to see an example of how to use ChangeCloudExadataInfrastructureCompartment API.
+func (client DatabaseClient) ChangeCloudExadataInfrastructureCompartment(ctx context.Context, request ChangeCloudExadataInfrastructureCompartmentRequest) (response ChangeCloudExadataInfrastructureCompartmentResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.changeCloudExadataInfrastructureCompartment, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeCloudExadataInfrastructureCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeCloudExadataInfrastructureCompartmentResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ChangeCloudExadataInfrastructureCompartmentResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ChangeCloudExadataInfrastructureCompartmentResponse")
+	}
+	return
+}
+
+// changeCloudExadataInfrastructureCompartment implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) changeCloudExadataInfrastructureCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/cloudExadataInfrastructures/{cloudExadataInfrastructureId}/actions/changeCompartment", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ChangeCloudExadataInfrastructureCompartmentResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ChangeCloudVmClusterCompartment Moves a cloud VM cluster and its dependent resources to another compartment. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeCloudVmClusterCompartment.go.html to see an example of how to use ChangeCloudVmClusterCompartment API.
+func (client DatabaseClient) ChangeCloudVmClusterCompartment(ctx context.Context, request ChangeCloudVmClusterCompartmentRequest) (response ChangeCloudVmClusterCompartmentResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.changeCloudVmClusterCompartment, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeCloudVmClusterCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeCloudVmClusterCompartmentResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ChangeCloudVmClusterCompartmentResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ChangeCloudVmClusterCompartmentResponse")
+	}
+	return
+}
+
+// changeCloudVmClusterCompartment implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) changeCloudVmClusterCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/cloudVmClusters/{cloudVmClusterId}/actions/changeCompartment", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ChangeCloudVmClusterCompartmentResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ChangeDatabaseSoftwareImageCompartment Move the Database Software Image and its dependent resources to the specified compartment.
+// For more information about moving Databse Software Images, see
+// Moving Database Resources to a Different Compartment (https://docs.cloud.oracle.com/Content/Database/Concepts/databaseoverview.htm#moveRes).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeDatabaseSoftwareImageCompartment.go.html to see an example of how to use ChangeDatabaseSoftwareImageCompartment API.
+func (client DatabaseClient) ChangeDatabaseSoftwareImageCompartment(ctx context.Context, request ChangeDatabaseSoftwareImageCompartmentRequest) (response ChangeDatabaseSoftwareImageCompartmentResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.changeDatabaseSoftwareImageCompartment, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeDatabaseSoftwareImageCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeDatabaseSoftwareImageCompartmentResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ChangeDatabaseSoftwareImageCompartmentResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ChangeDatabaseSoftwareImageCompartmentResponse")
+	}
+	return
+}
+
+// changeDatabaseSoftwareImageCompartment implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) changeDatabaseSoftwareImageCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databaseSoftwareImages/{databaseSoftwareImageId}/actions/changeCompartment", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ChangeDatabaseSoftwareImageCompartmentResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ChangeDbSystemCompartment Moves the DB system and its dependent resources to the specified compartment.
 // For more information about moving DB systems, see
 // Moving Database Resources to a Different Compartment (https://docs.cloud.oracle.com/Content/Database/Concepts/databaseoverview.htm#moveRes).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeDbSystemCompartment.go.html to see an example of how to use ChangeDbSystemCompartment API.
 func (client DatabaseClient) ChangeDbSystemCompartment(ctx context.Context, request ChangeDbSystemCompartmentRequest) (response ChangeDbSystemCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -318,7 +774,12 @@ func (client DatabaseClient) ChangeDbSystemCompartment(ctx context.Context, requ
 	ociResponse, err = common.Retry(ctx, request, client.changeDbSystemCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeDbSystemCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeDbSystemCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeDbSystemCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -331,8 +792,9 @@ func (client DatabaseClient) ChangeDbSystemCompartment(ctx context.Context, requ
 }
 
 // changeDbSystemCompartment implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) changeDbSystemCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dbSystems/{dbSystemId}/actions/changeCompartment")
+func (client DatabaseClient) changeDbSystemCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dbSystems/{dbSystemId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -350,11 +812,18 @@ func (client DatabaseClient) changeDbSystemCompartment(ctx context.Context, requ
 	return response, err
 }
 
-// ChangeExadataInfrastructureCompartment To move an Exadata infrastructure and its dependent resources to another compartment, use the
-// ChangeExadataInfrastructureCompartment operation.
+// ChangeExadataInfrastructureCompartment Moves an Exadata infrastructure resource and its dependent resources to another compartment. Applies to Exadata Cloud@Customer instances only.
+// To move an Exadata Cloud Service infrastructure resource to another compartment, use the  ChangeCloudExadataInfrastructureCompartment operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeExadataInfrastructureCompartment.go.html to see an example of how to use ChangeExadataInfrastructureCompartment API.
 func (client DatabaseClient) ChangeExadataInfrastructureCompartment(ctx context.Context, request ChangeExadataInfrastructureCompartmentRequest) (response ChangeExadataInfrastructureCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -366,7 +835,12 @@ func (client DatabaseClient) ChangeExadataInfrastructureCompartment(ctx context.
 	ociResponse, err = common.Retry(ctx, request, client.changeExadataInfrastructureCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeExadataInfrastructureCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeExadataInfrastructureCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeExadataInfrastructureCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -379,8 +853,9 @@ func (client DatabaseClient) ChangeExadataInfrastructureCompartment(ctx context.
 }
 
 // changeExadataInfrastructureCompartment implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) changeExadataInfrastructureCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/actions/changeCompartment")
+func (client DatabaseClient) changeExadataInfrastructureCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -398,11 +873,268 @@ func (client DatabaseClient) changeExadataInfrastructureCompartment(ctx context.
 	return response, err
 }
 
-// ChangeVmClusterCompartment To move a VM cluster and its dependent resources to another compartment, use the
-// ChangeVmClusterCompartment operation.
+// ChangeExternalContainerDatabaseCompartment Move the CreateExternalContainerDatabaseDetails
+// and its dependent resources to the specified compartment.
+// For more information about moving external container databases, see
+// Moving Database Resources to a Different Compartment (https://docs.cloud.oracle.com/Content/Database/Concepts/databaseoverview.htm#moveRes).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeExternalContainerDatabaseCompartment.go.html to see an example of how to use ChangeExternalContainerDatabaseCompartment API.
+func (client DatabaseClient) ChangeExternalContainerDatabaseCompartment(ctx context.Context, request ChangeExternalContainerDatabaseCompartmentRequest) (response ChangeExternalContainerDatabaseCompartmentResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.changeExternalContainerDatabaseCompartment, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeExternalContainerDatabaseCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeExternalContainerDatabaseCompartmentResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ChangeExternalContainerDatabaseCompartmentResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ChangeExternalContainerDatabaseCompartmentResponse")
+	}
+	return
+}
+
+// changeExternalContainerDatabaseCompartment implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) changeExternalContainerDatabaseCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalcontainerdatabases/{externalContainerDatabaseId}/actions/changeCompartment", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ChangeExternalContainerDatabaseCompartmentResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ChangeExternalNonContainerDatabaseCompartment Move the external non-container database and its dependent resources to the specified compartment.
+// For more information about moving external non-container databases, see
+// Moving Database Resources to a Different Compartment (https://docs.cloud.oracle.com/Content/Database/Concepts/databaseoverview.htm#moveRes).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeExternalNonContainerDatabaseCompartment.go.html to see an example of how to use ChangeExternalNonContainerDatabaseCompartment API.
+func (client DatabaseClient) ChangeExternalNonContainerDatabaseCompartment(ctx context.Context, request ChangeExternalNonContainerDatabaseCompartmentRequest) (response ChangeExternalNonContainerDatabaseCompartmentResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.changeExternalNonContainerDatabaseCompartment, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeExternalNonContainerDatabaseCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeExternalNonContainerDatabaseCompartmentResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ChangeExternalNonContainerDatabaseCompartmentResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ChangeExternalNonContainerDatabaseCompartmentResponse")
+	}
+	return
+}
+
+// changeExternalNonContainerDatabaseCompartment implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) changeExternalNonContainerDatabaseCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalnoncontainerdatabases/{externalNonContainerDatabaseId}/actions/changeCompartment", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ChangeExternalNonContainerDatabaseCompartmentResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ChangeExternalPluggableDatabaseCompartment Move the CreateExternalPluggableDatabaseDetails and
+// its dependent resources to the specified compartment.
+// For more information about moving external pluggable databases, see
+// Moving Database Resources to a Different Compartment (https://docs.cloud.oracle.com/Content/Database/Concepts/databaseoverview.htm#moveRes).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeExternalPluggableDatabaseCompartment.go.html to see an example of how to use ChangeExternalPluggableDatabaseCompartment API.
+func (client DatabaseClient) ChangeExternalPluggableDatabaseCompartment(ctx context.Context, request ChangeExternalPluggableDatabaseCompartmentRequest) (response ChangeExternalPluggableDatabaseCompartmentResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.changeExternalPluggableDatabaseCompartment, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeExternalPluggableDatabaseCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeExternalPluggableDatabaseCompartmentResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ChangeExternalPluggableDatabaseCompartmentResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ChangeExternalPluggableDatabaseCompartmentResponse")
+	}
+	return
+}
+
+// changeExternalPluggableDatabaseCompartment implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) changeExternalPluggableDatabaseCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalpluggabledatabases/{externalPluggableDatabaseId}/actions/changeCompartment", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ChangeExternalPluggableDatabaseCompartmentResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ChangeKeyStoreCompartment Move the key store resource to the specified compartment.
+// For more information about moving key stores, see
+// Moving Database Resources to a Different Compartment (https://docs.cloud.oracle.com/Content/Database/Concepts/databaseoverview.htm#moveRes).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeKeyStoreCompartment.go.html to see an example of how to use ChangeKeyStoreCompartment API.
+func (client DatabaseClient) ChangeKeyStoreCompartment(ctx context.Context, request ChangeKeyStoreCompartmentRequest) (response ChangeKeyStoreCompartmentResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.changeKeyStoreCompartment, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeKeyStoreCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeKeyStoreCompartmentResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ChangeKeyStoreCompartmentResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ChangeKeyStoreCompartmentResponse")
+	}
+	return
+}
+
+// changeKeyStoreCompartment implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) changeKeyStoreCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/keyStores/{keyStoreId}/actions/changeCompartment", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ChangeKeyStoreCompartmentResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ChangeVmClusterCompartment Moves a VM cluster and its dependent resources to another compartment. Applies to Exadata Cloud@Customer instances only.
+// To move a cloud VM cluster in an Exadata Cloud Service instance to another compartment, use the ChangeCloudVmClusterCompartment operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ChangeVmClusterCompartment.go.html to see an example of how to use ChangeVmClusterCompartment API.
 func (client DatabaseClient) ChangeVmClusterCompartment(ctx context.Context, request ChangeVmClusterCompartmentRequest) (response ChangeVmClusterCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -414,7 +1146,12 @@ func (client DatabaseClient) ChangeVmClusterCompartment(ctx context.Context, req
 	ociResponse, err = common.Retry(ctx, request, client.changeVmClusterCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeVmClusterCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeVmClusterCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeVmClusterCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -427,8 +1164,9 @@ func (client DatabaseClient) ChangeVmClusterCompartment(ctx context.Context, req
 }
 
 // changeVmClusterCompartment implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) changeVmClusterCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/vmClusters/{vmClusterId}/actions/changeCompartment")
+func (client DatabaseClient) changeVmClusterCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/vmClusters/{vmClusterId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -446,11 +1184,79 @@ func (client DatabaseClient) changeVmClusterCompartment(ctx context.Context, req
 	return response, err
 }
 
+// CheckExternalDatabaseConnectorConnectionStatus Check the status of the external database connection specified in this connector.
+// This operation will refresh the connectionStatus and timeConnectionStatusLastUpdated fields.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CheckExternalDatabaseConnectorConnectionStatus.go.html to see an example of how to use CheckExternalDatabaseConnectorConnectionStatus API.
+func (client DatabaseClient) CheckExternalDatabaseConnectorConnectionStatus(ctx context.Context, request CheckExternalDatabaseConnectorConnectionStatusRequest) (response CheckExternalDatabaseConnectorConnectionStatusResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.checkExternalDatabaseConnectorConnectionStatus, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CheckExternalDatabaseConnectorConnectionStatusResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CheckExternalDatabaseConnectorConnectionStatusResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CheckExternalDatabaseConnectorConnectionStatusResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CheckExternalDatabaseConnectorConnectionStatusResponse")
+	}
+	return
+}
+
+// checkExternalDatabaseConnectorConnectionStatus implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) checkExternalDatabaseConnectorConnectionStatus(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externaldatabaseconnectors/{externalDatabaseConnectorId}/actions/checkConnectionStatus", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CheckExternalDatabaseConnectorConnectionStatusResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // CompleteExternalBackupJob Changes the status of the standalone backup resource to `ACTIVE` after the backup is created from the on-premises database and placed in Oracle Cloud Infrastructure Object Storage.
 // **Note:** This API is used by an Oracle Cloud Infrastructure Python script that is packaged with the Oracle Cloud Infrastructure CLI. Oracle recommends that you use the script instead using the API directly. See Migrating an On-Premises Database to Oracle Cloud Infrastructure by Creating a Backup in the Cloud (https://docs.cloud.oracle.com/Content/Database/Tasks/mig-onprembackup.htm) for more information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CompleteExternalBackupJob.go.html to see an example of how to use CompleteExternalBackupJob API.
 func (client DatabaseClient) CompleteExternalBackupJob(ctx context.Context, request CompleteExternalBackupJobRequest) (response CompleteExternalBackupJobResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -462,7 +1268,12 @@ func (client DatabaseClient) CompleteExternalBackupJob(ctx context.Context, requ
 	ociResponse, err = common.Retry(ctx, request, client.completeExternalBackupJob, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CompleteExternalBackupJobResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CompleteExternalBackupJobResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CompleteExternalBackupJobResponse{}
+			}
 		}
 		return
 	}
@@ -475,8 +1286,9 @@ func (client DatabaseClient) CompleteExternalBackupJob(ctx context.Context, requ
 }
 
 // completeExternalBackupJob implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) completeExternalBackupJob(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalBackupJobs/{backupId}/actions/complete")
+func (client DatabaseClient) completeExternalBackupJob(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalBackupJobs/{backupId}/actions/complete", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -494,10 +1306,77 @@ func (client DatabaseClient) completeExternalBackupJob(ctx context.Context, requ
 	return response, err
 }
 
-// CreateAutonomousContainerDatabase Create a new Autonomous Container Database in the specified Autonomous Exadata Infrastructure.
+// ConfigureAutonomousDatabaseVaultKey Configures the Autonomous Database Vault service key (https://docs.cloud.oracle.com/Content/KeyManagement/Concepts/keyoverview.htm#concepts).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ConfigureAutonomousDatabaseVaultKey.go.html to see an example of how to use ConfigureAutonomousDatabaseVaultKey API.
+func (client DatabaseClient) ConfigureAutonomousDatabaseVaultKey(ctx context.Context, request ConfigureAutonomousDatabaseVaultKeyRequest) (response ConfigureAutonomousDatabaseVaultKeyResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.configureAutonomousDatabaseVaultKey, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ConfigureAutonomousDatabaseVaultKeyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ConfigureAutonomousDatabaseVaultKeyResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ConfigureAutonomousDatabaseVaultKeyResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ConfigureAutonomousDatabaseVaultKeyResponse")
+	}
+	return
+}
+
+// configureAutonomousDatabaseVaultKey implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) configureAutonomousDatabaseVaultKey(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/configureAutonomousDatabaseVaultKey", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ConfigureAutonomousDatabaseVaultKeyResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateAutonomousContainerDatabase Creates an Autonomous Container Database in the specified Autonomous Exadata Infrastructure.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateAutonomousContainerDatabase.go.html to see an example of how to use CreateAutonomousContainerDatabase API.
 func (client DatabaseClient) CreateAutonomousContainerDatabase(ctx context.Context, request CreateAutonomousContainerDatabaseRequest) (response CreateAutonomousContainerDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -509,7 +1388,12 @@ func (client DatabaseClient) CreateAutonomousContainerDatabase(ctx context.Conte
 	ociResponse, err = common.Retry(ctx, request, client.createAutonomousContainerDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateAutonomousContainerDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateAutonomousContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateAutonomousContainerDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -522,8 +1406,9 @@ func (client DatabaseClient) CreateAutonomousContainerDatabase(ctx context.Conte
 }
 
 // createAutonomousContainerDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createAutonomousContainerDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousContainerDatabases")
+func (client DatabaseClient) createAutonomousContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousContainerDatabases", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -541,104 +1426,17 @@ func (client DatabaseClient) createAutonomousContainerDatabase(ctx context.Conte
 	return response, err
 }
 
-// CreateAutonomousDataWarehouse **Deprecated.** To create a new Autonomous Data Warehouse, use the CreateAutonomousDatabase operation and specify `DW` as the workload type.
-func (client DatabaseClient) CreateAutonomousDataWarehouse(ctx context.Context, request CreateAutonomousDataWarehouseRequest) (response CreateAutonomousDataWarehouseResponse, err error) {
-	var ociResponse common.OCIResponse
-	policy := common.NoRetryPolicy()
-	if request.RetryPolicy() != nil {
-		policy = *request.RetryPolicy()
-	}
-
-	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
-		request.OpcRetryToken = common.String(common.RetryToken())
-	}
-
-	ociResponse, err = common.Retry(ctx, request, client.createAutonomousDataWarehouse, policy)
-	if err != nil {
-		if ociResponse != nil {
-			response = CreateAutonomousDataWarehouseResponse{RawResponse: ociResponse.HTTPResponse()}
-		}
-		return
-	}
-	if convertedResponse, ok := ociResponse.(CreateAutonomousDataWarehouseResponse); ok {
-		response = convertedResponse
-	} else {
-		err = fmt.Errorf("failed to convert OCIResponse into CreateAutonomousDataWarehouseResponse")
-	}
-	return
-}
-
-// createAutonomousDataWarehouse implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createAutonomousDataWarehouse(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDataWarehouses")
-	if err != nil {
-		return nil, err
-	}
-
-	var response CreateAutonomousDataWarehouseResponse
-	var httpResponse *http.Response
-	httpResponse, err = client.Call(ctx, &httpRequest)
-	defer common.CloseBodyIfValid(httpResponse)
-	response.RawResponse = httpResponse
-	if err != nil {
-		return response, err
-	}
-
-	err = common.UnmarshalResponse(httpResponse, &response)
-	return response, err
-}
-
-// CreateAutonomousDataWarehouseBackup **Deprecated.** To create a new Autonomous Data Warehouse backup for a specified database, use the CreateAutonomousDatabaseBackup operation.
-func (client DatabaseClient) CreateAutonomousDataWarehouseBackup(ctx context.Context, request CreateAutonomousDataWarehouseBackupRequest) (response CreateAutonomousDataWarehouseBackupResponse, err error) {
-	var ociResponse common.OCIResponse
-	policy := common.NoRetryPolicy()
-	if request.RetryPolicy() != nil {
-		policy = *request.RetryPolicy()
-	}
-
-	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
-		request.OpcRetryToken = common.String(common.RetryToken())
-	}
-
-	ociResponse, err = common.Retry(ctx, request, client.createAutonomousDataWarehouseBackup, policy)
-	if err != nil {
-		if ociResponse != nil {
-			response = CreateAutonomousDataWarehouseBackupResponse{RawResponse: ociResponse.HTTPResponse()}
-		}
-		return
-	}
-	if convertedResponse, ok := ociResponse.(CreateAutonomousDataWarehouseBackupResponse); ok {
-		response = convertedResponse
-	} else {
-		err = fmt.Errorf("failed to convert OCIResponse into CreateAutonomousDataWarehouseBackupResponse")
-	}
-	return
-}
-
-// createAutonomousDataWarehouseBackup implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createAutonomousDataWarehouseBackup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDataWarehouseBackups")
-	if err != nil {
-		return nil, err
-	}
-
-	var response CreateAutonomousDataWarehouseBackupResponse
-	var httpResponse *http.Response
-	httpResponse, err = client.Call(ctx, &httpRequest)
-	defer common.CloseBodyIfValid(httpResponse)
-	response.RawResponse = httpResponse
-	if err != nil {
-		return response, err
-	}
-
-	err = common.UnmarshalResponse(httpResponse, &response)
-	return response, err
-}
-
 // CreateAutonomousDatabase Creates a new Autonomous Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateAutonomousDatabase.go.html to see an example of how to use CreateAutonomousDatabase API.
 func (client DatabaseClient) CreateAutonomousDatabase(ctx context.Context, request CreateAutonomousDatabaseRequest) (response CreateAutonomousDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -650,7 +1448,12 @@ func (client DatabaseClient) CreateAutonomousDatabase(ctx context.Context, reque
 	ociResponse, err = common.Retry(ctx, request, client.createAutonomousDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateAutonomousDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateAutonomousDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateAutonomousDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -663,8 +1466,9 @@ func (client DatabaseClient) CreateAutonomousDatabase(ctx context.Context, reque
 }
 
 // createAutonomousDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createAutonomousDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases")
+func (client DatabaseClient) createAutonomousDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -683,9 +1487,16 @@ func (client DatabaseClient) createAutonomousDatabase(ctx context.Context, reque
 }
 
 // CreateAutonomousDatabaseBackup Creates a new Autonomous Database backup for the specified database based on the provided request parameters.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateAutonomousDatabaseBackup.go.html to see an example of how to use CreateAutonomousDatabaseBackup API.
 func (client DatabaseClient) CreateAutonomousDatabaseBackup(ctx context.Context, request CreateAutonomousDatabaseBackupRequest) (response CreateAutonomousDatabaseBackupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -697,7 +1508,12 @@ func (client DatabaseClient) CreateAutonomousDatabaseBackup(ctx context.Context,
 	ociResponse, err = common.Retry(ctx, request, client.createAutonomousDatabaseBackup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateAutonomousDatabaseBackupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateAutonomousDatabaseBackupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateAutonomousDatabaseBackupResponse{}
+			}
 		}
 		return
 	}
@@ -710,8 +1526,9 @@ func (client DatabaseClient) CreateAutonomousDatabaseBackup(ctx context.Context,
 }
 
 // createAutonomousDatabaseBackup implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createAutonomousDatabaseBackup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabaseBackups")
+func (client DatabaseClient) createAutonomousDatabaseBackup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabaseBackups", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -729,10 +1546,77 @@ func (client DatabaseClient) createAutonomousDatabaseBackup(ctx context.Context,
 	return response, err
 }
 
+// CreateAutonomousVmCluster Creates an Autonomous VM cluster for Exadata Cloud@Customer.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateAutonomousVmCluster.go.html to see an example of how to use CreateAutonomousVmCluster API.
+func (client DatabaseClient) CreateAutonomousVmCluster(ctx context.Context, request CreateAutonomousVmClusterRequest) (response CreateAutonomousVmClusterResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createAutonomousVmCluster, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateAutonomousVmClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateAutonomousVmClusterResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateAutonomousVmClusterResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateAutonomousVmClusterResponse")
+	}
+	return
+}
+
+// createAutonomousVmCluster implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) createAutonomousVmCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousVmClusters", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateAutonomousVmClusterResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // CreateBackup Creates a new backup in the specified database based on the request parameters you provide. If you previously used RMAN or dbcli to configure backups and then you switch to using the Console or the API for backups, a new backup configuration is created and associated with your database. This means that you can no longer rely on your previously configured unmanaged backups to work.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateBackup.go.html to see an example of how to use CreateBackup API.
 func (client DatabaseClient) CreateBackup(ctx context.Context, request CreateBackupRequest) (response CreateBackupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -744,7 +1628,12 @@ func (client DatabaseClient) CreateBackup(ctx context.Context, request CreateBac
 	ociResponse, err = common.Retry(ctx, request, client.createBackup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateBackupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateBackupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateBackupResponse{}
+			}
 		}
 		return
 	}
@@ -757,8 +1646,9 @@ func (client DatabaseClient) CreateBackup(ctx context.Context, request CreateBac
 }
 
 // createBackup implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createBackup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/backups")
+func (client DatabaseClient) createBackup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/backups", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -776,10 +1666,17 @@ func (client DatabaseClient) createBackup(ctx context.Context, request common.OC
 	return response, err
 }
 
-// CreateBackupDestination Creates a backup destination.
+// CreateBackupDestination Creates a backup destination in an Exadata Cloud@Customer system.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateBackupDestination.go.html to see an example of how to use CreateBackupDestination API.
 func (client DatabaseClient) CreateBackupDestination(ctx context.Context, request CreateBackupDestinationRequest) (response CreateBackupDestinationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -791,7 +1688,12 @@ func (client DatabaseClient) CreateBackupDestination(ctx context.Context, reques
 	ociResponse, err = common.Retry(ctx, request, client.createBackupDestination, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateBackupDestinationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateBackupDestinationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateBackupDestinationResponse{}
+			}
 		}
 		return
 	}
@@ -804,13 +1706,196 @@ func (client DatabaseClient) CreateBackupDestination(ctx context.Context, reques
 }
 
 // createBackupDestination implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createBackupDestination(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/backupDestinations")
+func (client DatabaseClient) createBackupDestination(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/backupDestinations", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
 
 	var response CreateBackupDestinationResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateCloudExadataInfrastructure Creates a cloud Exadata infrastructure resource. This resource is used to create an Exadata Cloud Service (https://docs.cloud.oracle.com/Content/Database/Concepts/exaoverview.htm) instance.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateCloudExadataInfrastructure.go.html to see an example of how to use CreateCloudExadataInfrastructure API.
+func (client DatabaseClient) CreateCloudExadataInfrastructure(ctx context.Context, request CreateCloudExadataInfrastructureRequest) (response CreateCloudExadataInfrastructureResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createCloudExadataInfrastructure, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateCloudExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateCloudExadataInfrastructureResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateCloudExadataInfrastructureResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateCloudExadataInfrastructureResponse")
+	}
+	return
+}
+
+// createCloudExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) createCloudExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/cloudExadataInfrastructures", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateCloudExadataInfrastructureResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateCloudVmCluster Creates a cloud VM cluster.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateCloudVmCluster.go.html to see an example of how to use CreateCloudVmCluster API.
+func (client DatabaseClient) CreateCloudVmCluster(ctx context.Context, request CreateCloudVmClusterRequest) (response CreateCloudVmClusterResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createCloudVmCluster, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateCloudVmClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateCloudVmClusterResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateCloudVmClusterResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateCloudVmClusterResponse")
+	}
+	return
+}
+
+// createCloudVmCluster implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) createCloudVmCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/cloudVmClusters", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateCloudVmClusterResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateConsoleConnection Creates a new console connection to the specified database node.
+// After the console connection has been created and is available,
+// you connect to the console using SSH.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateConsoleConnection.go.html to see an example of how to use CreateConsoleConnection API.
+func (client DatabaseClient) CreateConsoleConnection(ctx context.Context, request CreateConsoleConnectionRequest) (response CreateConsoleConnectionResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createConsoleConnection, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateConsoleConnectionResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateConsoleConnectionResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateConsoleConnectionResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateConsoleConnectionResponse")
+	}
+	return
+}
+
+// createConsoleConnection implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) createConsoleConnection(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dbNodes/{dbNodeId}/consoleConnections", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateConsoleConnectionResponse
 	var httpResponse *http.Response
 	httpResponse, err = client.Call(ctx, &httpRequest)
 	defer common.CloseBodyIfValid(httpResponse)
@@ -830,9 +1915,16 @@ func (client DatabaseClient) createBackupDestination(ctx context.Context, reques
 // You can also retrieve a resource's OCID by using a List API operation on that resource type, or by viewing the
 // resource in the Console. For more information, see
 // Resource Identifiers (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateDataGuardAssociation.go.html to see an example of how to use CreateDataGuardAssociation API.
 func (client DatabaseClient) CreateDataGuardAssociation(ctx context.Context, request CreateDataGuardAssociationRequest) (response CreateDataGuardAssociationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -844,7 +1936,12 @@ func (client DatabaseClient) CreateDataGuardAssociation(ctx context.Context, req
 	ociResponse, err = common.Retry(ctx, request, client.createDataGuardAssociation, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateDataGuardAssociationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateDataGuardAssociationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateDataGuardAssociationResponse{}
+			}
 		}
 		return
 	}
@@ -857,8 +1954,9 @@ func (client DatabaseClient) CreateDataGuardAssociation(ctx context.Context, req
 }
 
 // createDataGuardAssociation implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createDataGuardAssociation(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/dataGuardAssociations")
+func (client DatabaseClient) createDataGuardAssociation(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/dataGuardAssociations", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -876,10 +1974,137 @@ func (client DatabaseClient) createDataGuardAssociation(ctx context.Context, req
 	return response, err
 }
 
-// CreateDbHome Creates a new database home in the specified DB system based on the request parameters you provide.
+// CreateDatabase Creates a new database in the specified Database Home. If the database version is provided, it must match the version of the Database Home. Applies to Exadata and Exadata Cloud@Customer systems.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateDatabase.go.html to see an example of how to use CreateDatabase API.
+func (client DatabaseClient) CreateDatabase(ctx context.Context, request CreateDatabaseRequest) (response CreateDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateDatabaseResponse")
+	}
+	return
+}
+
+// createDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) createDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateDatabaseSoftwareImage create database software image in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateDatabaseSoftwareImage.go.html to see an example of how to use CreateDatabaseSoftwareImage API.
+func (client DatabaseClient) CreateDatabaseSoftwareImage(ctx context.Context, request CreateDatabaseSoftwareImageRequest) (response CreateDatabaseSoftwareImageResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createDatabaseSoftwareImage, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateDatabaseSoftwareImageResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateDatabaseSoftwareImageResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateDatabaseSoftwareImageResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateDatabaseSoftwareImageResponse")
+	}
+	return
+}
+
+// createDatabaseSoftwareImage implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) createDatabaseSoftwareImage(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databaseSoftwareImages", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateDatabaseSoftwareImageResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateDbHome Creates a new Database Home in the specified database system based on the request parameters you provide. Applies to bare metal DB systems, Exadata systems, and Exadata Cloud@Customer systems.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateDbHome.go.html to see an example of how to use CreateDbHome API.
 func (client DatabaseClient) CreateDbHome(ctx context.Context, request CreateDbHomeRequest) (response CreateDbHomeResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -891,7 +2116,12 @@ func (client DatabaseClient) CreateDbHome(ctx context.Context, request CreateDbH
 	ociResponse, err = common.Retry(ctx, request, client.createDbHome, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateDbHomeResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateDbHomeResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateDbHomeResponse{}
+			}
 		}
 		return
 	}
@@ -904,8 +2134,9 @@ func (client DatabaseClient) CreateDbHome(ctx context.Context, request CreateDbH
 }
 
 // createDbHome implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createDbHome(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dbHomes")
+func (client DatabaseClient) createDbHome(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dbHomes", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -923,10 +2154,18 @@ func (client DatabaseClient) createDbHome(ctx context.Context, request common.OC
 	return response, err
 }
 
-// CreateExadataInfrastructure Create Exadata infrastructure.
+// CreateExadataInfrastructure Creates an Exadata infrastructure resource. Applies to Exadata Cloud@Customer instances only.
+// To create an Exadata Cloud Service infrastructure resource, use the  CreateCloudExadataInfrastructure operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateExadataInfrastructure.go.html to see an example of how to use CreateExadataInfrastructure API.
 func (client DatabaseClient) CreateExadataInfrastructure(ctx context.Context, request CreateExadataInfrastructureRequest) (response CreateExadataInfrastructureResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -938,7 +2177,12 @@ func (client DatabaseClient) CreateExadataInfrastructure(ctx context.Context, re
 	ociResponse, err = common.Retry(ctx, request, client.createExadataInfrastructure, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateExadataInfrastructureResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateExadataInfrastructureResponse{}
+			}
 		}
 		return
 	}
@@ -951,8 +2195,9 @@ func (client DatabaseClient) CreateExadataInfrastructure(ctx context.Context, re
 }
 
 // createExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createExadataInfrastructure(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures")
+func (client DatabaseClient) createExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -972,9 +2217,16 @@ func (client DatabaseClient) createExadataInfrastructure(ctx context.Context, re
 
 // CreateExternalBackupJob Creates a new backup resource and returns the information the caller needs to back up an on-premises Oracle Database to Oracle Cloud Infrastructure.
 // **Note:** This API is used by an Oracle Cloud Infrastructure Python script that is packaged with the Oracle Cloud Infrastructure CLI. Oracle recommends that you use the script instead using the API directly. See Migrating an On-Premises Database to Oracle Cloud Infrastructure by Creating a Backup in the Cloud (https://docs.cloud.oracle.com/Content/Database/Tasks/mig-onprembackup.htm) for more information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateExternalBackupJob.go.html to see an example of how to use CreateExternalBackupJob API.
 func (client DatabaseClient) CreateExternalBackupJob(ctx context.Context, request CreateExternalBackupJobRequest) (response CreateExternalBackupJobResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -986,7 +2238,12 @@ func (client DatabaseClient) CreateExternalBackupJob(ctx context.Context, reques
 	ociResponse, err = common.Retry(ctx, request, client.createExternalBackupJob, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateExternalBackupJobResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateExternalBackupJobResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateExternalBackupJobResponse{}
+			}
 		}
 		return
 	}
@@ -999,8 +2256,9 @@ func (client DatabaseClient) CreateExternalBackupJob(ctx context.Context, reques
 }
 
 // createExternalBackupJob implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createExternalBackupJob(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalBackupJobs")
+func (client DatabaseClient) createExternalBackupJob(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalBackupJobs", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1018,10 +2276,379 @@ func (client DatabaseClient) createExternalBackupJob(ctx context.Context, reques
 	return response, err
 }
 
-// CreateVmCluster Creates a VM cluster.
+// CreateExternalContainerDatabase Creates a new external container database resource.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateExternalContainerDatabase.go.html to see an example of how to use CreateExternalContainerDatabase API.
+func (client DatabaseClient) CreateExternalContainerDatabase(ctx context.Context, request CreateExternalContainerDatabaseRequest) (response CreateExternalContainerDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createExternalContainerDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateExternalContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateExternalContainerDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateExternalContainerDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateExternalContainerDatabaseResponse")
+	}
+	return
+}
+
+// createExternalContainerDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) createExternalContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalcontainerdatabases", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateExternalContainerDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateExternalDatabaseConnector Creates a new external database connector.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateExternalDatabaseConnector.go.html to see an example of how to use CreateExternalDatabaseConnector API.
+func (client DatabaseClient) CreateExternalDatabaseConnector(ctx context.Context, request CreateExternalDatabaseConnectorRequest) (response CreateExternalDatabaseConnectorResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createExternalDatabaseConnector, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateExternalDatabaseConnectorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateExternalDatabaseConnectorResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateExternalDatabaseConnectorResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateExternalDatabaseConnectorResponse")
+	}
+	return
+}
+
+// createExternalDatabaseConnector implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) createExternalDatabaseConnector(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externaldatabaseconnectors", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateExternalDatabaseConnectorResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponseWithPolymorphicBody(httpResponse, &response, &externaldatabaseconnector{})
+	return response, err
+}
+
+// CreateExternalNonContainerDatabase Creates a new ExternalNonContainerDatabase resource
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateExternalNonContainerDatabase.go.html to see an example of how to use CreateExternalNonContainerDatabase API.
+func (client DatabaseClient) CreateExternalNonContainerDatabase(ctx context.Context, request CreateExternalNonContainerDatabaseRequest) (response CreateExternalNonContainerDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createExternalNonContainerDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateExternalNonContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateExternalNonContainerDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateExternalNonContainerDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateExternalNonContainerDatabaseResponse")
+	}
+	return
+}
+
+// createExternalNonContainerDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) createExternalNonContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalnoncontainerdatabases", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateExternalNonContainerDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateExternalPluggableDatabase Registers a new CreateExternalPluggableDatabaseDetails
+// resource.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateExternalPluggableDatabase.go.html to see an example of how to use CreateExternalPluggableDatabase API.
+func (client DatabaseClient) CreateExternalPluggableDatabase(ctx context.Context, request CreateExternalPluggableDatabaseRequest) (response CreateExternalPluggableDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createExternalPluggableDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateExternalPluggableDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateExternalPluggableDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateExternalPluggableDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateExternalPluggableDatabaseResponse")
+	}
+	return
+}
+
+// createExternalPluggableDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) createExternalPluggableDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalpluggabledatabases", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateExternalPluggableDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateKeyStore Creates a Key Store.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateKeyStore.go.html to see an example of how to use CreateKeyStore API.
+func (client DatabaseClient) CreateKeyStore(ctx context.Context, request CreateKeyStoreRequest) (response CreateKeyStoreResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createKeyStore, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateKeyStoreResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateKeyStoreResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreateKeyStoreResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreateKeyStoreResponse")
+	}
+	return
+}
+
+// createKeyStore implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) createKeyStore(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/keyStores", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreateKeyStoreResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreatePluggableDatabase Creates and starts a pluggable database in the specified container database.
+// Use the [StartPluggableDatabase](#/en/database/latest/PluggableDatabase/StartPluggableDatabase] and [StopPluggableDatabase](#/en/database/latest/PluggableDatabase/StopPluggableDatabase] APIs to start and stop the pluggable database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreatePluggableDatabase.go.html to see an example of how to use CreatePluggableDatabase API.
+func (client DatabaseClient) CreatePluggableDatabase(ctx context.Context, request CreatePluggableDatabaseRequest) (response CreatePluggableDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.createPluggableDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreatePluggableDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreatePluggableDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(CreatePluggableDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into CreatePluggableDatabaseResponse")
+	}
+	return
+}
+
+// createPluggableDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) createPluggableDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/pluggableDatabases", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response CreatePluggableDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// CreateVmCluster Creates an Exadata Cloud@Customer VM cluster.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateVmCluster.go.html to see an example of how to use CreateVmCluster API.
 func (client DatabaseClient) CreateVmCluster(ctx context.Context, request CreateVmClusterRequest) (response CreateVmClusterResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -1033,7 +2660,12 @@ func (client DatabaseClient) CreateVmCluster(ctx context.Context, request Create
 	ociResponse, err = common.Retry(ctx, request, client.createVmCluster, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateVmClusterResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateVmClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateVmClusterResponse{}
+			}
 		}
 		return
 	}
@@ -1046,8 +2678,9 @@ func (client DatabaseClient) CreateVmCluster(ctx context.Context, request Create
 }
 
 // createVmCluster implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createVmCluster(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/vmClusters")
+func (client DatabaseClient) createVmCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/vmClusters", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1065,10 +2698,18 @@ func (client DatabaseClient) createVmCluster(ctx context.Context, request common
 	return response, err
 }
 
-// CreateVmClusterNetwork Creates the VM cluster network.
+// CreateVmClusterNetwork Creates the VM cluster network. Applies to Exadata Cloud@Customer instances only.
+// To create a cloud VM cluster in an Exadata Cloud Service instance, use the CreateCloudVmCluster operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/CreateVmClusterNetwork.go.html to see an example of how to use CreateVmClusterNetwork API.
 func (client DatabaseClient) CreateVmClusterNetwork(ctx context.Context, request CreateVmClusterNetworkRequest) (response CreateVmClusterNetworkResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -1080,7 +2721,12 @@ func (client DatabaseClient) CreateVmClusterNetwork(ctx context.Context, request
 	ociResponse, err = common.Retry(ctx, request, client.createVmClusterNetwork, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateVmClusterNetworkResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateVmClusterNetworkResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateVmClusterNetworkResponse{}
+			}
 		}
 		return
 	}
@@ -1093,8 +2739,9 @@ func (client DatabaseClient) CreateVmClusterNetwork(ctx context.Context, request
 }
 
 // createVmClusterNetwork implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) createVmClusterNetwork(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks")
+func (client DatabaseClient) createVmClusterNetwork(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1118,15 +2765,22 @@ func (client DatabaseClient) createVmClusterNetwork(ctx context.Context, request
 // - softreset - ACPI shutdown and power on
 // - reset - power off and power on
 // **Note:** Stopping a node affects billing differently, depending on the type of DB system:
-// *Bare metal and Exadata DB systems* - The _stop_ state has no effect on the resources you consume.
+// *Bare metal and Exadata systems* - The _stop_ state has no effect on the resources you consume.
 // Billing continues for DB nodes that you stop, and related resources continue
 // to apply against any relevant quotas. You must terminate the DB system
 // (TerminateDbSystem)
 // to remove its resources from billing and quotas.
 // *Virtual machine DB systems* - Stopping a node stops billing for all OCPUs associated with that node, and billing resumes when you restart the node.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DbNodeAction.go.html to see an example of how to use DbNodeAction API.
 func (client DatabaseClient) DbNodeAction(ctx context.Context, request DbNodeActionRequest) (response DbNodeActionResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -1138,7 +2792,12 @@ func (client DatabaseClient) DbNodeAction(ctx context.Context, request DbNodeAct
 	ociResponse, err = common.Retry(ctx, request, client.dbNodeAction, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DbNodeActionResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DbNodeActionResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DbNodeActionResponse{}
+			}
 		}
 		return
 	}
@@ -1151,8 +2810,9 @@ func (client DatabaseClient) DbNodeAction(ctx context.Context, request DbNodeAct
 }
 
 // dbNodeAction implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) dbNodeAction(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dbNodes/{dbNodeId}")
+func (client DatabaseClient) dbNodeAction(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dbNodes/{dbNodeId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1170,59 +2830,29 @@ func (client DatabaseClient) dbNodeAction(ctx context.Context, request common.OC
 	return response, err
 }
 
-// DeleteAutonomousDataWarehouse **Deprecated.** To delete an Autonomous Data Warehouse, use the DeleteAutonomousDatabase operation.
-func (client DatabaseClient) DeleteAutonomousDataWarehouse(ctx context.Context, request DeleteAutonomousDataWarehouseRequest) (response DeleteAutonomousDataWarehouseResponse, err error) {
-	var ociResponse common.OCIResponse
-	policy := common.NoRetryPolicy()
-	if request.RetryPolicy() != nil {
-		policy = *request.RetryPolicy()
-	}
-	ociResponse, err = common.Retry(ctx, request, client.deleteAutonomousDataWarehouse, policy)
-	if err != nil {
-		if ociResponse != nil {
-			response = DeleteAutonomousDataWarehouseResponse{RawResponse: ociResponse.HTTPResponse()}
-		}
-		return
-	}
-	if convertedResponse, ok := ociResponse.(DeleteAutonomousDataWarehouseResponse); ok {
-		response = convertedResponse
-	} else {
-		err = fmt.Errorf("failed to convert OCIResponse into DeleteAutonomousDataWarehouseResponse")
-	}
-	return
-}
-
-// deleteAutonomousDataWarehouse implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) deleteAutonomousDataWarehouse(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/autonomousDataWarehouses/{autonomousDataWarehouseId}")
-	if err != nil {
-		return nil, err
-	}
-
-	var response DeleteAutonomousDataWarehouseResponse
-	var httpResponse *http.Response
-	httpResponse, err = client.Call(ctx, &httpRequest)
-	defer common.CloseBodyIfValid(httpResponse)
-	response.RawResponse = httpResponse
-	if err != nil {
-		return response, err
-	}
-
-	err = common.UnmarshalResponse(httpResponse, &response)
-	return response, err
-}
-
 // DeleteAutonomousDatabase Deletes the specified Autonomous Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteAutonomousDatabase.go.html to see an example of how to use DeleteAutonomousDatabase API.
 func (client DatabaseClient) DeleteAutonomousDatabase(ctx context.Context, request DeleteAutonomousDatabaseRequest) (response DeleteAutonomousDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteAutonomousDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteAutonomousDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteAutonomousDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteAutonomousDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -1235,8 +2865,9 @@ func (client DatabaseClient) DeleteAutonomousDatabase(ctx context.Context, reque
 }
 
 // deleteAutonomousDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) deleteAutonomousDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/autonomousDatabases/{autonomousDatabaseId}")
+func (client DatabaseClient) deleteAutonomousDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/autonomousDatabases/{autonomousDatabaseId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1254,17 +2885,84 @@ func (client DatabaseClient) deleteAutonomousDatabase(ctx context.Context, reque
 	return response, err
 }
 
+// DeleteAutonomousVmCluster Deletes the specified Autonomous VM cluster in an Exadata Cloud@Customer system.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteAutonomousVmCluster.go.html to see an example of how to use DeleteAutonomousVmCluster API.
+func (client DatabaseClient) DeleteAutonomousVmCluster(ctx context.Context, request DeleteAutonomousVmClusterRequest) (response DeleteAutonomousVmClusterResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteAutonomousVmCluster, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteAutonomousVmClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteAutonomousVmClusterResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteAutonomousVmClusterResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteAutonomousVmClusterResponse")
+	}
+	return
+}
+
+// deleteAutonomousVmCluster implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deleteAutonomousVmCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/autonomousVmClusters/{autonomousVmClusterId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteAutonomousVmClusterResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // DeleteBackup Deletes a full backup. You cannot delete automatic backups using this API.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteBackup.go.html to see an example of how to use DeleteBackup API.
 func (client DatabaseClient) DeleteBackup(ctx context.Context, request DeleteBackupRequest) (response DeleteBackupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteBackup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteBackupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteBackupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteBackupResponse{}
+			}
 		}
 		return
 	}
@@ -1277,8 +2975,9 @@ func (client DatabaseClient) DeleteBackup(ctx context.Context, request DeleteBac
 }
 
 // deleteBackup implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) deleteBackup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/backups/{backupId}")
+func (client DatabaseClient) deleteBackup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/backups/{backupId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1296,17 +2995,29 @@ func (client DatabaseClient) deleteBackup(ctx context.Context, request common.OC
 	return response, err
 }
 
-// DeleteBackupDestination Deletes a backup destination.
+// DeleteBackupDestination Deletes a backup destination in an Exadata Cloud@Customer system.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteBackupDestination.go.html to see an example of how to use DeleteBackupDestination API.
 func (client DatabaseClient) DeleteBackupDestination(ctx context.Context, request DeleteBackupDestinationRequest) (response DeleteBackupDestinationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteBackupDestination, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteBackupDestinationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteBackupDestinationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteBackupDestinationResponse{}
+			}
 		}
 		return
 	}
@@ -1319,8 +3030,9 @@ func (client DatabaseClient) DeleteBackupDestination(ctx context.Context, reques
 }
 
 // deleteBackupDestination implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) deleteBackupDestination(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/backupDestinations/{backupDestinationId}")
+func (client DatabaseClient) deleteBackupDestination(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/backupDestinations/{backupDestinationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1338,17 +3050,306 @@ func (client DatabaseClient) deleteBackupDestination(ctx context.Context, reques
 	return response, err
 }
 
-// DeleteDbHome Deletes a DB Home. The DB Home and its database data are local to the DB system and will be lost when it is deleted. Oracle recommends that you back up any data in the DB system prior to deleting it.
+// DeleteCloudExadataInfrastructure Deletes the cloud Exadata infrastructure resource. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteCloudExadataInfrastructure.go.html to see an example of how to use DeleteCloudExadataInfrastructure API.
+func (client DatabaseClient) DeleteCloudExadataInfrastructure(ctx context.Context, request DeleteCloudExadataInfrastructureRequest) (response DeleteCloudExadataInfrastructureResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteCloudExadataInfrastructure, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteCloudExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteCloudExadataInfrastructureResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteCloudExadataInfrastructureResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteCloudExadataInfrastructureResponse")
+	}
+	return
+}
+
+// deleteCloudExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deleteCloudExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/cloudExadataInfrastructures/{cloudExadataInfrastructureId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteCloudExadataInfrastructureResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeleteCloudVmCluster Deletes the specified cloud VM cluster. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteCloudVmCluster.go.html to see an example of how to use DeleteCloudVmCluster API.
+func (client DatabaseClient) DeleteCloudVmCluster(ctx context.Context, request DeleteCloudVmClusterRequest) (response DeleteCloudVmClusterResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteCloudVmCluster, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteCloudVmClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteCloudVmClusterResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteCloudVmClusterResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteCloudVmClusterResponse")
+	}
+	return
+}
+
+// deleteCloudVmCluster implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deleteCloudVmCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/cloudVmClusters/{cloudVmClusterId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteCloudVmClusterResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeleteConsoleConnection Deletes the specified database node console connection.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteConsoleConnection.go.html to see an example of how to use DeleteConsoleConnection API.
+func (client DatabaseClient) DeleteConsoleConnection(ctx context.Context, request DeleteConsoleConnectionRequest) (response DeleteConsoleConnectionResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteConsoleConnection, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteConsoleConnectionResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteConsoleConnectionResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteConsoleConnectionResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteConsoleConnectionResponse")
+	}
+	return
+}
+
+// deleteConsoleConnection implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deleteConsoleConnection(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/dbNodes/{dbNodeId}/consoleConnections/{consoleConnectionId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteConsoleConnectionResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeleteDatabase Deletes the specified database. Applies only to Exadata systems.
+// The data in this database is local to the Exadata system and will be lost when the database is deleted. Oracle recommends that you back up any data in the Exadata system prior to deleting it. You can use the `performFinalBackup` parameter to have the Exadata system database backed up before it is deleted.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteDatabase.go.html to see an example of how to use DeleteDatabase API.
+func (client DatabaseClient) DeleteDatabase(ctx context.Context, request DeleteDatabaseRequest) (response DeleteDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteDatabaseResponse")
+	}
+	return
+}
+
+// deleteDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deleteDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/databases/{databaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeleteDatabaseSoftwareImage Delete a database software image
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteDatabaseSoftwareImage.go.html to see an example of how to use DeleteDatabaseSoftwareImage API.
+func (client DatabaseClient) DeleteDatabaseSoftwareImage(ctx context.Context, request DeleteDatabaseSoftwareImageRequest) (response DeleteDatabaseSoftwareImageResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteDatabaseSoftwareImage, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteDatabaseSoftwareImageResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteDatabaseSoftwareImageResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteDatabaseSoftwareImageResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteDatabaseSoftwareImageResponse")
+	}
+	return
+}
+
+// deleteDatabaseSoftwareImage implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deleteDatabaseSoftwareImage(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/databaseSoftwareImages/{databaseSoftwareImageId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteDatabaseSoftwareImageResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeleteDbHome Deletes a Database Home. Applies to bare metal DB systems, Exadata Cloud Service, and Exadata Cloud@Customer systems.
+// Oracle recommends that you use the `performFinalBackup` parameter to back up any data on a bare metal DB system before you delete a Database Home. On an Exadata Cloud@Customer system or an Exadata Cloud Service system, you can delete a Database Home only when there are no databases in it and therefore you cannot use the `performFinalBackup` parameter to back up data.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteDbHome.go.html to see an example of how to use DeleteDbHome API.
 func (client DatabaseClient) DeleteDbHome(ctx context.Context, request DeleteDbHomeRequest) (response DeleteDbHomeResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteDbHome, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteDbHomeResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteDbHomeResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteDbHomeResponse{}
+			}
 		}
 		return
 	}
@@ -1361,8 +3362,9 @@ func (client DatabaseClient) DeleteDbHome(ctx context.Context, request DeleteDbH
 }
 
 // deleteDbHome implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) deleteDbHome(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/dbHomes/{dbHomeId}")
+func (client DatabaseClient) deleteDbHome(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/dbHomes/{dbHomeId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1380,17 +3382,29 @@ func (client DatabaseClient) deleteDbHome(ctx context.Context, request common.OC
 	return response, err
 }
 
-// DeleteExadataInfrastructure Deletes the Exadata infrastructure.
+// DeleteExadataInfrastructure Deletes the Exadata Cloud@Customer infrastructure.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteExadataInfrastructure.go.html to see an example of how to use DeleteExadataInfrastructure API.
 func (client DatabaseClient) DeleteExadataInfrastructure(ctx context.Context, request DeleteExadataInfrastructureRequest) (response DeleteExadataInfrastructureResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteExadataInfrastructure, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteExadataInfrastructureResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteExadataInfrastructureResponse{}
+			}
 		}
 		return
 	}
@@ -1403,8 +3417,9 @@ func (client DatabaseClient) DeleteExadataInfrastructure(ctx context.Context, re
 }
 
 // deleteExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) deleteExadataInfrastructure(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/exadataInfrastructures/{exadataInfrastructureId}")
+func (client DatabaseClient) deleteExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/exadataInfrastructures/{exadataInfrastructureId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1422,17 +3437,364 @@ func (client DatabaseClient) deleteExadataInfrastructure(ctx context.Context, re
 	return response, err
 }
 
-// DeleteVmCluster Deletes the specified VM cluster.
+// DeleteExternalContainerDatabase Deletes the CreateExternalContainerDatabaseDetails
+// resource. Any external pluggable databases registered under this container database must be deleted in
+// your Oracle Cloud Infrastructure tenancy prior to this operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteExternalContainerDatabase.go.html to see an example of how to use DeleteExternalContainerDatabase API.
+func (client DatabaseClient) DeleteExternalContainerDatabase(ctx context.Context, request DeleteExternalContainerDatabaseRequest) (response DeleteExternalContainerDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteExternalContainerDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteExternalContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteExternalContainerDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteExternalContainerDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteExternalContainerDatabaseResponse")
+	}
+	return
+}
+
+// deleteExternalContainerDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deleteExternalContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/externalcontainerdatabases/{externalContainerDatabaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteExternalContainerDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeleteExternalDatabaseConnector Deletes an external database connector.
+// Any services enabled using the external database connector must be
+// deleted prior to this operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteExternalDatabaseConnector.go.html to see an example of how to use DeleteExternalDatabaseConnector API.
+func (client DatabaseClient) DeleteExternalDatabaseConnector(ctx context.Context, request DeleteExternalDatabaseConnectorRequest) (response DeleteExternalDatabaseConnectorResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteExternalDatabaseConnector, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteExternalDatabaseConnectorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteExternalDatabaseConnectorResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteExternalDatabaseConnectorResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteExternalDatabaseConnectorResponse")
+	}
+	return
+}
+
+// deleteExternalDatabaseConnector implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deleteExternalDatabaseConnector(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/externaldatabaseconnectors/{externalDatabaseConnectorId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteExternalDatabaseConnectorResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeleteExternalNonContainerDatabase Deletes the Oracle Cloud Infrastructure resource representing an external non-container database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteExternalNonContainerDatabase.go.html to see an example of how to use DeleteExternalNonContainerDatabase API.
+func (client DatabaseClient) DeleteExternalNonContainerDatabase(ctx context.Context, request DeleteExternalNonContainerDatabaseRequest) (response DeleteExternalNonContainerDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteExternalNonContainerDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteExternalNonContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteExternalNonContainerDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteExternalNonContainerDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteExternalNonContainerDatabaseResponse")
+	}
+	return
+}
+
+// deleteExternalNonContainerDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deleteExternalNonContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/externalnoncontainerdatabases/{externalNonContainerDatabaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteExternalNonContainerDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeleteExternalPluggableDatabase Deletes the CreateExternalPluggableDatabaseDetails.
+// resource.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteExternalPluggableDatabase.go.html to see an example of how to use DeleteExternalPluggableDatabase API.
+func (client DatabaseClient) DeleteExternalPluggableDatabase(ctx context.Context, request DeleteExternalPluggableDatabaseRequest) (response DeleteExternalPluggableDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteExternalPluggableDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteExternalPluggableDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteExternalPluggableDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteExternalPluggableDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteExternalPluggableDatabaseResponse")
+	}
+	return
+}
+
+// deleteExternalPluggableDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deleteExternalPluggableDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/externalpluggabledatabases/{externalPluggableDatabaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteExternalPluggableDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeleteKeyStore Deletes a key store.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteKeyStore.go.html to see an example of how to use DeleteKeyStore API.
+func (client DatabaseClient) DeleteKeyStore(ctx context.Context, request DeleteKeyStoreRequest) (response DeleteKeyStoreResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deleteKeyStore, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteKeyStoreResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteKeyStoreResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeleteKeyStoreResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeleteKeyStoreResponse")
+	}
+	return
+}
+
+// deleteKeyStore implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deleteKeyStore(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/keyStores/{keyStoreId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeleteKeyStoreResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeletePluggableDatabase Deletes the specified pluggable database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeletePluggableDatabase.go.html to see an example of how to use DeletePluggableDatabase API.
+func (client DatabaseClient) DeletePluggableDatabase(ctx context.Context, request DeletePluggableDatabaseRequest) (response DeletePluggableDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deletePluggableDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeletePluggableDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeletePluggableDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeletePluggableDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeletePluggableDatabaseResponse")
+	}
+	return
+}
+
+// deletePluggableDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deletePluggableDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/pluggableDatabases/{pluggableDatabaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeletePluggableDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DeleteVmCluster Deletes the specified VM cluster. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteVmCluster.go.html to see an example of how to use DeleteVmCluster API.
 func (client DatabaseClient) DeleteVmCluster(ctx context.Context, request DeleteVmClusterRequest) (response DeleteVmClusterResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteVmCluster, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteVmClusterResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteVmClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteVmClusterResponse{}
+			}
 		}
 		return
 	}
@@ -1445,8 +3807,9 @@ func (client DatabaseClient) DeleteVmCluster(ctx context.Context, request Delete
 }
 
 // deleteVmCluster implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) deleteVmCluster(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/vmClusters/{vmClusterId}")
+func (client DatabaseClient) deleteVmCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/vmClusters/{vmClusterId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1464,17 +3827,30 @@ func (client DatabaseClient) deleteVmCluster(ctx context.Context, request common
 	return response, err
 }
 
-// DeleteVmClusterNetwork Deletes the specified VM cluster network.
+// DeleteVmClusterNetwork Deletes the specified VM cluster network. Applies to Exadata Cloud@Customer instances only.
+// To delete a cloud VM cluster in an Exadata Cloud Service instance, use the DeleteCloudVmCluster operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeleteVmClusterNetwork.go.html to see an example of how to use DeleteVmClusterNetwork API.
 func (client DatabaseClient) DeleteVmClusterNetwork(ctx context.Context, request DeleteVmClusterNetworkRequest) (response DeleteVmClusterNetworkResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteVmClusterNetwork, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteVmClusterNetworkResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteVmClusterNetworkResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteVmClusterNetworkResponse{}
+			}
 		}
 		return
 	}
@@ -1487,8 +3863,9 @@ func (client DatabaseClient) DeleteVmClusterNetwork(ctx context.Context, request
 }
 
 // deleteVmClusterNetwork implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) deleteVmClusterNetwork(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/{vmClusterNetworkId}")
+func (client DatabaseClient) deleteVmClusterNetwork(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/{vmClusterNetworkId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1506,10 +3883,431 @@ func (client DatabaseClient) deleteVmClusterNetwork(ctx context.Context, request
 	return response, err
 }
 
-// DownloadExadataInfrastructureConfigFile Downloads the configuration file for the specified Exadata infrastructure.
+// DeregisterAutonomousDatabaseDataSafe Asynchronously deregisters this Autonomous Database with Data Safe.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DeregisterAutonomousDatabaseDataSafe.go.html to see an example of how to use DeregisterAutonomousDatabaseDataSafe API.
+func (client DatabaseClient) DeregisterAutonomousDatabaseDataSafe(ctx context.Context, request DeregisterAutonomousDatabaseDataSafeRequest) (response DeregisterAutonomousDatabaseDataSafeResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.deregisterAutonomousDatabaseDataSafe, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeregisterAutonomousDatabaseDataSafeResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeregisterAutonomousDatabaseDataSafeResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DeregisterAutonomousDatabaseDataSafeResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DeregisterAutonomousDatabaseDataSafeResponse")
+	}
+	return
+}
+
+// deregisterAutonomousDatabaseDataSafe implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) deregisterAutonomousDatabaseDataSafe(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/deregisterDataSafe", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DeregisterAutonomousDatabaseDataSafeResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DisableAutonomousDatabaseOperationsInsights Disables Operations Insights for the Autonomous Database resource.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DisableAutonomousDatabaseOperationsInsights.go.html to see an example of how to use DisableAutonomousDatabaseOperationsInsights API.
+func (client DatabaseClient) DisableAutonomousDatabaseOperationsInsights(ctx context.Context, request DisableAutonomousDatabaseOperationsInsightsRequest) (response DisableAutonomousDatabaseOperationsInsightsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.disableAutonomousDatabaseOperationsInsights, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DisableAutonomousDatabaseOperationsInsightsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DisableAutonomousDatabaseOperationsInsightsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DisableAutonomousDatabaseOperationsInsightsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DisableAutonomousDatabaseOperationsInsightsResponse")
+	}
+	return
+}
+
+// disableAutonomousDatabaseOperationsInsights implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) disableAutonomousDatabaseOperationsInsights(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/disableOperationsInsights", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DisableAutonomousDatabaseOperationsInsightsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DisableExternalContainerDatabaseDatabaseManagement Disable Database Management service for the external container database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DisableExternalContainerDatabaseDatabaseManagement.go.html to see an example of how to use DisableExternalContainerDatabaseDatabaseManagement API.
+func (client DatabaseClient) DisableExternalContainerDatabaseDatabaseManagement(ctx context.Context, request DisableExternalContainerDatabaseDatabaseManagementRequest) (response DisableExternalContainerDatabaseDatabaseManagementResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.disableExternalContainerDatabaseDatabaseManagement, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DisableExternalContainerDatabaseDatabaseManagementResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DisableExternalContainerDatabaseDatabaseManagementResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DisableExternalContainerDatabaseDatabaseManagementResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DisableExternalContainerDatabaseDatabaseManagementResponse")
+	}
+	return
+}
+
+// disableExternalContainerDatabaseDatabaseManagement implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) disableExternalContainerDatabaseDatabaseManagement(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalcontainerdatabases/{externalContainerDatabaseId}/actions/disableDatabaseManagement", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DisableExternalContainerDatabaseDatabaseManagementResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DisableExternalNonContainerDatabaseDatabaseManagement Disable Database Management Service for the external non-container database.
+// For more information about the Database Management Service, see
+// Database Management Service (https://docs.cloud.oracle.com/Content/ExternalDatabase/Concepts/databasemanagementservice.htm).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DisableExternalNonContainerDatabaseDatabaseManagement.go.html to see an example of how to use DisableExternalNonContainerDatabaseDatabaseManagement API.
+func (client DatabaseClient) DisableExternalNonContainerDatabaseDatabaseManagement(ctx context.Context, request DisableExternalNonContainerDatabaseDatabaseManagementRequest) (response DisableExternalNonContainerDatabaseDatabaseManagementResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.disableExternalNonContainerDatabaseDatabaseManagement, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DisableExternalNonContainerDatabaseDatabaseManagementResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DisableExternalNonContainerDatabaseDatabaseManagementResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DisableExternalNonContainerDatabaseDatabaseManagementResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DisableExternalNonContainerDatabaseDatabaseManagementResponse")
+	}
+	return
+}
+
+// disableExternalNonContainerDatabaseDatabaseManagement implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) disableExternalNonContainerDatabaseDatabaseManagement(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalnoncontainerdatabases/{externalNonContainerDatabaseId}/actions/disableDatabaseManagement", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DisableExternalNonContainerDatabaseDatabaseManagementResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DisableExternalNonContainerDatabaseOperationsInsights Disable Operations Insights for the external non-container database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DisableExternalNonContainerDatabaseOperationsInsights.go.html to see an example of how to use DisableExternalNonContainerDatabaseOperationsInsights API.
+func (client DatabaseClient) DisableExternalNonContainerDatabaseOperationsInsights(ctx context.Context, request DisableExternalNonContainerDatabaseOperationsInsightsRequest) (response DisableExternalNonContainerDatabaseOperationsInsightsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.disableExternalNonContainerDatabaseOperationsInsights, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DisableExternalNonContainerDatabaseOperationsInsightsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DisableExternalNonContainerDatabaseOperationsInsightsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DisableExternalNonContainerDatabaseOperationsInsightsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DisableExternalNonContainerDatabaseOperationsInsightsResponse")
+	}
+	return
+}
+
+// disableExternalNonContainerDatabaseOperationsInsights implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) disableExternalNonContainerDatabaseOperationsInsights(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalnoncontainerdatabases/{externalNonContainerDatabaseId}/actions/disableOperationsInsights", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DisableExternalNonContainerDatabaseOperationsInsightsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DisableExternalPluggableDatabaseDatabaseManagement Disable Database Management Service for the external pluggable database.
+// For more information about the Database Management Service, see
+// Database Management Service (https://docs.cloud.oracle.com/Content/ExternalDatabase/Concepts/databasemanagementservice.htm).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DisableExternalPluggableDatabaseDatabaseManagement.go.html to see an example of how to use DisableExternalPluggableDatabaseDatabaseManagement API.
+func (client DatabaseClient) DisableExternalPluggableDatabaseDatabaseManagement(ctx context.Context, request DisableExternalPluggableDatabaseDatabaseManagementRequest) (response DisableExternalPluggableDatabaseDatabaseManagementResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.disableExternalPluggableDatabaseDatabaseManagement, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DisableExternalPluggableDatabaseDatabaseManagementResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DisableExternalPluggableDatabaseDatabaseManagementResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DisableExternalPluggableDatabaseDatabaseManagementResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DisableExternalPluggableDatabaseDatabaseManagementResponse")
+	}
+	return
+}
+
+// disableExternalPluggableDatabaseDatabaseManagement implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) disableExternalPluggableDatabaseDatabaseManagement(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalpluggabledatabases/{externalPluggableDatabaseId}/actions/disableDatabaseManagement", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DisableExternalPluggableDatabaseDatabaseManagementResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DisableExternalPluggableDatabaseOperationsInsights Disable Operations Insights for the external pluggable database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DisableExternalPluggableDatabaseOperationsInsights.go.html to see an example of how to use DisableExternalPluggableDatabaseOperationsInsights API.
+func (client DatabaseClient) DisableExternalPluggableDatabaseOperationsInsights(ctx context.Context, request DisableExternalPluggableDatabaseOperationsInsightsRequest) (response DisableExternalPluggableDatabaseOperationsInsightsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.disableExternalPluggableDatabaseOperationsInsights, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DisableExternalPluggableDatabaseOperationsInsightsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DisableExternalPluggableDatabaseOperationsInsightsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DisableExternalPluggableDatabaseOperationsInsightsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DisableExternalPluggableDatabaseOperationsInsightsResponse")
+	}
+	return
+}
+
+// disableExternalPluggableDatabaseOperationsInsights implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) disableExternalPluggableDatabaseOperationsInsights(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalpluggabledatabases/{externalPluggableDatabaseId}/actions/disableOperationsInsights", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DisableExternalPluggableDatabaseOperationsInsightsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DownloadExadataInfrastructureConfigFile Downloads the configuration file for the specified Exadata Cloud@Customer infrastructure.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DownloadExadataInfrastructureConfigFile.go.html to see an example of how to use DownloadExadataInfrastructureConfigFile API.
 func (client DatabaseClient) DownloadExadataInfrastructureConfigFile(ctx context.Context, request DownloadExadataInfrastructureConfigFileRequest) (response DownloadExadataInfrastructureConfigFileResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -1521,7 +4319,12 @@ func (client DatabaseClient) DownloadExadataInfrastructureConfigFile(ctx context
 	ociResponse, err = common.Retry(ctx, request, client.downloadExadataInfrastructureConfigFile, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DownloadExadataInfrastructureConfigFileResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DownloadExadataInfrastructureConfigFileResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DownloadExadataInfrastructureConfigFileResponse{}
+			}
 		}
 		return
 	}
@@ -1534,8 +4337,9 @@ func (client DatabaseClient) DownloadExadataInfrastructureConfigFile(ctx context
 }
 
 // downloadExadataInfrastructureConfigFile implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) downloadExadataInfrastructureConfigFile(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/actions/downloadConfigFile")
+func (client DatabaseClient) downloadExadataInfrastructureConfigFile(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/actions/downloadConfigFile", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1552,10 +4356,76 @@ func (client DatabaseClient) downloadExadataInfrastructureConfigFile(ctx context
 	return response, err
 }
 
-// DownloadVmClusterNetworkConfigFile Downloads the configuration file for the specified VM Cluster Network.
+// DownloadValidationReport Downloads the network validation report file for the specified VM cluster network. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DownloadValidationReport.go.html to see an example of how to use DownloadValidationReport API.
+func (client DatabaseClient) DownloadValidationReport(ctx context.Context, request DownloadValidationReportRequest) (response DownloadValidationReportResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.downloadValidationReport, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DownloadValidationReportResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DownloadValidationReportResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(DownloadValidationReportResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into DownloadValidationReportResponse")
+	}
+	return
+}
+
+// downloadValidationReport implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) downloadValidationReport(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/{vmClusterNetworkId}/actions/downloadValidationReport", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response DownloadValidationReportResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// DownloadVmClusterNetworkConfigFile Downloads the configuration file for the specified VM cluster network. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/DownloadVmClusterNetworkConfigFile.go.html to see an example of how to use DownloadVmClusterNetworkConfigFile API.
 func (client DatabaseClient) DownloadVmClusterNetworkConfigFile(ctx context.Context, request DownloadVmClusterNetworkConfigFileRequest) (response DownloadVmClusterNetworkConfigFileResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -1567,7 +4437,12 @@ func (client DatabaseClient) DownloadVmClusterNetworkConfigFile(ctx context.Cont
 	ociResponse, err = common.Retry(ctx, request, client.downloadVmClusterNetworkConfigFile, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DownloadVmClusterNetworkConfigFileResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DownloadVmClusterNetworkConfigFileResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DownloadVmClusterNetworkConfigFileResponse{}
+			}
 		}
 		return
 	}
@@ -1580,8 +4455,9 @@ func (client DatabaseClient) DownloadVmClusterNetworkConfigFile(ctx context.Cont
 }
 
 // downloadVmClusterNetworkConfigFile implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) downloadVmClusterNetworkConfigFile(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/{vmClusterNetworkId}/actions/downloadConfigFile")
+func (client DatabaseClient) downloadVmClusterNetworkConfigFile(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/{vmClusterNetworkId}/actions/downloadConfigFile", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1598,20 +4474,509 @@ func (client DatabaseClient) downloadVmClusterNetworkConfigFile(ctx context.Cont
 	return response, err
 }
 
+// EnableAutonomousDatabaseOperationsInsights Enables the specified Autonomous Database with Operations Insights.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/EnableAutonomousDatabaseOperationsInsights.go.html to see an example of how to use EnableAutonomousDatabaseOperationsInsights API.
+func (client DatabaseClient) EnableAutonomousDatabaseOperationsInsights(ctx context.Context, request EnableAutonomousDatabaseOperationsInsightsRequest) (response EnableAutonomousDatabaseOperationsInsightsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.enableAutonomousDatabaseOperationsInsights, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = EnableAutonomousDatabaseOperationsInsightsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = EnableAutonomousDatabaseOperationsInsightsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(EnableAutonomousDatabaseOperationsInsightsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into EnableAutonomousDatabaseOperationsInsightsResponse")
+	}
+	return
+}
+
+// enableAutonomousDatabaseOperationsInsights implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) enableAutonomousDatabaseOperationsInsights(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/enableOperationsInsights", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response EnableAutonomousDatabaseOperationsInsightsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// EnableExternalContainerDatabaseDatabaseManagement Enables Database Management Service for the external container database.
+// For more information about the Database Management Service, see
+// Database Management Service (https://docs.cloud.oracle.com/Content/ExternalDatabase/Concepts/databasemanagementservice.htm).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/EnableExternalContainerDatabaseDatabaseManagement.go.html to see an example of how to use EnableExternalContainerDatabaseDatabaseManagement API.
+func (client DatabaseClient) EnableExternalContainerDatabaseDatabaseManagement(ctx context.Context, request EnableExternalContainerDatabaseDatabaseManagementRequest) (response EnableExternalContainerDatabaseDatabaseManagementResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.enableExternalContainerDatabaseDatabaseManagement, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = EnableExternalContainerDatabaseDatabaseManagementResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = EnableExternalContainerDatabaseDatabaseManagementResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(EnableExternalContainerDatabaseDatabaseManagementResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into EnableExternalContainerDatabaseDatabaseManagementResponse")
+	}
+	return
+}
+
+// enableExternalContainerDatabaseDatabaseManagement implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) enableExternalContainerDatabaseDatabaseManagement(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalcontainerdatabases/{externalContainerDatabaseId}/actions/enableDatabaseManagement", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response EnableExternalContainerDatabaseDatabaseManagementResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// EnableExternalNonContainerDatabaseDatabaseManagement Enable Database Management Service for the external non-container database.
+// For more information about the Database Management Service, see
+// Database Management Service (https://docs.cloud.oracle.com/Content/ExternalDatabase/Concepts/databasemanagementservice.htm).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/EnableExternalNonContainerDatabaseDatabaseManagement.go.html to see an example of how to use EnableExternalNonContainerDatabaseDatabaseManagement API.
+func (client DatabaseClient) EnableExternalNonContainerDatabaseDatabaseManagement(ctx context.Context, request EnableExternalNonContainerDatabaseDatabaseManagementRequest) (response EnableExternalNonContainerDatabaseDatabaseManagementResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.enableExternalNonContainerDatabaseDatabaseManagement, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = EnableExternalNonContainerDatabaseDatabaseManagementResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = EnableExternalNonContainerDatabaseDatabaseManagementResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(EnableExternalNonContainerDatabaseDatabaseManagementResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into EnableExternalNonContainerDatabaseDatabaseManagementResponse")
+	}
+	return
+}
+
+// enableExternalNonContainerDatabaseDatabaseManagement implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) enableExternalNonContainerDatabaseDatabaseManagement(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalnoncontainerdatabases/{externalNonContainerDatabaseId}/actions/enableDatabaseManagement", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response EnableExternalNonContainerDatabaseDatabaseManagementResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// EnableExternalNonContainerDatabaseOperationsInsights Enable Operations Insights for the external non-container database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/EnableExternalNonContainerDatabaseOperationsInsights.go.html to see an example of how to use EnableExternalNonContainerDatabaseOperationsInsights API.
+func (client DatabaseClient) EnableExternalNonContainerDatabaseOperationsInsights(ctx context.Context, request EnableExternalNonContainerDatabaseOperationsInsightsRequest) (response EnableExternalNonContainerDatabaseOperationsInsightsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.enableExternalNonContainerDatabaseOperationsInsights, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = EnableExternalNonContainerDatabaseOperationsInsightsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = EnableExternalNonContainerDatabaseOperationsInsightsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(EnableExternalNonContainerDatabaseOperationsInsightsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into EnableExternalNonContainerDatabaseOperationsInsightsResponse")
+	}
+	return
+}
+
+// enableExternalNonContainerDatabaseOperationsInsights implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) enableExternalNonContainerDatabaseOperationsInsights(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalnoncontainerdatabases/{externalNonContainerDatabaseId}/actions/enableOperationsInsights", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response EnableExternalNonContainerDatabaseOperationsInsightsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// EnableExternalPluggableDatabaseDatabaseManagement Enable Database Management Service for the external pluggable database.
+// For more information about the Database Management Service, see
+// Database Management Service (https://docs.cloud.oracle.com/Content/ExternalDatabase/Concepts/databasemanagementservice.htm).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/EnableExternalPluggableDatabaseDatabaseManagement.go.html to see an example of how to use EnableExternalPluggableDatabaseDatabaseManagement API.
+func (client DatabaseClient) EnableExternalPluggableDatabaseDatabaseManagement(ctx context.Context, request EnableExternalPluggableDatabaseDatabaseManagementRequest) (response EnableExternalPluggableDatabaseDatabaseManagementResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.enableExternalPluggableDatabaseDatabaseManagement, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = EnableExternalPluggableDatabaseDatabaseManagementResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = EnableExternalPluggableDatabaseDatabaseManagementResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(EnableExternalPluggableDatabaseDatabaseManagementResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into EnableExternalPluggableDatabaseDatabaseManagementResponse")
+	}
+	return
+}
+
+// enableExternalPluggableDatabaseDatabaseManagement implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) enableExternalPluggableDatabaseDatabaseManagement(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalpluggabledatabases/{externalPluggableDatabaseId}/actions/enableDatabaseManagement", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response EnableExternalPluggableDatabaseDatabaseManagementResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// EnableExternalPluggableDatabaseOperationsInsights Enable Operations Insights for the external pluggable database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/EnableExternalPluggableDatabaseOperationsInsights.go.html to see an example of how to use EnableExternalPluggableDatabaseOperationsInsights API.
+func (client DatabaseClient) EnableExternalPluggableDatabaseOperationsInsights(ctx context.Context, request EnableExternalPluggableDatabaseOperationsInsightsRequest) (response EnableExternalPluggableDatabaseOperationsInsightsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.enableExternalPluggableDatabaseOperationsInsights, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = EnableExternalPluggableDatabaseOperationsInsightsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = EnableExternalPluggableDatabaseOperationsInsightsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(EnableExternalPluggableDatabaseOperationsInsightsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into EnableExternalPluggableDatabaseOperationsInsightsResponse")
+	}
+	return
+}
+
+// enableExternalPluggableDatabaseOperationsInsights implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) enableExternalPluggableDatabaseOperationsInsights(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalpluggabledatabases/{externalPluggableDatabaseId}/actions/enableOperationsInsights", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response EnableExternalPluggableDatabaseOperationsInsightsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// FailOverAutonomousDatabase Initiates a failover the specified Autonomous Database to a standby.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/FailOverAutonomousDatabase.go.html to see an example of how to use FailOverAutonomousDatabase API.
+func (client DatabaseClient) FailOverAutonomousDatabase(ctx context.Context, request FailOverAutonomousDatabaseRequest) (response FailOverAutonomousDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.failOverAutonomousDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = FailOverAutonomousDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = FailOverAutonomousDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(FailOverAutonomousDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into FailOverAutonomousDatabaseResponse")
+	}
+	return
+}
+
+// failOverAutonomousDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) failOverAutonomousDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/failover", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response FailOverAutonomousDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// FailoverAutonomousContainerDatabaseDataguardAssociation Fails over the standby Autonomous Container Database identified by the autonomousContainerDatabaseId parameter to the primary Autonomous Container Database after the existing primary Autonomous Container Database fails or becomes unreachable.
+// A failover can result in data loss, depending on the protection mode in effect at the time the primary Autonomous Container Database fails.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/FailoverAutonomousContainerDatabaseDataguardAssociation.go.html to see an example of how to use FailoverAutonomousContainerDatabaseDataguardAssociation API.
+func (client DatabaseClient) FailoverAutonomousContainerDatabaseDataguardAssociation(ctx context.Context, request FailoverAutonomousContainerDatabaseDataguardAssociationRequest) (response FailoverAutonomousContainerDatabaseDataguardAssociationResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.failoverAutonomousContainerDatabaseDataguardAssociation, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = FailoverAutonomousContainerDatabaseDataguardAssociationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = FailoverAutonomousContainerDatabaseDataguardAssociationResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(FailoverAutonomousContainerDatabaseDataguardAssociationResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into FailoverAutonomousContainerDatabaseDataguardAssociationResponse")
+	}
+	return
+}
+
+// failoverAutonomousContainerDatabaseDataguardAssociation implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) failoverAutonomousContainerDatabaseDataguardAssociation(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}/autonomousContainerDatabaseDataguardAssociations/{autonomousContainerDatabaseDataguardAssociationId}/actions/failover", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response FailoverAutonomousContainerDatabaseDataguardAssociationResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // FailoverDataGuardAssociation Performs a failover to transition the standby database identified by the `databaseId` parameter into the
 // specified Data Guard association's primary role after the existing primary database fails or becomes unreachable.
 // A failover might result in data loss depending on the protection mode in effect at the time of the primary
 // database failure.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/FailoverDataGuardAssociation.go.html to see an example of how to use FailoverDataGuardAssociation API.
 func (client DatabaseClient) FailoverDataGuardAssociation(ctx context.Context, request FailoverDataGuardAssociationRequest) (response FailoverDataGuardAssociationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.failoverDataGuardAssociation, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = FailoverDataGuardAssociationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = FailoverDataGuardAssociationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = FailoverDataGuardAssociationResponse{}
+			}
 		}
 		return
 	}
@@ -1624,8 +4989,9 @@ func (client DatabaseClient) FailoverDataGuardAssociation(ctx context.Context, r
 }
 
 // failoverDataGuardAssociation implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) failoverDataGuardAssociation(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/dataGuardAssociations/{dataGuardAssociationId}/actions/failover")
+func (client DatabaseClient) failoverDataGuardAssociation(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/dataGuardAssociations/{dataGuardAssociationId}/actions/failover", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1643,56 +5009,17 @@ func (client DatabaseClient) failoverDataGuardAssociation(ctx context.Context, r
 	return response, err
 }
 
-// GenerateAutonomousDataWarehouseWallet **Deprecated.** To create and download a wallet for an Autonomous Data Warehouse, use the GenerateAutonomousDatabaseWallet operation.
-func (client DatabaseClient) GenerateAutonomousDataWarehouseWallet(ctx context.Context, request GenerateAutonomousDataWarehouseWalletRequest) (response GenerateAutonomousDataWarehouseWalletResponse, err error) {
-	var ociResponse common.OCIResponse
-	policy := common.NoRetryPolicy()
-	if request.RetryPolicy() != nil {
-		policy = *request.RetryPolicy()
-	}
-
-	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
-		request.OpcRetryToken = common.String(common.RetryToken())
-	}
-
-	ociResponse, err = common.Retry(ctx, request, client.generateAutonomousDataWarehouseWallet, policy)
-	if err != nil {
-		if ociResponse != nil {
-			response = GenerateAutonomousDataWarehouseWalletResponse{RawResponse: ociResponse.HTTPResponse()}
-		}
-		return
-	}
-	if convertedResponse, ok := ociResponse.(GenerateAutonomousDataWarehouseWalletResponse); ok {
-		response = convertedResponse
-	} else {
-		err = fmt.Errorf("failed to convert OCIResponse into GenerateAutonomousDataWarehouseWalletResponse")
-	}
-	return
-}
-
-// generateAutonomousDataWarehouseWallet implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) generateAutonomousDataWarehouseWallet(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDataWarehouses/{autonomousDataWarehouseId}/actions/generateWallet")
-	if err != nil {
-		return nil, err
-	}
-
-	var response GenerateAutonomousDataWarehouseWalletResponse
-	var httpResponse *http.Response
-	httpResponse, err = client.Call(ctx, &httpRequest)
-	response.RawResponse = httpResponse
-	if err != nil {
-		return response, err
-	}
-
-	err = common.UnmarshalResponse(httpResponse, &response)
-	return response, err
-}
-
 // GenerateAutonomousDatabaseWallet Creates and downloads a wallet for the specified Autonomous Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GenerateAutonomousDatabaseWallet.go.html to see an example of how to use GenerateAutonomousDatabaseWallet API.
 func (client DatabaseClient) GenerateAutonomousDatabaseWallet(ctx context.Context, request GenerateAutonomousDatabaseWalletRequest) (response GenerateAutonomousDatabaseWalletResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -1704,7 +5031,12 @@ func (client DatabaseClient) GenerateAutonomousDatabaseWallet(ctx context.Contex
 	ociResponse, err = common.Retry(ctx, request, client.generateAutonomousDatabaseWallet, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GenerateAutonomousDatabaseWalletResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GenerateAutonomousDatabaseWalletResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GenerateAutonomousDatabaseWalletResponse{}
+			}
 		}
 		return
 	}
@@ -1717,8 +5049,9 @@ func (client DatabaseClient) GenerateAutonomousDatabaseWallet(ctx context.Contex
 }
 
 // generateAutonomousDatabaseWallet implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) generateAutonomousDatabaseWallet(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/generateWallet")
+func (client DatabaseClient) generateAutonomousDatabaseWallet(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/generateWallet", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1735,10 +5068,17 @@ func (client DatabaseClient) generateAutonomousDatabaseWallet(ctx context.Contex
 	return response, err
 }
 
-// GenerateRecommendedVmClusterNetwork Generates a recommended VM cluster network configuration.
+// GenerateRecommendedVmClusterNetwork Generates a recommended Cloud@Customer VM cluster network configuration.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GenerateRecommendedVmClusterNetwork.go.html to see an example of how to use GenerateRecommendedVmClusterNetwork API.
 func (client DatabaseClient) GenerateRecommendedVmClusterNetwork(ctx context.Context, request GenerateRecommendedVmClusterNetworkRequest) (response GenerateRecommendedVmClusterNetworkResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -1750,7 +5090,12 @@ func (client DatabaseClient) GenerateRecommendedVmClusterNetwork(ctx context.Con
 	ociResponse, err = common.Retry(ctx, request, client.generateRecommendedVmClusterNetwork, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GenerateRecommendedVmClusterNetworkResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GenerateRecommendedVmClusterNetworkResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GenerateRecommendedVmClusterNetworkResponse{}
+			}
 		}
 		return
 	}
@@ -1763,8 +5108,9 @@ func (client DatabaseClient) GenerateRecommendedVmClusterNetwork(ctx context.Con
 }
 
 // generateRecommendedVmClusterNetwork implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) generateRecommendedVmClusterNetwork(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/actions/generateRecommendedNetwork")
+func (client DatabaseClient) generateRecommendedVmClusterNetwork(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/actions/generateRecommendedNetwork", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1783,16 +5129,28 @@ func (client DatabaseClient) generateRecommendedVmClusterNetwork(ctx context.Con
 }
 
 // GetAutonomousContainerDatabase Gets information about the specified Autonomous Container Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetAutonomousContainerDatabase.go.html to see an example of how to use GetAutonomousContainerDatabase API.
 func (client DatabaseClient) GetAutonomousContainerDatabase(ctx context.Context, request GetAutonomousContainerDatabaseRequest) (response GetAutonomousContainerDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAutonomousContainerDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAutonomousContainerDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAutonomousContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAutonomousContainerDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -1805,8 +5163,9 @@ func (client DatabaseClient) GetAutonomousContainerDatabase(ctx context.Context,
 }
 
 // getAutonomousContainerDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getAutonomousContainerDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}")
+func (client DatabaseClient) getAutonomousContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1824,78 +5183,49 @@ func (client DatabaseClient) getAutonomousContainerDatabase(ctx context.Context,
 	return response, err
 }
 
-// GetAutonomousDataWarehouse **Deprecated.** To get the details of an Autonomous Data Warehouse, use the GetAutonomousDatabase operation.
-func (client DatabaseClient) GetAutonomousDataWarehouse(ctx context.Context, request GetAutonomousDataWarehouseRequest) (response GetAutonomousDataWarehouseResponse, err error) {
+// GetAutonomousContainerDatabaseDataguardAssociation Gets an Autonomous Container Database enabled with Autonomous Data Guard associated with the specified Autonomous Container Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetAutonomousContainerDatabaseDataguardAssociation.go.html to see an example of how to use GetAutonomousContainerDatabaseDataguardAssociation API.
+func (client DatabaseClient) GetAutonomousContainerDatabaseDataguardAssociation(ctx context.Context, request GetAutonomousContainerDatabaseDataguardAssociationRequest) (response GetAutonomousContainerDatabaseDataguardAssociationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
-	ociResponse, err = common.Retry(ctx, request, client.getAutonomousDataWarehouse, policy)
+	ociResponse, err = common.Retry(ctx, request, client.getAutonomousContainerDatabaseDataguardAssociation, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAutonomousDataWarehouseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAutonomousContainerDatabaseDataguardAssociationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAutonomousContainerDatabaseDataguardAssociationResponse{}
+			}
 		}
 		return
 	}
-	if convertedResponse, ok := ociResponse.(GetAutonomousDataWarehouseResponse); ok {
+	if convertedResponse, ok := ociResponse.(GetAutonomousContainerDatabaseDataguardAssociationResponse); ok {
 		response = convertedResponse
 	} else {
-		err = fmt.Errorf("failed to convert OCIResponse into GetAutonomousDataWarehouseResponse")
+		err = fmt.Errorf("failed to convert OCIResponse into GetAutonomousContainerDatabaseDataguardAssociationResponse")
 	}
 	return
 }
 
-// getAutonomousDataWarehouse implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getAutonomousDataWarehouse(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDataWarehouses/{autonomousDataWarehouseId}")
+// getAutonomousContainerDatabaseDataguardAssociation implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getAutonomousContainerDatabaseDataguardAssociation(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}/autonomousContainerDatabaseDataguardAssociations/{autonomousContainerDatabaseDataguardAssociationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
 
-	var response GetAutonomousDataWarehouseResponse
-	var httpResponse *http.Response
-	httpResponse, err = client.Call(ctx, &httpRequest)
-	defer common.CloseBodyIfValid(httpResponse)
-	response.RawResponse = httpResponse
-	if err != nil {
-		return response, err
-	}
-
-	err = common.UnmarshalResponse(httpResponse, &response)
-	return response, err
-}
-
-// GetAutonomousDataWarehouseBackup **Deprecated.** To get information about a specified Autonomous Data Warehouse backup, use the GetAutonomousDatabaseBackup operation.
-func (client DatabaseClient) GetAutonomousDataWarehouseBackup(ctx context.Context, request GetAutonomousDataWarehouseBackupRequest) (response GetAutonomousDataWarehouseBackupResponse, err error) {
-	var ociResponse common.OCIResponse
-	policy := common.NoRetryPolicy()
-	if request.RetryPolicy() != nil {
-		policy = *request.RetryPolicy()
-	}
-	ociResponse, err = common.Retry(ctx, request, client.getAutonomousDataWarehouseBackup, policy)
-	if err != nil {
-		if ociResponse != nil {
-			response = GetAutonomousDataWarehouseBackupResponse{RawResponse: ociResponse.HTTPResponse()}
-		}
-		return
-	}
-	if convertedResponse, ok := ociResponse.(GetAutonomousDataWarehouseBackupResponse); ok {
-		response = convertedResponse
-	} else {
-		err = fmt.Errorf("failed to convert OCIResponse into GetAutonomousDataWarehouseBackupResponse")
-	}
-	return
-}
-
-// getAutonomousDataWarehouseBackup implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getAutonomousDataWarehouseBackup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDataWarehouseBackups/{autonomousDataWarehouseBackupId}")
-	if err != nil {
-		return nil, err
-	}
-
-	var response GetAutonomousDataWarehouseBackupResponse
+	var response GetAutonomousContainerDatabaseDataguardAssociationResponse
 	var httpResponse *http.Response
 	httpResponse, err = client.Call(ctx, &httpRequest)
 	defer common.CloseBodyIfValid(httpResponse)
@@ -1909,16 +5239,28 @@ func (client DatabaseClient) getAutonomousDataWarehouseBackup(ctx context.Contex
 }
 
 // GetAutonomousDatabase Gets the details of the specified Autonomous Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetAutonomousDatabase.go.html to see an example of how to use GetAutonomousDatabase API.
 func (client DatabaseClient) GetAutonomousDatabase(ctx context.Context, request GetAutonomousDatabaseRequest) (response GetAutonomousDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAutonomousDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAutonomousDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAutonomousDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAutonomousDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -1931,8 +5273,9 @@ func (client DatabaseClient) GetAutonomousDatabase(ctx context.Context, request 
 }
 
 // getAutonomousDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getAutonomousDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabases/{autonomousDatabaseId}")
+func (client DatabaseClient) getAutonomousDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabases/{autonomousDatabaseId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1951,16 +5294,28 @@ func (client DatabaseClient) getAutonomousDatabase(ctx context.Context, request 
 }
 
 // GetAutonomousDatabaseBackup Gets information about the specified Autonomous Database backup.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetAutonomousDatabaseBackup.go.html to see an example of how to use GetAutonomousDatabaseBackup API.
 func (client DatabaseClient) GetAutonomousDatabaseBackup(ctx context.Context, request GetAutonomousDatabaseBackupRequest) (response GetAutonomousDatabaseBackupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAutonomousDatabaseBackup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAutonomousDatabaseBackupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAutonomousDatabaseBackupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAutonomousDatabaseBackupResponse{}
+			}
 		}
 		return
 	}
@@ -1973,8 +5328,9 @@ func (client DatabaseClient) GetAutonomousDatabaseBackup(ctx context.Context, re
 }
 
 // getAutonomousDatabaseBackup implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getAutonomousDatabaseBackup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabaseBackups/{autonomousDatabaseBackupId}")
+func (client DatabaseClient) getAutonomousDatabaseBackup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabaseBackups/{autonomousDatabaseBackupId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -1992,17 +5348,84 @@ func (client DatabaseClient) getAutonomousDatabaseBackup(ctx context.Context, re
 	return response, err
 }
 
+// GetAutonomousDatabaseDataguardAssociation Gets an Autonomous Data Guard-enabled database associated with the specified Autonomous Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetAutonomousDatabaseDataguardAssociation.go.html to see an example of how to use GetAutonomousDatabaseDataguardAssociation API.
+func (client DatabaseClient) GetAutonomousDatabaseDataguardAssociation(ctx context.Context, request GetAutonomousDatabaseDataguardAssociationRequest) (response GetAutonomousDatabaseDataguardAssociationResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getAutonomousDatabaseDataguardAssociation, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAutonomousDatabaseDataguardAssociationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAutonomousDatabaseDataguardAssociationResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetAutonomousDatabaseDataguardAssociationResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetAutonomousDatabaseDataguardAssociationResponse")
+	}
+	return
+}
+
+// getAutonomousDatabaseDataguardAssociation implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getAutonomousDatabaseDataguardAssociation(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabases/{autonomousDatabaseId}/autonomousDatabaseDataguardAssociations/{autonomousDatabaseDataguardAssociationId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetAutonomousDatabaseDataguardAssociationResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // GetAutonomousDatabaseRegionalWallet Gets the Autonomous Database regional wallet details.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetAutonomousDatabaseRegionalWallet.go.html to see an example of how to use GetAutonomousDatabaseRegionalWallet API.
 func (client DatabaseClient) GetAutonomousDatabaseRegionalWallet(ctx context.Context, request GetAutonomousDatabaseRegionalWalletRequest) (response GetAutonomousDatabaseRegionalWalletResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAutonomousDatabaseRegionalWallet, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAutonomousDatabaseRegionalWalletResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAutonomousDatabaseRegionalWalletResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAutonomousDatabaseRegionalWalletResponse{}
+			}
 		}
 		return
 	}
@@ -2015,8 +5438,9 @@ func (client DatabaseClient) GetAutonomousDatabaseRegionalWallet(ctx context.Con
 }
 
 // getAutonomousDatabaseRegionalWallet implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getAutonomousDatabaseRegionalWallet(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabases/wallet")
+func (client DatabaseClient) getAutonomousDatabaseRegionalWallet(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabases/wallet", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2035,16 +5459,28 @@ func (client DatabaseClient) getAutonomousDatabaseRegionalWallet(ctx context.Con
 }
 
 // GetAutonomousDatabaseWallet Gets the wallet details for the specified Autonomous Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetAutonomousDatabaseWallet.go.html to see an example of how to use GetAutonomousDatabaseWallet API.
 func (client DatabaseClient) GetAutonomousDatabaseWallet(ctx context.Context, request GetAutonomousDatabaseWalletRequest) (response GetAutonomousDatabaseWalletResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAutonomousDatabaseWallet, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAutonomousDatabaseWalletResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAutonomousDatabaseWalletResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAutonomousDatabaseWalletResponse{}
+			}
 		}
 		return
 	}
@@ -2057,8 +5493,9 @@ func (client DatabaseClient) GetAutonomousDatabaseWallet(ctx context.Context, re
 }
 
 // getAutonomousDatabaseWallet implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getAutonomousDatabaseWallet(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabases/{autonomousDatabaseId}/wallet")
+func (client DatabaseClient) getAutonomousDatabaseWallet(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabases/{autonomousDatabaseId}/wallet", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2076,17 +5513,29 @@ func (client DatabaseClient) getAutonomousDatabaseWallet(ctx context.Context, re
 	return response, err
 }
 
-// GetAutonomousExadataInfrastructure Gets information about the specified Autonomous Exadata Infrastructure.
+// GetAutonomousExadataInfrastructure Gets information about the specified Autonomous Exadata Infrastructure resource.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetAutonomousExadataInfrastructure.go.html to see an example of how to use GetAutonomousExadataInfrastructure API.
 func (client DatabaseClient) GetAutonomousExadataInfrastructure(ctx context.Context, request GetAutonomousExadataInfrastructureRequest) (response GetAutonomousExadataInfrastructureResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getAutonomousExadataInfrastructure, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetAutonomousExadataInfrastructureResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAutonomousExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAutonomousExadataInfrastructureResponse{}
+			}
 		}
 		return
 	}
@@ -2099,8 +5548,9 @@ func (client DatabaseClient) GetAutonomousExadataInfrastructure(ctx context.Cont
 }
 
 // getAutonomousExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getAutonomousExadataInfrastructure(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousExadataInfrastructures/{autonomousExadataInfrastructureId}")
+func (client DatabaseClient) getAutonomousExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousExadataInfrastructures/{autonomousExadataInfrastructureId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2118,17 +5568,139 @@ func (client DatabaseClient) getAutonomousExadataInfrastructure(ctx context.Cont
 	return response, err
 }
 
+// GetAutonomousPatch Gets information about a specific autonomous patch.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetAutonomousPatch.go.html to see an example of how to use GetAutonomousPatch API.
+func (client DatabaseClient) GetAutonomousPatch(ctx context.Context, request GetAutonomousPatchRequest) (response GetAutonomousPatchResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getAutonomousPatch, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAutonomousPatchResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAutonomousPatchResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetAutonomousPatchResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetAutonomousPatchResponse")
+	}
+	return
+}
+
+// getAutonomousPatch implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getAutonomousPatch(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousPatches/{autonomousPatchId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetAutonomousPatchResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetAutonomousVmCluster Gets information about the specified Autonomous VM cluster for an Exadata Cloud@Customer system.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetAutonomousVmCluster.go.html to see an example of how to use GetAutonomousVmCluster API.
+func (client DatabaseClient) GetAutonomousVmCluster(ctx context.Context, request GetAutonomousVmClusterRequest) (response GetAutonomousVmClusterResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getAutonomousVmCluster, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetAutonomousVmClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetAutonomousVmClusterResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetAutonomousVmClusterResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetAutonomousVmClusterResponse")
+	}
+	return
+}
+
+// getAutonomousVmCluster implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getAutonomousVmCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousVmClusters/{autonomousVmClusterId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetAutonomousVmClusterResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // GetBackup Gets information about the specified backup.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetBackup.go.html to see an example of how to use GetBackup API.
 func (client DatabaseClient) GetBackup(ctx context.Context, request GetBackupRequest) (response GetBackupResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getBackup, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetBackupResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetBackupResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetBackupResponse{}
+			}
 		}
 		return
 	}
@@ -2141,8 +5713,9 @@ func (client DatabaseClient) GetBackup(ctx context.Context, request GetBackupReq
 }
 
 // getBackup implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getBackup(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/backups/{backupId}")
+func (client DatabaseClient) getBackup(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/backups/{backupId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2160,17 +5733,29 @@ func (client DatabaseClient) getBackup(ctx context.Context, request common.OCIRe
 	return response, err
 }
 
-// GetBackupDestination Gets information about the specified backup destination.
+// GetBackupDestination Gets information about the specified backup destination in an Exadata Cloud@Customer system.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetBackupDestination.go.html to see an example of how to use GetBackupDestination API.
 func (client DatabaseClient) GetBackupDestination(ctx context.Context, request GetBackupDestinationRequest) (response GetBackupDestinationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getBackupDestination, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetBackupDestinationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetBackupDestinationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetBackupDestinationResponse{}
+			}
 		}
 		return
 	}
@@ -2183,8 +5768,9 @@ func (client DatabaseClient) GetBackupDestination(ctx context.Context, request G
 }
 
 // getBackupDestination implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getBackupDestination(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/backupDestinations/{backupDestinationId}")
+func (client DatabaseClient) getBackupDestination(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/backupDestinations/{backupDestinationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2202,17 +5788,360 @@ func (client DatabaseClient) getBackupDestination(ctx context.Context, request c
 	return response, err
 }
 
+// GetCloudExadataInfrastructure Gets information about the specified cloud Exadata infrastructure resource. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetCloudExadataInfrastructure.go.html to see an example of how to use GetCloudExadataInfrastructure API.
+func (client DatabaseClient) GetCloudExadataInfrastructure(ctx context.Context, request GetCloudExadataInfrastructureRequest) (response GetCloudExadataInfrastructureResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getCloudExadataInfrastructure, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetCloudExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetCloudExadataInfrastructureResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetCloudExadataInfrastructureResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetCloudExadataInfrastructureResponse")
+	}
+	return
+}
+
+// getCloudExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getCloudExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/cloudExadataInfrastructures/{cloudExadataInfrastructureId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetCloudExadataInfrastructureResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetCloudVmCluster Gets information about the specified cloud VM cluster. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetCloudVmCluster.go.html to see an example of how to use GetCloudVmCluster API.
+func (client DatabaseClient) GetCloudVmCluster(ctx context.Context, request GetCloudVmClusterRequest) (response GetCloudVmClusterResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getCloudVmCluster, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetCloudVmClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetCloudVmClusterResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetCloudVmClusterResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetCloudVmClusterResponse")
+	}
+	return
+}
+
+// getCloudVmCluster implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getCloudVmCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/cloudVmClusters/{cloudVmClusterId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetCloudVmClusterResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetCloudVmClusterIormConfig Gets the IORM configuration for the specified cloud VM cluster in an Exadata Cloud Service instance.
+// If you have not specified an IORM configuration, the default configuration is returned.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetCloudVmClusterIormConfig.go.html to see an example of how to use GetCloudVmClusterIormConfig API.
+func (client DatabaseClient) GetCloudVmClusterIormConfig(ctx context.Context, request GetCloudVmClusterIormConfigRequest) (response GetCloudVmClusterIormConfigResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getCloudVmClusterIormConfig, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetCloudVmClusterIormConfigResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetCloudVmClusterIormConfigResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetCloudVmClusterIormConfigResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetCloudVmClusterIormConfigResponse")
+	}
+	return
+}
+
+// getCloudVmClusterIormConfig implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getCloudVmClusterIormConfig(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/cloudVmClusters/{cloudVmClusterId}/CloudVmClusterIormConfig", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetCloudVmClusterIormConfigResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetCloudVmClusterUpdate Gets information about a specified maintenance update package for a cloud VM cluster. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetCloudVmClusterUpdate.go.html to see an example of how to use GetCloudVmClusterUpdate API.
+func (client DatabaseClient) GetCloudVmClusterUpdate(ctx context.Context, request GetCloudVmClusterUpdateRequest) (response GetCloudVmClusterUpdateResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getCloudVmClusterUpdate, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetCloudVmClusterUpdateResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetCloudVmClusterUpdateResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetCloudVmClusterUpdateResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetCloudVmClusterUpdateResponse")
+	}
+	return
+}
+
+// getCloudVmClusterUpdate implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getCloudVmClusterUpdate(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/cloudVmClusters/{cloudVmClusterId}/updates/{updateId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetCloudVmClusterUpdateResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetCloudVmClusterUpdateHistoryEntry Gets the maintenance update history details for the specified update history entry. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetCloudVmClusterUpdateHistoryEntry.go.html to see an example of how to use GetCloudVmClusterUpdateHistoryEntry API.
+func (client DatabaseClient) GetCloudVmClusterUpdateHistoryEntry(ctx context.Context, request GetCloudVmClusterUpdateHistoryEntryRequest) (response GetCloudVmClusterUpdateHistoryEntryResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getCloudVmClusterUpdateHistoryEntry, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetCloudVmClusterUpdateHistoryEntryResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetCloudVmClusterUpdateHistoryEntryResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetCloudVmClusterUpdateHistoryEntryResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetCloudVmClusterUpdateHistoryEntryResponse")
+	}
+	return
+}
+
+// getCloudVmClusterUpdateHistoryEntry implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getCloudVmClusterUpdateHistoryEntry(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/cloudVmClusters/{cloudVmClusterId}/updateHistoryEntries/{updateHistoryEntryId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetCloudVmClusterUpdateHistoryEntryResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetConsoleConnection Gets the specified database node console connection's information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetConsoleConnection.go.html to see an example of how to use GetConsoleConnection API.
+func (client DatabaseClient) GetConsoleConnection(ctx context.Context, request GetConsoleConnectionRequest) (response GetConsoleConnectionResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getConsoleConnection, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetConsoleConnectionResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetConsoleConnectionResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetConsoleConnectionResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetConsoleConnectionResponse")
+	}
+	return
+}
+
+// getConsoleConnection implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getConsoleConnection(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbNodes/{dbNodeId}/consoleConnections/{consoleConnectionId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetConsoleConnectionResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // GetDataGuardAssociation Gets the specified Data Guard association's configuration information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetDataGuardAssociation.go.html to see an example of how to use GetDataGuardAssociation API.
 func (client DatabaseClient) GetDataGuardAssociation(ctx context.Context, request GetDataGuardAssociationRequest) (response GetDataGuardAssociationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getDataGuardAssociation, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetDataGuardAssociationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetDataGuardAssociationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetDataGuardAssociationResponse{}
+			}
 		}
 		return
 	}
@@ -2225,8 +6154,9 @@ func (client DatabaseClient) GetDataGuardAssociation(ctx context.Context, reques
 }
 
 // getDataGuardAssociation implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getDataGuardAssociation(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/databases/{databaseId}/dataGuardAssociations/{dataGuardAssociationId}")
+func (client DatabaseClient) getDataGuardAssociation(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/databases/{databaseId}/dataGuardAssociations/{dataGuardAssociationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2244,17 +6174,29 @@ func (client DatabaseClient) getDataGuardAssociation(ctx context.Context, reques
 	return response, err
 }
 
-// GetDatabase Gets information about a specific database.
+// GetDatabase Gets information about the specified database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetDatabase.go.html to see an example of how to use GetDatabase API.
 func (client DatabaseClient) GetDatabase(ctx context.Context, request GetDatabaseRequest) (response GetDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -2267,8 +6209,9 @@ func (client DatabaseClient) GetDatabase(ctx context.Context, request GetDatabas
 }
 
 // getDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/databases/{databaseId}")
+func (client DatabaseClient) getDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/databases/{databaseId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2286,17 +6229,139 @@ func (client DatabaseClient) getDatabase(ctx context.Context, request common.OCI
 	return response, err
 }
 
-// GetDbHome Gets information about the specified database home.
+// GetDatabaseSoftwareImage Gets information about the specified database software image.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetDatabaseSoftwareImage.go.html to see an example of how to use GetDatabaseSoftwareImage API.
+func (client DatabaseClient) GetDatabaseSoftwareImage(ctx context.Context, request GetDatabaseSoftwareImageRequest) (response GetDatabaseSoftwareImageResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getDatabaseSoftwareImage, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetDatabaseSoftwareImageResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetDatabaseSoftwareImageResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetDatabaseSoftwareImageResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetDatabaseSoftwareImageResponse")
+	}
+	return
+}
+
+// getDatabaseSoftwareImage implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getDatabaseSoftwareImage(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/databaseSoftwareImages/{databaseSoftwareImageId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetDatabaseSoftwareImageResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetDatabaseUpgradeHistoryEntry gets the upgrade history for a specified database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetDatabaseUpgradeHistoryEntry.go.html to see an example of how to use GetDatabaseUpgradeHistoryEntry API.
+func (client DatabaseClient) GetDatabaseUpgradeHistoryEntry(ctx context.Context, request GetDatabaseUpgradeHistoryEntryRequest) (response GetDatabaseUpgradeHistoryEntryResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getDatabaseUpgradeHistoryEntry, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetDatabaseUpgradeHistoryEntryResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetDatabaseUpgradeHistoryEntryResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetDatabaseUpgradeHistoryEntryResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetDatabaseUpgradeHistoryEntryResponse")
+	}
+	return
+}
+
+// getDatabaseUpgradeHistoryEntry implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getDatabaseUpgradeHistoryEntry(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/databases/{databaseId}/upgradeHistoryEntries/{upgradeHistoryEntryId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetDatabaseUpgradeHistoryEntryResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetDbHome Gets information about the specified Database Home.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetDbHome.go.html to see an example of how to use GetDbHome API.
 func (client DatabaseClient) GetDbHome(ctx context.Context, request GetDbHomeRequest) (response GetDbHomeResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getDbHome, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetDbHomeResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetDbHomeResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetDbHomeResponse{}
+			}
 		}
 		return
 	}
@@ -2309,8 +6374,9 @@ func (client DatabaseClient) GetDbHome(ctx context.Context, request GetDbHomeReq
 }
 
 // getDbHome implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getDbHome(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbHomes/{dbHomeId}")
+func (client DatabaseClient) getDbHome(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbHomes/{dbHomeId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2329,16 +6395,28 @@ func (client DatabaseClient) getDbHome(ctx context.Context, request common.OCIRe
 }
 
 // GetDbHomePatch Gets information about a specified patch package.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetDbHomePatch.go.html to see an example of how to use GetDbHomePatch API.
 func (client DatabaseClient) GetDbHomePatch(ctx context.Context, request GetDbHomePatchRequest) (response GetDbHomePatchResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getDbHomePatch, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetDbHomePatchResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetDbHomePatchResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetDbHomePatchResponse{}
+			}
 		}
 		return
 	}
@@ -2351,8 +6429,9 @@ func (client DatabaseClient) GetDbHomePatch(ctx context.Context, request GetDbHo
 }
 
 // getDbHomePatch implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getDbHomePatch(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbHomes/{dbHomeId}/patches/{patchId}")
+func (client DatabaseClient) getDbHomePatch(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbHomes/{dbHomeId}/patches/{patchId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2371,16 +6450,28 @@ func (client DatabaseClient) getDbHomePatch(ctx context.Context, request common.
 }
 
 // GetDbHomePatchHistoryEntry Gets the patch history details for the specified patchHistoryEntryId
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetDbHomePatchHistoryEntry.go.html to see an example of how to use GetDbHomePatchHistoryEntry API.
 func (client DatabaseClient) GetDbHomePatchHistoryEntry(ctx context.Context, request GetDbHomePatchHistoryEntryRequest) (response GetDbHomePatchHistoryEntryResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getDbHomePatchHistoryEntry, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetDbHomePatchHistoryEntryResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetDbHomePatchHistoryEntryResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetDbHomePatchHistoryEntryResponse{}
+			}
 		}
 		return
 	}
@@ -2393,8 +6484,9 @@ func (client DatabaseClient) GetDbHomePatchHistoryEntry(ctx context.Context, req
 }
 
 // getDbHomePatchHistoryEntry implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getDbHomePatchHistoryEntry(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbHomes/{dbHomeId}/patchHistoryEntries/{patchHistoryEntryId}")
+func (client DatabaseClient) getDbHomePatchHistoryEntry(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbHomes/{dbHomeId}/patchHistoryEntries/{patchHistoryEntryId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2413,16 +6505,28 @@ func (client DatabaseClient) getDbHomePatchHistoryEntry(ctx context.Context, req
 }
 
 // GetDbNode Gets information about the specified database node.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetDbNode.go.html to see an example of how to use GetDbNode API.
 func (client DatabaseClient) GetDbNode(ctx context.Context, request GetDbNodeRequest) (response GetDbNodeResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getDbNode, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetDbNodeResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetDbNodeResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetDbNodeResponse{}
+			}
 		}
 		return
 	}
@@ -2435,8 +6539,9 @@ func (client DatabaseClient) GetDbNode(ctx context.Context, request GetDbNodeReq
 }
 
 // getDbNode implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getDbNode(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbNodes/{dbNodeId}")
+func (client DatabaseClient) getDbNode(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbNodes/{dbNodeId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2455,16 +6560,30 @@ func (client DatabaseClient) getDbNode(ctx context.Context, request common.OCIRe
 }
 
 // GetDbSystem Gets information about the specified DB system.
+// **Note:** Deprecated for Exadata Cloud Service systems. Use the new resource model APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem.htm#exaflexsystem_topic-resource_model) instead.
+// For Exadata Cloud Service instances, support for this API will end on May 15th, 2021. See Switching an Exadata DB System to the New Resource Model and APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem_topic-resource_model_conversion.htm) for details on converting existing Exadata DB systems to the new resource model.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetDbSystem.go.html to see an example of how to use GetDbSystem API.
 func (client DatabaseClient) GetDbSystem(ctx context.Context, request GetDbSystemRequest) (response GetDbSystemResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getDbSystem, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetDbSystemResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetDbSystemResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetDbSystemResponse{}
+			}
 		}
 		return
 	}
@@ -2477,8 +6596,9 @@ func (client DatabaseClient) GetDbSystem(ctx context.Context, request GetDbSyste
 }
 
 // getDbSystem implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getDbSystem(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems/{dbSystemId}")
+func (client DatabaseClient) getDbSystem(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems/{dbSystemId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2496,17 +6616,29 @@ func (client DatabaseClient) getDbSystem(ctx context.Context, request common.OCI
 	return response, err
 }
 
-// GetDbSystemPatch Gets information about a specified patch package.
+// GetDbSystemPatch Gets information the specified patch.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetDbSystemPatch.go.html to see an example of how to use GetDbSystemPatch API.
 func (client DatabaseClient) GetDbSystemPatch(ctx context.Context, request GetDbSystemPatchRequest) (response GetDbSystemPatchResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getDbSystemPatch, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetDbSystemPatchResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetDbSystemPatchResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetDbSystemPatchResponse{}
+			}
 		}
 		return
 	}
@@ -2519,8 +6651,9 @@ func (client DatabaseClient) GetDbSystemPatch(ctx context.Context, request GetDb
 }
 
 // getDbSystemPatch implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getDbSystemPatch(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems/{dbSystemId}/patches/{patchId}")
+func (client DatabaseClient) getDbSystemPatch(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems/{dbSystemId}/patches/{patchId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2538,17 +6671,29 @@ func (client DatabaseClient) getDbSystemPatch(ctx context.Context, request commo
 	return response, err
 }
 
-// GetDbSystemPatchHistoryEntry Gets the patch history details for the specified patchHistoryEntryId.
+// GetDbSystemPatchHistoryEntry Gets the details of the specified patch operation on the specified DB system.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetDbSystemPatchHistoryEntry.go.html to see an example of how to use GetDbSystemPatchHistoryEntry API.
 func (client DatabaseClient) GetDbSystemPatchHistoryEntry(ctx context.Context, request GetDbSystemPatchHistoryEntryRequest) (response GetDbSystemPatchHistoryEntryResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getDbSystemPatchHistoryEntry, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetDbSystemPatchHistoryEntryResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetDbSystemPatchHistoryEntryResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetDbSystemPatchHistoryEntryResponse{}
+			}
 		}
 		return
 	}
@@ -2561,8 +6706,9 @@ func (client DatabaseClient) GetDbSystemPatchHistoryEntry(ctx context.Context, r
 }
 
 // getDbSystemPatchHistoryEntry implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getDbSystemPatchHistoryEntry(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems/{dbSystemId}/patchHistoryEntries/{patchHistoryEntryId}")
+func (client DatabaseClient) getDbSystemPatchHistoryEntry(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems/{dbSystemId}/patchHistoryEntries/{patchHistoryEntryId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2580,17 +6726,30 @@ func (client DatabaseClient) getDbSystemPatchHistoryEntry(ctx context.Context, r
 	return response, err
 }
 
-// GetExadataInfrastructure Gets information about the specified Exadata infrastructure.
+// GetExadataInfrastructure Gets information about the specified Exadata infrastructure. Applies to Exadata Cloud@Customer instances only.
+// To get information on an Exadata Cloud Service infrastructure resource, use the  GetCloudExadataInfrastructure operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetExadataInfrastructure.go.html to see an example of how to use GetExadataInfrastructure API.
 func (client DatabaseClient) GetExadataInfrastructure(ctx context.Context, request GetExadataInfrastructureRequest) (response GetExadataInfrastructureResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getExadataInfrastructure, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetExadataInfrastructureResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetExadataInfrastructureResponse{}
+			}
 		}
 		return
 	}
@@ -2603,8 +6762,9 @@ func (client DatabaseClient) GetExadataInfrastructure(ctx context.Context, reque
 }
 
 // getExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getExadataInfrastructure(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/exadataInfrastructures/{exadataInfrastructureId}")
+func (client DatabaseClient) getExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/exadataInfrastructures/{exadataInfrastructureId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2622,18 +6782,89 @@ func (client DatabaseClient) getExadataInfrastructure(ctx context.Context, reque
 	return response, err
 }
 
-// GetExadataIormConfig Gets `IORM` Setting for the requested Exadata DB System.
-// The default IORM Settings is pre-created in all the Exadata DB System.
+// GetExadataInfrastructureOcpus Gets details of the available and consumed OCPUs for the specified Autonomous Exadata Infrastructure resource.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetExadataInfrastructureOcpus.go.html to see an example of how to use GetExadataInfrastructureOcpus API.
+func (client DatabaseClient) GetExadataInfrastructureOcpus(ctx context.Context, request GetExadataInfrastructureOcpusRequest) (response GetExadataInfrastructureOcpusResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getExadataInfrastructureOcpus, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetExadataInfrastructureOcpusResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetExadataInfrastructureOcpusResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetExadataInfrastructureOcpusResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetExadataInfrastructureOcpusResponse")
+	}
+	return
+}
+
+// getExadataInfrastructureOcpus implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getExadataInfrastructureOcpus(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousExadataInfrastructures/{autonomousExadataInfrastructureId}/ocpus", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetExadataInfrastructureOcpusResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetExadataIormConfig Gets the IORM configuration settings for the specified cloud Exadata DB system.
+// All Exadata service instances have default IORM settings.
+// **Note:** Deprecated for Exadata Cloud Service systems. Use the new resource model APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem.htm#exaflexsystem_topic-resource_model) instead.
+// For Exadata Cloud Service instances, support for this API will end on May 15th, 2021. See Switching an Exadata DB System to the New Resource Model and APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem_topic-resource_model_conversion.htm) for details on converting existing Exadata DB systems to the new resource model.
+// The GetCloudVmClusterIormConfig API is used for this operation with Exadata systems using the
+// new resource model.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetExadataIormConfig.go.html to see an example of how to use GetExadataIormConfig API.
 func (client DatabaseClient) GetExadataIormConfig(ctx context.Context, request GetExadataIormConfigRequest) (response GetExadataIormConfigResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getExadataIormConfig, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetExadataIormConfigResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetExadataIormConfigResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetExadataIormConfigResponse{}
+			}
 		}
 		return
 	}
@@ -2646,8 +6877,9 @@ func (client DatabaseClient) GetExadataIormConfig(ctx context.Context, request G
 }
 
 // getExadataIormConfig implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getExadataIormConfig(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems/{dbSystemId}/ExadataIormConfig")
+func (client DatabaseClient) getExadataIormConfig(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems/{dbSystemId}/ExadataIormConfig", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2667,16 +6899,28 @@ func (client DatabaseClient) getExadataIormConfig(ctx context.Context, request c
 
 // GetExternalBackupJob Gets information about the specified external backup job.
 // **Note:** This API is used by an Oracle Cloud Infrastructure Python script that is packaged with the Oracle Cloud Infrastructure CLI. Oracle recommends that you use the script instead using the API directly. See Migrating an On-Premises Database to Oracle Cloud Infrastructure by Creating a Backup in the Cloud (https://docs.cloud.oracle.com/Content/Database/Tasks/mig-onprembackup.htm) for more information.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetExternalBackupJob.go.html to see an example of how to use GetExternalBackupJob API.
 func (client DatabaseClient) GetExternalBackupJob(ctx context.Context, request GetExternalBackupJobRequest) (response GetExternalBackupJobResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getExternalBackupJob, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetExternalBackupJobResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetExternalBackupJobResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetExternalBackupJobResponse{}
+			}
 		}
 		return
 	}
@@ -2689,8 +6933,9 @@ func (client DatabaseClient) GetExternalBackupJob(ctx context.Context, request G
 }
 
 // getExternalBackupJob implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getExternalBackupJob(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/externalBackupJobs/{backupId}")
+func (client DatabaseClient) getExternalBackupJob(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/externalBackupJobs/{backupId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2708,17 +6953,305 @@ func (client DatabaseClient) getExternalBackupJob(ctx context.Context, request c
 	return response, err
 }
 
-// GetMaintenanceRun Gets information about the specified Maintenance Run.
+// GetExternalContainerDatabase Gets information about the specified external container database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetExternalContainerDatabase.go.html to see an example of how to use GetExternalContainerDatabase API.
+func (client DatabaseClient) GetExternalContainerDatabase(ctx context.Context, request GetExternalContainerDatabaseRequest) (response GetExternalContainerDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getExternalContainerDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetExternalContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetExternalContainerDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetExternalContainerDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetExternalContainerDatabaseResponse")
+	}
+	return
+}
+
+// getExternalContainerDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getExternalContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/externalcontainerdatabases/{externalContainerDatabaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetExternalContainerDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetExternalDatabaseConnector Gets information about the specified external database connector.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetExternalDatabaseConnector.go.html to see an example of how to use GetExternalDatabaseConnector API.
+func (client DatabaseClient) GetExternalDatabaseConnector(ctx context.Context, request GetExternalDatabaseConnectorRequest) (response GetExternalDatabaseConnectorResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getExternalDatabaseConnector, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetExternalDatabaseConnectorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetExternalDatabaseConnectorResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetExternalDatabaseConnectorResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetExternalDatabaseConnectorResponse")
+	}
+	return
+}
+
+// getExternalDatabaseConnector implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getExternalDatabaseConnector(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/externaldatabaseconnectors/{externalDatabaseConnectorId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetExternalDatabaseConnectorResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponseWithPolymorphicBody(httpResponse, &response, &externaldatabaseconnector{})
+	return response, err
+}
+
+// GetExternalNonContainerDatabase Gets information about a specific external non-container database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetExternalNonContainerDatabase.go.html to see an example of how to use GetExternalNonContainerDatabase API.
+func (client DatabaseClient) GetExternalNonContainerDatabase(ctx context.Context, request GetExternalNonContainerDatabaseRequest) (response GetExternalNonContainerDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getExternalNonContainerDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetExternalNonContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetExternalNonContainerDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetExternalNonContainerDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetExternalNonContainerDatabaseResponse")
+	}
+	return
+}
+
+// getExternalNonContainerDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getExternalNonContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/externalnoncontainerdatabases/{externalNonContainerDatabaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetExternalNonContainerDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetExternalPluggableDatabase Gets information about a specific
+// CreateExternalPluggableDatabaseDetails resource.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetExternalPluggableDatabase.go.html to see an example of how to use GetExternalPluggableDatabase API.
+func (client DatabaseClient) GetExternalPluggableDatabase(ctx context.Context, request GetExternalPluggableDatabaseRequest) (response GetExternalPluggableDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getExternalPluggableDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetExternalPluggableDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetExternalPluggableDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetExternalPluggableDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetExternalPluggableDatabaseResponse")
+	}
+	return
+}
+
+// getExternalPluggableDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getExternalPluggableDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/externalpluggabledatabases/{externalPluggableDatabaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetExternalPluggableDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetKeyStore Gets information about the specified key store.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetKeyStore.go.html to see an example of how to use GetKeyStore API.
+func (client DatabaseClient) GetKeyStore(ctx context.Context, request GetKeyStoreRequest) (response GetKeyStoreResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getKeyStore, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetKeyStoreResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetKeyStoreResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetKeyStoreResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetKeyStoreResponse")
+	}
+	return
+}
+
+// getKeyStore implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getKeyStore(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/keyStores/{keyStoreId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetKeyStoreResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetMaintenanceRun Gets information about the specified maintenance run.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetMaintenanceRun.go.html to see an example of how to use GetMaintenanceRun API.
 func (client DatabaseClient) GetMaintenanceRun(ctx context.Context, request GetMaintenanceRunRequest) (response GetMaintenanceRunResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getMaintenanceRun, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetMaintenanceRunResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetMaintenanceRunResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetMaintenanceRunResponse{}
+			}
 		}
 		return
 	}
@@ -2731,8 +7264,9 @@ func (client DatabaseClient) GetMaintenanceRun(ctx context.Context, request GetM
 }
 
 // getMaintenanceRun implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getMaintenanceRun(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/maintenanceRuns/{maintenanceRunId}")
+func (client DatabaseClient) getMaintenanceRun(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/maintenanceRuns/{maintenanceRunId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2750,17 +7284,84 @@ func (client DatabaseClient) getMaintenanceRun(ctx context.Context, request comm
 	return response, err
 }
 
-// GetVmCluster Gets information about the specified VM cluster.
+// GetPluggableDatabase Gets information about the specified pluggable database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetPluggableDatabase.go.html to see an example of how to use GetPluggableDatabase API.
+func (client DatabaseClient) GetPluggableDatabase(ctx context.Context, request GetPluggableDatabaseRequest) (response GetPluggableDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getPluggableDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetPluggableDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetPluggableDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetPluggableDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetPluggableDatabaseResponse")
+	}
+	return
+}
+
+// getPluggableDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getPluggableDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/pluggableDatabases/{pluggableDatabaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetPluggableDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetVmCluster Gets information about the VM cluster. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetVmCluster.go.html to see an example of how to use GetVmCluster API.
 func (client DatabaseClient) GetVmCluster(ctx context.Context, request GetVmClusterRequest) (response GetVmClusterResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getVmCluster, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetVmClusterResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetVmClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetVmClusterResponse{}
+			}
 		}
 		return
 	}
@@ -2773,8 +7374,9 @@ func (client DatabaseClient) GetVmCluster(ctx context.Context, request GetVmClus
 }
 
 // getVmCluster implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getVmCluster(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vmClusters/{vmClusterId}")
+func (client DatabaseClient) getVmCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vmClusters/{vmClusterId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2792,17 +7394,30 @@ func (client DatabaseClient) getVmCluster(ctx context.Context, request common.OC
 	return response, err
 }
 
-// GetVmClusterNetwork Gets information about the specified VM cluster network.
+// GetVmClusterNetwork Gets information about the specified VM cluster network. Applies to Exadata Cloud@Customer instances only.
+// To get information about a cloud VM cluster in an Exadata Cloud Service instance, use the GetCloudVmCluster operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetVmClusterNetwork.go.html to see an example of how to use GetVmClusterNetwork API.
 func (client DatabaseClient) GetVmClusterNetwork(ctx context.Context, request GetVmClusterNetworkRequest) (response GetVmClusterNetworkResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getVmClusterNetwork, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetVmClusterNetworkResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetVmClusterNetworkResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetVmClusterNetworkResponse{}
+			}
 		}
 		return
 	}
@@ -2815,8 +7430,9 @@ func (client DatabaseClient) GetVmClusterNetwork(ctx context.Context, request Ge
 }
 
 // getVmClusterNetwork implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) getVmClusterNetwork(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/{vmClusterNetworkId}")
+func (client DatabaseClient) getVmClusterNetwork(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/{vmClusterNetworkId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2834,10 +7450,237 @@ func (client DatabaseClient) getVmClusterNetwork(ctx context.Context, request co
 	return response, err
 }
 
-// LaunchAutonomousExadataInfrastructure Launches a new Autonomous Exadata Infrastructure in the specified compartment and availability domain.
+// GetVmClusterPatch Gets information about a specified patch package.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetVmClusterPatch.go.html to see an example of how to use GetVmClusterPatch API.
+func (client DatabaseClient) GetVmClusterPatch(ctx context.Context, request GetVmClusterPatchRequest) (response GetVmClusterPatchResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getVmClusterPatch, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetVmClusterPatchResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetVmClusterPatchResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetVmClusterPatchResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetVmClusterPatchResponse")
+	}
+	return
+}
+
+// getVmClusterPatch implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getVmClusterPatch(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vmClusters/{vmClusterId}/patches/{patchId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetVmClusterPatchResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetVmClusterPatchHistoryEntry Gets the patch history details for the specified patch history entry.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetVmClusterPatchHistoryEntry.go.html to see an example of how to use GetVmClusterPatchHistoryEntry API.
+func (client DatabaseClient) GetVmClusterPatchHistoryEntry(ctx context.Context, request GetVmClusterPatchHistoryEntryRequest) (response GetVmClusterPatchHistoryEntryResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getVmClusterPatchHistoryEntry, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetVmClusterPatchHistoryEntryResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetVmClusterPatchHistoryEntryResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetVmClusterPatchHistoryEntryResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetVmClusterPatchHistoryEntryResponse")
+	}
+	return
+}
+
+// getVmClusterPatchHistoryEntry implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getVmClusterPatchHistoryEntry(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vmClusters/{vmClusterId}/patchHistoryEntries/{patchHistoryEntryId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetVmClusterPatchHistoryEntryResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetVmClusterUpdate Gets information about a specified maintenance update package for a VM cluster. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetVmClusterUpdate.go.html to see an example of how to use GetVmClusterUpdate API.
+func (client DatabaseClient) GetVmClusterUpdate(ctx context.Context, request GetVmClusterUpdateRequest) (response GetVmClusterUpdateResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getVmClusterUpdate, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetVmClusterUpdateResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetVmClusterUpdateResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetVmClusterUpdateResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetVmClusterUpdateResponse")
+	}
+	return
+}
+
+// getVmClusterUpdate implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getVmClusterUpdate(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vmClusters/{vmClusterId}/updates/{updateId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetVmClusterUpdateResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// GetVmClusterUpdateHistoryEntry Gets the maintenance update history details for the specified update history entry. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/GetVmClusterUpdateHistoryEntry.go.html to see an example of how to use GetVmClusterUpdateHistoryEntry API.
+func (client DatabaseClient) GetVmClusterUpdateHistoryEntry(ctx context.Context, request GetVmClusterUpdateHistoryEntryRequest) (response GetVmClusterUpdateHistoryEntryResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getVmClusterUpdateHistoryEntry, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetVmClusterUpdateHistoryEntryResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetVmClusterUpdateHistoryEntryResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetVmClusterUpdateHistoryEntryResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetVmClusterUpdateHistoryEntryResponse")
+	}
+	return
+}
+
+// getVmClusterUpdateHistoryEntry implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) getVmClusterUpdateHistoryEntry(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vmClusters/{vmClusterId}/updateHistoryEntries/{updateHistoryEntryId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetVmClusterUpdateHistoryEntryResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// LaunchAutonomousExadataInfrastructure Creates a new Autonomous Exadata Infrastructure in the specified compartment and availability domain.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/LaunchAutonomousExadataInfrastructure.go.html to see an example of how to use LaunchAutonomousExadataInfrastructure API.
 func (client DatabaseClient) LaunchAutonomousExadataInfrastructure(ctx context.Context, request LaunchAutonomousExadataInfrastructureRequest) (response LaunchAutonomousExadataInfrastructureResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -2849,7 +7692,12 @@ func (client DatabaseClient) LaunchAutonomousExadataInfrastructure(ctx context.C
 	ociResponse, err = common.Retry(ctx, request, client.launchAutonomousExadataInfrastructure, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = LaunchAutonomousExadataInfrastructureResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = LaunchAutonomousExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = LaunchAutonomousExadataInfrastructureResponse{}
+			}
 		}
 		return
 	}
@@ -2862,8 +7710,9 @@ func (client DatabaseClient) LaunchAutonomousExadataInfrastructure(ctx context.C
 }
 
 // launchAutonomousExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) launchAutonomousExadataInfrastructure(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousExadataInfrastructures")
+func (client DatabaseClient) launchAutonomousExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousExadataInfrastructures", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2881,14 +7730,23 @@ func (client DatabaseClient) launchAutonomousExadataInfrastructure(ctx context.C
 	return response, err
 }
 
-// LaunchDbSystem Launches a new DB system in the specified compartment and availability domain. The Oracle
+// LaunchDbSystem Creates a new DB system in the specified compartment and availability domain. The Oracle
 // Database edition that you specify applies to all the databases on that DB system. The selected edition cannot be changed.
 // An initial database is created on the DB system based on the request parameters you provide and some default
-// options. For more information,
-// see Default Options for the Initial Database (https://docs.cloud.oracle.com/Content/Database/Tasks/launchingDB.htm#DefaultOptionsfortheInitialDatabase).
+// options. For detailed information about default options, see Bare metal and virtual machine DB system default options. (https://docs.cloud.oracle.com/Content/Database/Tasks/creatingDBsystem.htm#Default)
+// **Note:** Deprecated for Exadata Cloud Service systems. Use the new resource model APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem.htm#exaflexsystem_topic-resource_model) instead.
+// For Exadata Cloud Service instances, support for this API will end on May 15th, 2021. See Switching an Exadata DB System to the New Resource Model and APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem_topic-resource_model_conversion.htm) for details on converting existing Exadata DB systems to the new resource model.
+// Use the CreateCloudExadataInfrastructure and CreateCloudVmCluster APIs to provision a new Exadata Cloud Service instance.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/LaunchDbSystem.go.html to see an example of how to use LaunchDbSystem API.
 func (client DatabaseClient) LaunchDbSystem(ctx context.Context, request LaunchDbSystemRequest) (response LaunchDbSystemResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -2900,7 +7758,12 @@ func (client DatabaseClient) LaunchDbSystem(ctx context.Context, request LaunchD
 	ociResponse, err = common.Retry(ctx, request, client.launchDbSystem, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = LaunchDbSystemResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = LaunchDbSystemResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = LaunchDbSystemResponse{}
+			}
 		}
 		return
 	}
@@ -2913,8 +7776,9 @@ func (client DatabaseClient) LaunchDbSystem(ctx context.Context, request LaunchD
 }
 
 // launchDbSystem implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) launchDbSystem(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dbSystems")
+func (client DatabaseClient) launchDbSystem(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dbSystems", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2932,17 +7796,84 @@ func (client DatabaseClient) launchDbSystem(ctx context.Context, request common.
 	return response, err
 }
 
+// ListAutonomousContainerDatabaseDataguardAssociations Gets a list of the Autonomous Container Databases with Autonomous Data Guard-enabled associated with the specified Autonomous Container Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListAutonomousContainerDatabaseDataguardAssociations.go.html to see an example of how to use ListAutonomousContainerDatabaseDataguardAssociations API.
+func (client DatabaseClient) ListAutonomousContainerDatabaseDataguardAssociations(ctx context.Context, request ListAutonomousContainerDatabaseDataguardAssociationsRequest) (response ListAutonomousContainerDatabaseDataguardAssociationsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listAutonomousContainerDatabaseDataguardAssociations, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutonomousContainerDatabaseDataguardAssociationsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutonomousContainerDatabaseDataguardAssociationsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListAutonomousContainerDatabaseDataguardAssociationsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListAutonomousContainerDatabaseDataguardAssociationsResponse")
+	}
+	return
+}
+
+// listAutonomousContainerDatabaseDataguardAssociations implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listAutonomousContainerDatabaseDataguardAssociations(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}/autonomousContainerDatabaseDataguardAssociations", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListAutonomousContainerDatabaseDataguardAssociationsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // ListAutonomousContainerDatabases Gets a list of the Autonomous Container Databases in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListAutonomousContainerDatabases.go.html to see an example of how to use ListAutonomousContainerDatabases API.
 func (client DatabaseClient) ListAutonomousContainerDatabases(ctx context.Context, request ListAutonomousContainerDatabasesRequest) (response ListAutonomousContainerDatabasesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAutonomousContainerDatabases, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAutonomousContainerDatabasesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutonomousContainerDatabasesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutonomousContainerDatabasesResponse{}
+			}
 		}
 		return
 	}
@@ -2955,8 +7886,9 @@ func (client DatabaseClient) ListAutonomousContainerDatabases(ctx context.Contex
 }
 
 // listAutonomousContainerDatabases implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listAutonomousContainerDatabases(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousContainerDatabases")
+func (client DatabaseClient) listAutonomousContainerDatabases(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousContainerDatabases", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -2974,101 +7906,29 @@ func (client DatabaseClient) listAutonomousContainerDatabases(ctx context.Contex
 	return response, err
 }
 
-// ListAutonomousDataWarehouseBackups **Deprecated.** To get a list of Autonomous Data Warehouse backups, use the ListAutonomousDatabaseBackups operation.
-func (client DatabaseClient) ListAutonomousDataWarehouseBackups(ctx context.Context, request ListAutonomousDataWarehouseBackupsRequest) (response ListAutonomousDataWarehouseBackupsResponse, err error) {
-	var ociResponse common.OCIResponse
-	policy := common.NoRetryPolicy()
-	if request.RetryPolicy() != nil {
-		policy = *request.RetryPolicy()
-	}
-	ociResponse, err = common.Retry(ctx, request, client.listAutonomousDataWarehouseBackups, policy)
-	if err != nil {
-		if ociResponse != nil {
-			response = ListAutonomousDataWarehouseBackupsResponse{RawResponse: ociResponse.HTTPResponse()}
-		}
-		return
-	}
-	if convertedResponse, ok := ociResponse.(ListAutonomousDataWarehouseBackupsResponse); ok {
-		response = convertedResponse
-	} else {
-		err = fmt.Errorf("failed to convert OCIResponse into ListAutonomousDataWarehouseBackupsResponse")
-	}
-	return
-}
-
-// listAutonomousDataWarehouseBackups implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listAutonomousDataWarehouseBackups(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDataWarehouseBackups")
-	if err != nil {
-		return nil, err
-	}
-
-	var response ListAutonomousDataWarehouseBackupsResponse
-	var httpResponse *http.Response
-	httpResponse, err = client.Call(ctx, &httpRequest)
-	defer common.CloseBodyIfValid(httpResponse)
-	response.RawResponse = httpResponse
-	if err != nil {
-		return response, err
-	}
-
-	err = common.UnmarshalResponse(httpResponse, &response)
-	return response, err
-}
-
-// ListAutonomousDataWarehouses **Deprecated.** To get a list of Autonomous Data Warehouses, use the ListAutonomousDatabases operation and specify `DW` as the workload type.
-func (client DatabaseClient) ListAutonomousDataWarehouses(ctx context.Context, request ListAutonomousDataWarehousesRequest) (response ListAutonomousDataWarehousesResponse, err error) {
-	var ociResponse common.OCIResponse
-	policy := common.NoRetryPolicy()
-	if request.RetryPolicy() != nil {
-		policy = *request.RetryPolicy()
-	}
-	ociResponse, err = common.Retry(ctx, request, client.listAutonomousDataWarehouses, policy)
-	if err != nil {
-		if ociResponse != nil {
-			response = ListAutonomousDataWarehousesResponse{RawResponse: ociResponse.HTTPResponse()}
-		}
-		return
-	}
-	if convertedResponse, ok := ociResponse.(ListAutonomousDataWarehousesResponse); ok {
-		response = convertedResponse
-	} else {
-		err = fmt.Errorf("failed to convert OCIResponse into ListAutonomousDataWarehousesResponse")
-	}
-	return
-}
-
-// listAutonomousDataWarehouses implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listAutonomousDataWarehouses(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDataWarehouses")
-	if err != nil {
-		return nil, err
-	}
-
-	var response ListAutonomousDataWarehousesResponse
-	var httpResponse *http.Response
-	httpResponse, err = client.Call(ctx, &httpRequest)
-	defer common.CloseBodyIfValid(httpResponse)
-	response.RawResponse = httpResponse
-	if err != nil {
-		return response, err
-	}
-
-	err = common.UnmarshalResponse(httpResponse, &response)
-	return response, err
-}
-
 // ListAutonomousDatabaseBackups Gets a list of Autonomous Database backups based on either the `autonomousDatabaseId` or `compartmentId` specified as a query parameter.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListAutonomousDatabaseBackups.go.html to see an example of how to use ListAutonomousDatabaseBackups API.
 func (client DatabaseClient) ListAutonomousDatabaseBackups(ctx context.Context, request ListAutonomousDatabaseBackupsRequest) (response ListAutonomousDatabaseBackupsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAutonomousDatabaseBackups, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAutonomousDatabaseBackupsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutonomousDatabaseBackupsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutonomousDatabaseBackupsResponse{}
+			}
 		}
 		return
 	}
@@ -3081,8 +7941,9 @@ func (client DatabaseClient) ListAutonomousDatabaseBackups(ctx context.Context, 
 }
 
 // listAutonomousDatabaseBackups implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listAutonomousDatabaseBackups(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabaseBackups")
+func (client DatabaseClient) listAutonomousDatabaseBackups(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabaseBackups", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3100,17 +7961,139 @@ func (client DatabaseClient) listAutonomousDatabaseBackups(ctx context.Context, 
 	return response, err
 }
 
-// ListAutonomousDatabases Gets a list of Autonomous Databases.
+// ListAutonomousDatabaseClones Lists the Autonomous Database clones for the specified Autonomous Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListAutonomousDatabaseClones.go.html to see an example of how to use ListAutonomousDatabaseClones API.
+func (client DatabaseClient) ListAutonomousDatabaseClones(ctx context.Context, request ListAutonomousDatabaseClonesRequest) (response ListAutonomousDatabaseClonesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listAutonomousDatabaseClones, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutonomousDatabaseClonesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutonomousDatabaseClonesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListAutonomousDatabaseClonesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListAutonomousDatabaseClonesResponse")
+	}
+	return
+}
+
+// listAutonomousDatabaseClones implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listAutonomousDatabaseClones(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabases/{autonomousDatabaseId}/clones", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListAutonomousDatabaseClonesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListAutonomousDatabaseDataguardAssociations Gets a list of the Autonomous Data Guard-enabled databases associated with the specified Autonomous Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListAutonomousDatabaseDataguardAssociations.go.html to see an example of how to use ListAutonomousDatabaseDataguardAssociations API.
+func (client DatabaseClient) ListAutonomousDatabaseDataguardAssociations(ctx context.Context, request ListAutonomousDatabaseDataguardAssociationsRequest) (response ListAutonomousDatabaseDataguardAssociationsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listAutonomousDatabaseDataguardAssociations, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutonomousDatabaseDataguardAssociationsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutonomousDatabaseDataguardAssociationsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListAutonomousDatabaseDataguardAssociationsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListAutonomousDatabaseDataguardAssociationsResponse")
+	}
+	return
+}
+
+// listAutonomousDatabaseDataguardAssociations implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listAutonomousDatabaseDataguardAssociations(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabases/{autonomousDatabaseId}/autonomousDatabaseDataguardAssociations", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListAutonomousDatabaseDataguardAssociationsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListAutonomousDatabases Gets a list of Autonomous Databases based on the query parameters specified.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListAutonomousDatabases.go.html to see an example of how to use ListAutonomousDatabases API.
 func (client DatabaseClient) ListAutonomousDatabases(ctx context.Context, request ListAutonomousDatabasesRequest) (response ListAutonomousDatabasesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAutonomousDatabases, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAutonomousDatabasesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutonomousDatabasesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutonomousDatabasesResponse{}
+			}
 		}
 		return
 	}
@@ -3123,8 +8106,9 @@ func (client DatabaseClient) ListAutonomousDatabases(ctx context.Context, reques
 }
 
 // listAutonomousDatabases implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listAutonomousDatabases(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabases")
+func (client DatabaseClient) listAutonomousDatabases(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDatabases", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3142,17 +8126,30 @@ func (client DatabaseClient) listAutonomousDatabases(ctx context.Context, reques
 	return response, err
 }
 
-// ListAutonomousDbPreviewVersions Gets a list of supported Autonomous Database versions. Note that preview version software is only available for serverless deployments (https://docs.cloud.oracle.com/Content/Database/Concepts/adboverview.htm#AEI).
+// ListAutonomousDbPreviewVersions Gets a list of supported Autonomous Database versions. Note that preview version software is only available for
+// databases with shared Exadata infrastructure (https://docs.cloud.oracle.com/Content/Database/Concepts/adboverview.htm#AEI).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListAutonomousDbPreviewVersions.go.html to see an example of how to use ListAutonomousDbPreviewVersions API.
 func (client DatabaseClient) ListAutonomousDbPreviewVersions(ctx context.Context, request ListAutonomousDbPreviewVersionsRequest) (response ListAutonomousDbPreviewVersionsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAutonomousDbPreviewVersions, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAutonomousDbPreviewVersionsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutonomousDbPreviewVersionsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutonomousDbPreviewVersionsResponse{}
+			}
 		}
 		return
 	}
@@ -3165,8 +8162,9 @@ func (client DatabaseClient) ListAutonomousDbPreviewVersions(ctx context.Context
 }
 
 // listAutonomousDbPreviewVersions implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listAutonomousDbPreviewVersions(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDbPreviewVersions")
+func (client DatabaseClient) listAutonomousDbPreviewVersions(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDbPreviewVersions", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3184,17 +8182,84 @@ func (client DatabaseClient) listAutonomousDbPreviewVersions(ctx context.Context
 	return response, err
 }
 
-// ListAutonomousExadataInfrastructureShapes Gets a list of the shapes that can be used to launch a new Autonomous Exadata Infrastructure DB system. The shape determines resources to allocate to the DB system (CPU cores, memory and storage).
+// ListAutonomousDbVersions Gets a list of supported Autonomous Database versions.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListAutonomousDbVersions.go.html to see an example of how to use ListAutonomousDbVersions API.
+func (client DatabaseClient) ListAutonomousDbVersions(ctx context.Context, request ListAutonomousDbVersionsRequest) (response ListAutonomousDbVersionsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listAutonomousDbVersions, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutonomousDbVersionsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutonomousDbVersionsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListAutonomousDbVersionsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListAutonomousDbVersionsResponse")
+	}
+	return
+}
+
+// listAutonomousDbVersions implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listAutonomousDbVersions(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousDbVersions", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListAutonomousDbVersionsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListAutonomousExadataInfrastructureShapes Gets a list of the shapes that can be used to launch a new Autonomous Exadata Infrastructure resource. The shape determines resources to allocate (CPU cores, memory and storage).
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListAutonomousExadataInfrastructureShapes.go.html to see an example of how to use ListAutonomousExadataInfrastructureShapes API.
 func (client DatabaseClient) ListAutonomousExadataInfrastructureShapes(ctx context.Context, request ListAutonomousExadataInfrastructureShapesRequest) (response ListAutonomousExadataInfrastructureShapesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAutonomousExadataInfrastructureShapes, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAutonomousExadataInfrastructureShapesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutonomousExadataInfrastructureShapesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutonomousExadataInfrastructureShapesResponse{}
+			}
 		}
 		return
 	}
@@ -3207,8 +8272,9 @@ func (client DatabaseClient) ListAutonomousExadataInfrastructureShapes(ctx conte
 }
 
 // listAutonomousExadataInfrastructureShapes implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listAutonomousExadataInfrastructureShapes(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousExadataInfrastructureShapes")
+func (client DatabaseClient) listAutonomousExadataInfrastructureShapes(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousExadataInfrastructureShapes", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3227,16 +8293,28 @@ func (client DatabaseClient) listAutonomousExadataInfrastructureShapes(ctx conte
 }
 
 // ListAutonomousExadataInfrastructures Gets a list of the Autonomous Exadata Infrastructures in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListAutonomousExadataInfrastructures.go.html to see an example of how to use ListAutonomousExadataInfrastructures API.
 func (client DatabaseClient) ListAutonomousExadataInfrastructures(ctx context.Context, request ListAutonomousExadataInfrastructuresRequest) (response ListAutonomousExadataInfrastructuresResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listAutonomousExadataInfrastructures, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListAutonomousExadataInfrastructuresResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutonomousExadataInfrastructuresResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutonomousExadataInfrastructuresResponse{}
+			}
 		}
 		return
 	}
@@ -3249,8 +8327,9 @@ func (client DatabaseClient) ListAutonomousExadataInfrastructures(ctx context.Co
 }
 
 // listAutonomousExadataInfrastructures implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listAutonomousExadataInfrastructures(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousExadataInfrastructures")
+func (client DatabaseClient) listAutonomousExadataInfrastructures(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousExadataInfrastructures", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3268,17 +8347,84 @@ func (client DatabaseClient) listAutonomousExadataInfrastructures(ctx context.Co
 	return response, err
 }
 
+// ListAutonomousVmClusters Gets a list of Exadata Cloud@Customer Autonomous VM clusters in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListAutonomousVmClusters.go.html to see an example of how to use ListAutonomousVmClusters API.
+func (client DatabaseClient) ListAutonomousVmClusters(ctx context.Context, request ListAutonomousVmClustersRequest) (response ListAutonomousVmClustersResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listAutonomousVmClusters, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListAutonomousVmClustersResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListAutonomousVmClustersResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListAutonomousVmClustersResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListAutonomousVmClustersResponse")
+	}
+	return
+}
+
+// listAutonomousVmClusters implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listAutonomousVmClusters(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousVmClusters", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListAutonomousVmClustersResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // ListBackupDestination Gets a list of backup destinations in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListBackupDestination.go.html to see an example of how to use ListBackupDestination API.
 func (client DatabaseClient) ListBackupDestination(ctx context.Context, request ListBackupDestinationRequest) (response ListBackupDestinationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listBackupDestination, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListBackupDestinationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListBackupDestinationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListBackupDestinationResponse{}
+			}
 		}
 		return
 	}
@@ -3291,8 +8437,9 @@ func (client DatabaseClient) ListBackupDestination(ctx context.Context, request 
 }
 
 // listBackupDestination implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listBackupDestination(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/backupDestinations")
+func (client DatabaseClient) listBackupDestination(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/backupDestinations", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3310,17 +8457,29 @@ func (client DatabaseClient) listBackupDestination(ctx context.Context, request 
 	return response, err
 }
 
-// ListBackups Gets a list of backups based on the databaseId or compartmentId specified. Either one of the query parameters must be provided.
+// ListBackups Gets a list of backups based on the `databaseId` or `compartmentId` specified. Either one of these query parameters must be provided.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListBackups.go.html to see an example of how to use ListBackups API.
 func (client DatabaseClient) ListBackups(ctx context.Context, request ListBackupsRequest) (response ListBackupsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listBackups, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListBackupsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListBackupsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListBackupsResponse{}
+			}
 		}
 		return
 	}
@@ -3333,8 +8492,9 @@ func (client DatabaseClient) ListBackups(ctx context.Context, request ListBackup
 }
 
 // listBackups implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listBackups(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/backups")
+func (client DatabaseClient) listBackups(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/backups", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3352,17 +8512,359 @@ func (client DatabaseClient) listBackups(ctx context.Context, request common.OCI
 	return response, err
 }
 
+// ListCloudExadataInfrastructures Gets a list of the cloud Exadata infrastructure resources in the specified compartment. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListCloudExadataInfrastructures.go.html to see an example of how to use ListCloudExadataInfrastructures API.
+func (client DatabaseClient) ListCloudExadataInfrastructures(ctx context.Context, request ListCloudExadataInfrastructuresRequest) (response ListCloudExadataInfrastructuresResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listCloudExadataInfrastructures, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListCloudExadataInfrastructuresResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListCloudExadataInfrastructuresResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListCloudExadataInfrastructuresResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListCloudExadataInfrastructuresResponse")
+	}
+	return
+}
+
+// listCloudExadataInfrastructures implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listCloudExadataInfrastructures(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/cloudExadataInfrastructures", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListCloudExadataInfrastructuresResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListCloudVmClusterUpdateHistoryEntries Gets the history of the maintenance update actions performed on the specified cloud VM cluster. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListCloudVmClusterUpdateHistoryEntries.go.html to see an example of how to use ListCloudVmClusterUpdateHistoryEntries API.
+func (client DatabaseClient) ListCloudVmClusterUpdateHistoryEntries(ctx context.Context, request ListCloudVmClusterUpdateHistoryEntriesRequest) (response ListCloudVmClusterUpdateHistoryEntriesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listCloudVmClusterUpdateHistoryEntries, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListCloudVmClusterUpdateHistoryEntriesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListCloudVmClusterUpdateHistoryEntriesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListCloudVmClusterUpdateHistoryEntriesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListCloudVmClusterUpdateHistoryEntriesResponse")
+	}
+	return
+}
+
+// listCloudVmClusterUpdateHistoryEntries implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listCloudVmClusterUpdateHistoryEntries(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/cloudVmClusters/{cloudVmClusterId}/updateHistoryEntries", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListCloudVmClusterUpdateHistoryEntriesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListCloudVmClusterUpdates Lists the maintenance updates that can be applied to the specified cloud VM cluster. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListCloudVmClusterUpdates.go.html to see an example of how to use ListCloudVmClusterUpdates API.
+func (client DatabaseClient) ListCloudVmClusterUpdates(ctx context.Context, request ListCloudVmClusterUpdatesRequest) (response ListCloudVmClusterUpdatesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listCloudVmClusterUpdates, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListCloudVmClusterUpdatesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListCloudVmClusterUpdatesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListCloudVmClusterUpdatesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListCloudVmClusterUpdatesResponse")
+	}
+	return
+}
+
+// listCloudVmClusterUpdates implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listCloudVmClusterUpdates(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/cloudVmClusters/{cloudVmClusterId}/updates", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListCloudVmClusterUpdatesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListCloudVmClusters Gets a list of the cloud VM clusters in the specified compartment. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListCloudVmClusters.go.html to see an example of how to use ListCloudVmClusters API.
+func (client DatabaseClient) ListCloudVmClusters(ctx context.Context, request ListCloudVmClustersRequest) (response ListCloudVmClustersResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listCloudVmClusters, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListCloudVmClustersResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListCloudVmClustersResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListCloudVmClustersResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListCloudVmClustersResponse")
+	}
+	return
+}
+
+// listCloudVmClusters implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listCloudVmClusters(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/cloudVmClusters", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListCloudVmClustersResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListConsoleConnections Lists the console connections for the specified database node.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListConsoleConnections.go.html to see an example of how to use ListConsoleConnections API.
+func (client DatabaseClient) ListConsoleConnections(ctx context.Context, request ListConsoleConnectionsRequest) (response ListConsoleConnectionsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listConsoleConnections, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListConsoleConnectionsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListConsoleConnectionsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListConsoleConnectionsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListConsoleConnectionsResponse")
+	}
+	return
+}
+
+// listConsoleConnections implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listConsoleConnections(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbNodes/{dbNodeId}/consoleConnections", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListConsoleConnectionsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListContainerDatabasePatches Lists the patches applicable to the requested container database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListContainerDatabasePatches.go.html to see an example of how to use ListContainerDatabasePatches API.
+func (client DatabaseClient) ListContainerDatabasePatches(ctx context.Context, request ListContainerDatabasePatchesRequest) (response ListContainerDatabasePatchesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listContainerDatabasePatches, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListContainerDatabasePatchesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListContainerDatabasePatchesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListContainerDatabasePatchesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListContainerDatabasePatchesResponse")
+	}
+	return
+}
+
+// listContainerDatabasePatches implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listContainerDatabasePatches(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}/patches", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListContainerDatabasePatchesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // ListDataGuardAssociations Lists all Data Guard associations for the specified database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDataGuardAssociations.go.html to see an example of how to use ListDataGuardAssociations API.
 func (client DatabaseClient) ListDataGuardAssociations(ctx context.Context, request ListDataGuardAssociationsRequest) (response ListDataGuardAssociationsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listDataGuardAssociations, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListDataGuardAssociationsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDataGuardAssociationsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDataGuardAssociationsResponse{}
+			}
 		}
 		return
 	}
@@ -3375,8 +8877,9 @@ func (client DatabaseClient) ListDataGuardAssociations(ctx context.Context, requ
 }
 
 // listDataGuardAssociations implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listDataGuardAssociations(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/databases/{databaseId}/dataGuardAssociations")
+func (client DatabaseClient) listDataGuardAssociations(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/databases/{databaseId}/dataGuardAssociations", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3394,17 +8897,139 @@ func (client DatabaseClient) listDataGuardAssociations(ctx context.Context, requ
 	return response, err
 }
 
-// ListDatabases Gets a list of the databases in the specified database home.
+// ListDatabaseSoftwareImages Gets a list of the database software images in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDatabaseSoftwareImages.go.html to see an example of how to use ListDatabaseSoftwareImages API.
+func (client DatabaseClient) ListDatabaseSoftwareImages(ctx context.Context, request ListDatabaseSoftwareImagesRequest) (response ListDatabaseSoftwareImagesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listDatabaseSoftwareImages, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDatabaseSoftwareImagesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDatabaseSoftwareImagesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListDatabaseSoftwareImagesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListDatabaseSoftwareImagesResponse")
+	}
+	return
+}
+
+// listDatabaseSoftwareImages implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listDatabaseSoftwareImages(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/databaseSoftwareImages", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListDatabaseSoftwareImagesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListDatabaseUpgradeHistoryEntries Gets the upgrade history for a specified database in a bare metal or virtual machine DB system.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDatabaseUpgradeHistoryEntries.go.html to see an example of how to use ListDatabaseUpgradeHistoryEntries API.
+func (client DatabaseClient) ListDatabaseUpgradeHistoryEntries(ctx context.Context, request ListDatabaseUpgradeHistoryEntriesRequest) (response ListDatabaseUpgradeHistoryEntriesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listDatabaseUpgradeHistoryEntries, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDatabaseUpgradeHistoryEntriesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDatabaseUpgradeHistoryEntriesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListDatabaseUpgradeHistoryEntriesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListDatabaseUpgradeHistoryEntriesResponse")
+	}
+	return
+}
+
+// listDatabaseUpgradeHistoryEntries implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listDatabaseUpgradeHistoryEntries(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/databases/{databaseId}/upgradeHistoryEntries", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListDatabaseUpgradeHistoryEntriesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListDatabases Gets a list of the databases in the specified Database Home.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDatabases.go.html to see an example of how to use ListDatabases API.
 func (client DatabaseClient) ListDatabases(ctx context.Context, request ListDatabasesRequest) (response ListDatabasesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listDatabases, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListDatabasesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDatabasesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDatabasesResponse{}
+			}
 		}
 		return
 	}
@@ -3417,8 +9042,9 @@ func (client DatabaseClient) ListDatabases(ctx context.Context, request ListData
 }
 
 // listDatabases implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listDatabases(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/databases")
+func (client DatabaseClient) listDatabases(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/databases", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3436,17 +9062,29 @@ func (client DatabaseClient) listDatabases(ctx context.Context, request common.O
 	return response, err
 }
 
-// ListDbHomePatchHistoryEntries Gets history of the actions taken for patches for the specified database home.
+// ListDbHomePatchHistoryEntries Lists the history of patch operations on the specified Database Home.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDbHomePatchHistoryEntries.go.html to see an example of how to use ListDbHomePatchHistoryEntries API.
 func (client DatabaseClient) ListDbHomePatchHistoryEntries(ctx context.Context, request ListDbHomePatchHistoryEntriesRequest) (response ListDbHomePatchHistoryEntriesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listDbHomePatchHistoryEntries, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListDbHomePatchHistoryEntriesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDbHomePatchHistoryEntriesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDbHomePatchHistoryEntriesResponse{}
+			}
 		}
 		return
 	}
@@ -3459,8 +9097,9 @@ func (client DatabaseClient) ListDbHomePatchHistoryEntries(ctx context.Context, 
 }
 
 // listDbHomePatchHistoryEntries implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listDbHomePatchHistoryEntries(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbHomes/{dbHomeId}/patchHistoryEntries")
+func (client DatabaseClient) listDbHomePatchHistoryEntries(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbHomes/{dbHomeId}/patchHistoryEntries", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3478,17 +9117,29 @@ func (client DatabaseClient) listDbHomePatchHistoryEntries(ctx context.Context, 
 	return response, err
 }
 
-// ListDbHomePatches Lists patches applicable to the requested database home.
+// ListDbHomePatches Lists patches applicable to the requested Database Home.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDbHomePatches.go.html to see an example of how to use ListDbHomePatches API.
 func (client DatabaseClient) ListDbHomePatches(ctx context.Context, request ListDbHomePatchesRequest) (response ListDbHomePatchesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listDbHomePatches, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListDbHomePatchesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDbHomePatchesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDbHomePatchesResponse{}
+			}
 		}
 		return
 	}
@@ -3501,8 +9152,9 @@ func (client DatabaseClient) ListDbHomePatches(ctx context.Context, request List
 }
 
 // listDbHomePatches implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listDbHomePatches(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbHomes/{dbHomeId}/patches")
+func (client DatabaseClient) listDbHomePatches(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbHomes/{dbHomeId}/patches", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3520,17 +9172,29 @@ func (client DatabaseClient) listDbHomePatches(ctx context.Context, request comm
 	return response, err
 }
 
-// ListDbHomes Gets a list of database homes in the specified DB system and compartment. A database home is a directory where Oracle Database software is installed.
+// ListDbHomes Lists the Database Homes in the specified DB system and compartment. A Database Home is a directory where Oracle Database software is installed.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDbHomes.go.html to see an example of how to use ListDbHomes API.
 func (client DatabaseClient) ListDbHomes(ctx context.Context, request ListDbHomesRequest) (response ListDbHomesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listDbHomes, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListDbHomesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDbHomesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDbHomesResponse{}
+			}
 		}
 		return
 	}
@@ -3543,8 +9207,9 @@ func (client DatabaseClient) ListDbHomes(ctx context.Context, request ListDbHome
 }
 
 // listDbHomes implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listDbHomes(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbHomes")
+func (client DatabaseClient) listDbHomes(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbHomes", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3562,17 +9227,29 @@ func (client DatabaseClient) listDbHomes(ctx context.Context, request common.OCI
 	return response, err
 }
 
-// ListDbNodes Gets a list of database nodes in the specified DB system and compartment. A database node is a server running database software.
+// ListDbNodes Lists the database nodes in the specified DB system and compartment. A database node is a server running database software.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDbNodes.go.html to see an example of how to use ListDbNodes API.
 func (client DatabaseClient) ListDbNodes(ctx context.Context, request ListDbNodesRequest) (response ListDbNodesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listDbNodes, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListDbNodesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDbNodesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDbNodesResponse{}
+			}
 		}
 		return
 	}
@@ -3585,8 +9262,9 @@ func (client DatabaseClient) ListDbNodes(ctx context.Context, request ListDbNode
 }
 
 // listDbNodes implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listDbNodes(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbNodes")
+func (client DatabaseClient) listDbNodes(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbNodes", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3605,16 +9283,28 @@ func (client DatabaseClient) listDbNodes(ctx context.Context, request common.OCI
 }
 
 // ListDbSystemPatchHistoryEntries Gets the history of the patch actions performed on the specified DB system.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDbSystemPatchHistoryEntries.go.html to see an example of how to use ListDbSystemPatchHistoryEntries API.
 func (client DatabaseClient) ListDbSystemPatchHistoryEntries(ctx context.Context, request ListDbSystemPatchHistoryEntriesRequest) (response ListDbSystemPatchHistoryEntriesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listDbSystemPatchHistoryEntries, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListDbSystemPatchHistoryEntriesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDbSystemPatchHistoryEntriesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDbSystemPatchHistoryEntriesResponse{}
+			}
 		}
 		return
 	}
@@ -3627,8 +9317,9 @@ func (client DatabaseClient) ListDbSystemPatchHistoryEntries(ctx context.Context
 }
 
 // listDbSystemPatchHistoryEntries implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listDbSystemPatchHistoryEntries(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems/{dbSystemId}/patchHistoryEntries")
+func (client DatabaseClient) listDbSystemPatchHistoryEntries(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems/{dbSystemId}/patchHistoryEntries", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3646,17 +9337,29 @@ func (client DatabaseClient) listDbSystemPatchHistoryEntries(ctx context.Context
 	return response, err
 }
 
-// ListDbSystemPatches Lists the patches applicable to the requested DB system.
+// ListDbSystemPatches Lists the patches applicable to the specified DB system.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDbSystemPatches.go.html to see an example of how to use ListDbSystemPatches API.
 func (client DatabaseClient) ListDbSystemPatches(ctx context.Context, request ListDbSystemPatchesRequest) (response ListDbSystemPatchesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listDbSystemPatches, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListDbSystemPatchesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDbSystemPatchesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDbSystemPatchesResponse{}
+			}
 		}
 		return
 	}
@@ -3669,8 +9372,9 @@ func (client DatabaseClient) ListDbSystemPatches(ctx context.Context, request Li
 }
 
 // listDbSystemPatches implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listDbSystemPatches(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems/{dbSystemId}/patches")
+func (client DatabaseClient) listDbSystemPatches(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems/{dbSystemId}/patches", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3689,16 +9393,28 @@ func (client DatabaseClient) listDbSystemPatches(ctx context.Context, request co
 }
 
 // ListDbSystemShapes Gets a list of the shapes that can be used to launch a new DB system. The shape determines resources to allocate to the DB system - CPU cores and memory for VM shapes; CPU cores, memory and storage for non-VM (or bare metal) shapes.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDbSystemShapes.go.html to see an example of how to use ListDbSystemShapes API.
 func (client DatabaseClient) ListDbSystemShapes(ctx context.Context, request ListDbSystemShapesRequest) (response ListDbSystemShapesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listDbSystemShapes, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListDbSystemShapesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDbSystemShapesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDbSystemShapesResponse{}
+			}
 		}
 		return
 	}
@@ -3711,8 +9427,9 @@ func (client DatabaseClient) ListDbSystemShapes(ctx context.Context, request Lis
 }
 
 // listDbSystemShapes implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listDbSystemShapes(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystemShapes")
+func (client DatabaseClient) listDbSystemShapes(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystemShapes", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3730,18 +9447,31 @@ func (client DatabaseClient) listDbSystemShapes(ctx context.Context, request com
 	return response, err
 }
 
-// ListDbSystems Gets a list of the DB systems in the specified compartment. You can specify a backupId to list only the DB systems that support creating a database using this backup in this compartment.
+// ListDbSystems Lists the DB systems in the specified compartment. You can specify a `backupId` to list only the DB systems that support creating a database using this backup in this compartment.
+// **Note:** Deprecated for Exadata Cloud Service systems. Use the new resource model APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem.htm#exaflexsystem_topic-resource_model) instead.
+// For Exadata Cloud Service instances, support for this API will end on May 15th, 2021. See Switching an Exadata DB System to the New Resource Model and APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem_topic-resource_model_conversion.htm) for details on converting existing Exadata DB systems to the new resource model.
 //
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDbSystems.go.html to see an example of how to use ListDbSystems API.
 func (client DatabaseClient) ListDbSystems(ctx context.Context, request ListDbSystemsRequest) (response ListDbSystemsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listDbSystems, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListDbSystemsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDbSystemsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDbSystemsResponse{}
+			}
 		}
 		return
 	}
@@ -3754,8 +9484,9 @@ func (client DatabaseClient) ListDbSystems(ctx context.Context, request ListDbSy
 }
 
 // listDbSystems implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listDbSystems(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems")
+func (client DatabaseClient) listDbSystems(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystems", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3774,16 +9505,28 @@ func (client DatabaseClient) listDbSystems(ctx context.Context, request common.O
 }
 
 // ListDbVersions Gets a list of supported Oracle Database versions.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListDbVersions.go.html to see an example of how to use ListDbVersions API.
 func (client DatabaseClient) ListDbVersions(ctx context.Context, request ListDbVersionsRequest) (response ListDbVersionsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listDbVersions, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListDbVersionsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListDbVersionsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListDbVersionsResponse{}
+			}
 		}
 		return
 	}
@@ -3796,8 +9539,9 @@ func (client DatabaseClient) ListDbVersions(ctx context.Context, request ListDbV
 }
 
 // listDbVersions implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listDbVersions(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbVersions")
+func (client DatabaseClient) listDbVersions(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbVersions", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3815,17 +9559,30 @@ func (client DatabaseClient) listDbVersions(ctx context.Context, request common.
 	return response, err
 }
 
-// ListExadataInfrastructures Gets a list of the Exadata infrastructure in the specified compartment.
+// ListExadataInfrastructures Lists the Exadata infrastructure resources in the specified compartment. Applies to Exadata Cloud@Customer instances only.
+// To list the Exadata Cloud Service infrastructure resources in a compartment, use the  ListCloudExadataInfrastructures operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListExadataInfrastructures.go.html to see an example of how to use ListExadataInfrastructures API.
 func (client DatabaseClient) ListExadataInfrastructures(ctx context.Context, request ListExadataInfrastructuresRequest) (response ListExadataInfrastructuresResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listExadataInfrastructures, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListExadataInfrastructuresResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListExadataInfrastructuresResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListExadataInfrastructuresResponse{}
+			}
 		}
 		return
 	}
@@ -3838,8 +9595,9 @@ func (client DatabaseClient) ListExadataInfrastructures(ctx context.Context, req
 }
 
 // listExadataInfrastructures implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listExadataInfrastructures(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/exadataInfrastructures")
+func (client DatabaseClient) listExadataInfrastructures(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/exadataInfrastructures", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3857,17 +9615,321 @@ func (client DatabaseClient) listExadataInfrastructures(ctx context.Context, req
 	return response, err
 }
 
-// ListGiVersions Gets a list of supported GI versions for VM Cluster.
+// ListExternalContainerDatabases Gets a list of the external container databases in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListExternalContainerDatabases.go.html to see an example of how to use ListExternalContainerDatabases API.
+func (client DatabaseClient) ListExternalContainerDatabases(ctx context.Context, request ListExternalContainerDatabasesRequest) (response ListExternalContainerDatabasesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listExternalContainerDatabases, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListExternalContainerDatabasesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListExternalContainerDatabasesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListExternalContainerDatabasesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListExternalContainerDatabasesResponse")
+	}
+	return
+}
+
+// listExternalContainerDatabases implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listExternalContainerDatabases(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/externalcontainerdatabases", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListExternalContainerDatabasesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+//listexternaldatabaseconnectorsummary allows to unmarshal list of polymorphic ExternalDatabaseConnectorSummary
+type listexternaldatabaseconnectorsummary []externaldatabaseconnectorsummary
+
+//UnmarshalPolymorphicJSON unmarshals polymorphic json list of items
+func (m *listexternaldatabaseconnectorsummary) UnmarshalPolymorphicJSON(data []byte) (interface{}, error) {
+	res := make([]ExternalDatabaseConnectorSummary, len(*m))
+	for i, v := range *m {
+		nn, err := v.UnmarshalPolymorphicJSON(v.JsonData)
+		if err != nil {
+			return nil, err
+		}
+		res[i] = nn.(ExternalDatabaseConnectorSummary)
+	}
+	return res, nil
+}
+
+// ListExternalDatabaseConnectors Gets a list of the external database connectors in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListExternalDatabaseConnectors.go.html to see an example of how to use ListExternalDatabaseConnectors API.
+func (client DatabaseClient) ListExternalDatabaseConnectors(ctx context.Context, request ListExternalDatabaseConnectorsRequest) (response ListExternalDatabaseConnectorsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listExternalDatabaseConnectors, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListExternalDatabaseConnectorsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListExternalDatabaseConnectorsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListExternalDatabaseConnectorsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListExternalDatabaseConnectorsResponse")
+	}
+	return
+}
+
+// listExternalDatabaseConnectors implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listExternalDatabaseConnectors(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/externaldatabaseconnectors", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListExternalDatabaseConnectorsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponseWithPolymorphicBody(httpResponse, &response, &listexternaldatabaseconnectorsummary{})
+	return response, err
+}
+
+// ListExternalNonContainerDatabases Gets a list of the ExternalNonContainerDatabases in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListExternalNonContainerDatabases.go.html to see an example of how to use ListExternalNonContainerDatabases API.
+func (client DatabaseClient) ListExternalNonContainerDatabases(ctx context.Context, request ListExternalNonContainerDatabasesRequest) (response ListExternalNonContainerDatabasesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listExternalNonContainerDatabases, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListExternalNonContainerDatabasesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListExternalNonContainerDatabasesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListExternalNonContainerDatabasesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListExternalNonContainerDatabasesResponse")
+	}
+	return
+}
+
+// listExternalNonContainerDatabases implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listExternalNonContainerDatabases(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/externalnoncontainerdatabases", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListExternalNonContainerDatabasesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListExternalPluggableDatabases Gets a list of the CreateExternalPluggableDatabaseDetails
+// resources in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListExternalPluggableDatabases.go.html to see an example of how to use ListExternalPluggableDatabases API.
+func (client DatabaseClient) ListExternalPluggableDatabases(ctx context.Context, request ListExternalPluggableDatabasesRequest) (response ListExternalPluggableDatabasesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listExternalPluggableDatabases, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListExternalPluggableDatabasesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListExternalPluggableDatabasesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListExternalPluggableDatabasesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListExternalPluggableDatabasesResponse")
+	}
+	return
+}
+
+// listExternalPluggableDatabases implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listExternalPluggableDatabases(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/externalpluggabledatabases", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListExternalPluggableDatabasesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListFlexComponents Gets a list of the flex components that can be used to launch a new DB system. The flex component determines resources to allocate to the DB system - Database Servers and Storage Servers.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListFlexComponents.go.html to see an example of how to use ListFlexComponents API.
+func (client DatabaseClient) ListFlexComponents(ctx context.Context, request ListFlexComponentsRequest) (response ListFlexComponentsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listFlexComponents, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListFlexComponentsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListFlexComponentsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListFlexComponentsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListFlexComponentsResponse")
+	}
+	return
+}
+
+// listFlexComponents implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listFlexComponents(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/dbSystemShapes/flexComponents", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListFlexComponentsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListGiVersions Gets a list of supported GI versions for the Exadata Cloud@Customer VM cluster.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListGiVersions.go.html to see an example of how to use ListGiVersions API.
 func (client DatabaseClient) ListGiVersions(ctx context.Context, request ListGiVersionsRequest) (response ListGiVersionsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listGiVersions, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListGiVersionsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListGiVersionsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListGiVersionsResponse{}
+			}
 		}
 		return
 	}
@@ -3880,8 +9942,9 @@ func (client DatabaseClient) ListGiVersions(ctx context.Context, request ListGiV
 }
 
 // listGiVersions implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listGiVersions(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/giVersions")
+func (client DatabaseClient) listGiVersions(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/giVersions", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3899,17 +9962,84 @@ func (client DatabaseClient) listGiVersions(ctx context.Context, request common.
 	return response, err
 }
 
-// ListMaintenanceRuns Gets a list of the Maintenance Runs in the specified compartment.
+// ListKeyStores Gets a list of key stores in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListKeyStores.go.html to see an example of how to use ListKeyStores API.
+func (client DatabaseClient) ListKeyStores(ctx context.Context, request ListKeyStoresRequest) (response ListKeyStoresResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listKeyStores, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListKeyStoresResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListKeyStoresResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListKeyStoresResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListKeyStoresResponse")
+	}
+	return
+}
+
+// listKeyStores implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listKeyStores(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/keyStores", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListKeyStoresResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListMaintenanceRuns Gets a list of the maintenance runs in the specified compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListMaintenanceRuns.go.html to see an example of how to use ListMaintenanceRuns API.
 func (client DatabaseClient) ListMaintenanceRuns(ctx context.Context, request ListMaintenanceRunsRequest) (response ListMaintenanceRunsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listMaintenanceRuns, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListMaintenanceRunsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListMaintenanceRunsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListMaintenanceRunsResponse{}
+			}
 		}
 		return
 	}
@@ -3922,8 +10052,9 @@ func (client DatabaseClient) ListMaintenanceRuns(ctx context.Context, request Li
 }
 
 // listMaintenanceRuns implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listMaintenanceRuns(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/maintenanceRuns")
+func (client DatabaseClient) listMaintenanceRuns(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/maintenanceRuns", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3941,17 +10072,84 @@ func (client DatabaseClient) listMaintenanceRuns(ctx context.Context, request co
 	return response, err
 }
 
-// ListVmClusterNetworks Gets a list of the VM cluster networks in the specified compartment.
+// ListPluggableDatabases Gets a list of the pluggable databases in a database or compartment. You must provide either a `databaseId` or `compartmentId` value.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListPluggableDatabases.go.html to see an example of how to use ListPluggableDatabases API.
+func (client DatabaseClient) ListPluggableDatabases(ctx context.Context, request ListPluggableDatabasesRequest) (response ListPluggableDatabasesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listPluggableDatabases, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListPluggableDatabasesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListPluggableDatabasesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListPluggableDatabasesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListPluggableDatabasesResponse")
+	}
+	return
+}
+
+// listPluggableDatabases implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listPluggableDatabases(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/pluggableDatabases", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListPluggableDatabasesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListVmClusterNetworks Gets a list of the VM cluster networks in the specified compartment. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListVmClusterNetworks.go.html to see an example of how to use ListVmClusterNetworks API.
 func (client DatabaseClient) ListVmClusterNetworks(ctx context.Context, request ListVmClusterNetworksRequest) (response ListVmClusterNetworksResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listVmClusterNetworks, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListVmClusterNetworksResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListVmClusterNetworksResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListVmClusterNetworksResponse{}
+			}
 		}
 		return
 	}
@@ -3964,8 +10162,9 @@ func (client DatabaseClient) ListVmClusterNetworks(ctx context.Context, request 
 }
 
 // listVmClusterNetworks implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listVmClusterNetworks(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks")
+func (client DatabaseClient) listVmClusterNetworks(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -3983,17 +10182,250 @@ func (client DatabaseClient) listVmClusterNetworks(ctx context.Context, request 
 	return response, err
 }
 
-// ListVmClusters Gets a list of the VM clusters in the specified compartment.
+// ListVmClusterPatchHistoryEntries Gets the history of the patch actions performed on the specified VM cluster in an Exadata Cloud@Customer system.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListVmClusterPatchHistoryEntries.go.html to see an example of how to use ListVmClusterPatchHistoryEntries API.
+func (client DatabaseClient) ListVmClusterPatchHistoryEntries(ctx context.Context, request ListVmClusterPatchHistoryEntriesRequest) (response ListVmClusterPatchHistoryEntriesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listVmClusterPatchHistoryEntries, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListVmClusterPatchHistoryEntriesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListVmClusterPatchHistoryEntriesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListVmClusterPatchHistoryEntriesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListVmClusterPatchHistoryEntriesResponse")
+	}
+	return
+}
+
+// listVmClusterPatchHistoryEntries implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listVmClusterPatchHistoryEntries(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vmClusters/{vmClusterId}/patchHistoryEntries", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListVmClusterPatchHistoryEntriesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListVmClusterPatches Lists the patches applicable to the specified VM cluster in an Exadata Cloud@Customer system.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListVmClusterPatches.go.html to see an example of how to use ListVmClusterPatches API.
+func (client DatabaseClient) ListVmClusterPatches(ctx context.Context, request ListVmClusterPatchesRequest) (response ListVmClusterPatchesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listVmClusterPatches, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListVmClusterPatchesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListVmClusterPatchesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListVmClusterPatchesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListVmClusterPatchesResponse")
+	}
+	return
+}
+
+// listVmClusterPatches implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listVmClusterPatches(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vmClusters/{vmClusterId}/patches", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListVmClusterPatchesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListVmClusterUpdateHistoryEntries Gets the history of the maintenance update actions performed on the specified VM cluster. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListVmClusterUpdateHistoryEntries.go.html to see an example of how to use ListVmClusterUpdateHistoryEntries API.
+func (client DatabaseClient) ListVmClusterUpdateHistoryEntries(ctx context.Context, request ListVmClusterUpdateHistoryEntriesRequest) (response ListVmClusterUpdateHistoryEntriesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listVmClusterUpdateHistoryEntries, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListVmClusterUpdateHistoryEntriesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListVmClusterUpdateHistoryEntriesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListVmClusterUpdateHistoryEntriesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListVmClusterUpdateHistoryEntriesResponse")
+	}
+	return
+}
+
+// listVmClusterUpdateHistoryEntries implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listVmClusterUpdateHistoryEntries(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vmClusters/{vmClusterId}/updateHistoryEntries", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListVmClusterUpdateHistoryEntriesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListVmClusterUpdates Lists the maintenance updates that can be applied to the specified VM cluster. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListVmClusterUpdates.go.html to see an example of how to use ListVmClusterUpdates API.
+func (client DatabaseClient) ListVmClusterUpdates(ctx context.Context, request ListVmClusterUpdatesRequest) (response ListVmClusterUpdatesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.listVmClusterUpdates, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListVmClusterUpdatesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListVmClusterUpdatesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ListVmClusterUpdatesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ListVmClusterUpdatesResponse")
+	}
+	return
+}
+
+// listVmClusterUpdates implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) listVmClusterUpdates(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vmClusters/{vmClusterId}/updates", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ListVmClusterUpdatesResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ListVmClusters Lists the VM clusters in the specified compartment. Applies to Exadata Cloud@Customer instances only.
+// To list the cloud VM clusters in an Exadata Cloud Service instance, use the ListCloudVmClusters operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ListVmClusters.go.html to see an example of how to use ListVmClusters API.
 func (client DatabaseClient) ListVmClusters(ctx context.Context, request ListVmClustersRequest) (response ListVmClustersResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listVmClusters, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListVmClustersResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListVmClustersResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListVmClustersResponse{}
+			}
 		}
 		return
 	}
@@ -4006,8 +10438,9 @@ func (client DatabaseClient) ListVmClusters(ctx context.Context, request ListVmC
 }
 
 // listVmClusters implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) listVmClusters(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vmClusters")
+func (client DatabaseClient) listVmClusters(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/vmClusters", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4025,17 +10458,320 @@ func (client DatabaseClient) listVmClusters(ctx context.Context, request common.
 	return response, err
 }
 
+// LocalClonePluggableDatabase Clones and starts a pluggable database (PDB) in the same database (CDB) as the source PDB. The source PDB must be in the `READ_WRITE` openMode to perform the clone operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/LocalClonePluggableDatabase.go.html to see an example of how to use LocalClonePluggableDatabase API.
+func (client DatabaseClient) LocalClonePluggableDatabase(ctx context.Context, request LocalClonePluggableDatabaseRequest) (response LocalClonePluggableDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.localClonePluggableDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = LocalClonePluggableDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = LocalClonePluggableDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(LocalClonePluggableDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into LocalClonePluggableDatabaseResponse")
+	}
+	return
+}
+
+// localClonePluggableDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) localClonePluggableDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/pluggableDatabases/{pluggableDatabaseId}/actions/localClone", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response LocalClonePluggableDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// MigrateExadataDbSystemResourceModel Migrates the Exadata DB system to the new Exadata resource model (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem.htm#exaflexsystem_topic-resource_model).
+// All related resources will be migrated.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/MigrateExadataDbSystemResourceModel.go.html to see an example of how to use MigrateExadataDbSystemResourceModel API.
+func (client DatabaseClient) MigrateExadataDbSystemResourceModel(ctx context.Context, request MigrateExadataDbSystemResourceModelRequest) (response MigrateExadataDbSystemResourceModelResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.migrateExadataDbSystemResourceModel, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = MigrateExadataDbSystemResourceModelResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = MigrateExadataDbSystemResourceModelResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(MigrateExadataDbSystemResourceModelResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into MigrateExadataDbSystemResourceModelResponse")
+	}
+	return
+}
+
+// migrateExadataDbSystemResourceModel implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) migrateExadataDbSystemResourceModel(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/dbSystems/{dbSystemId}/actions/migration", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response MigrateExadataDbSystemResourceModelResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// MigrateVaultKey Changes encryption key management from customer-managed, using the Vault service (https://docs.cloud.oracle.com/iaas/Content/KeyManagement/Concepts/keyoverview.htm), to Oracle-managed.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/MigrateVaultKey.go.html to see an example of how to use MigrateVaultKey API.
+func (client DatabaseClient) MigrateVaultKey(ctx context.Context, request MigrateVaultKeyRequest) (response MigrateVaultKeyResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.migrateVaultKey, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = MigrateVaultKeyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = MigrateVaultKeyResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(MigrateVaultKeyResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into MigrateVaultKeyResponse")
+	}
+	return
+}
+
+// migrateVaultKey implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) migrateVaultKey(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/actions/migrateKey", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response MigrateVaultKeyResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// RegisterAutonomousDatabaseDataSafe Asynchronously registers this Autonomous Database with Data Safe.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/RegisterAutonomousDatabaseDataSafe.go.html to see an example of how to use RegisterAutonomousDatabaseDataSafe API.
+func (client DatabaseClient) RegisterAutonomousDatabaseDataSafe(ctx context.Context, request RegisterAutonomousDatabaseDataSafeRequest) (response RegisterAutonomousDatabaseDataSafeResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.registerAutonomousDatabaseDataSafe, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RegisterAutonomousDatabaseDataSafeResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RegisterAutonomousDatabaseDataSafeResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(RegisterAutonomousDatabaseDataSafeResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into RegisterAutonomousDatabaseDataSafeResponse")
+	}
+	return
+}
+
+// registerAutonomousDatabaseDataSafe implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) registerAutonomousDatabaseDataSafe(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/registerDataSafe", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response RegisterAutonomousDatabaseDataSafeResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ReinstateAutonomousContainerDatabaseDataguardAssociation Reinstates a disabled standby Autonomous Container Database, identified by the autonomousContainerDatabaseId parameter, to an active standby Autonomous Container Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ReinstateAutonomousContainerDatabaseDataguardAssociation.go.html to see an example of how to use ReinstateAutonomousContainerDatabaseDataguardAssociation API.
+func (client DatabaseClient) ReinstateAutonomousContainerDatabaseDataguardAssociation(ctx context.Context, request ReinstateAutonomousContainerDatabaseDataguardAssociationRequest) (response ReinstateAutonomousContainerDatabaseDataguardAssociationResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.reinstateAutonomousContainerDatabaseDataguardAssociation, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ReinstateAutonomousContainerDatabaseDataguardAssociationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ReinstateAutonomousContainerDatabaseDataguardAssociationResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ReinstateAutonomousContainerDatabaseDataguardAssociationResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ReinstateAutonomousContainerDatabaseDataguardAssociationResponse")
+	}
+	return
+}
+
+// reinstateAutonomousContainerDatabaseDataguardAssociation implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) reinstateAutonomousContainerDatabaseDataguardAssociation(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}/autonomousContainerDatabaseDataguardAssociations/{autonomousContainerDatabaseDataguardAssociationId}/actions/reinstate", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ReinstateAutonomousContainerDatabaseDataguardAssociationResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // ReinstateDataGuardAssociation Reinstates the database identified by the `databaseId` parameter into the standby role in a Data Guard association.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ReinstateDataGuardAssociation.go.html to see an example of how to use ReinstateDataGuardAssociation API.
 func (client DatabaseClient) ReinstateDataGuardAssociation(ctx context.Context, request ReinstateDataGuardAssociationRequest) (response ReinstateDataGuardAssociationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.reinstateDataGuardAssociation, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ReinstateDataGuardAssociationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ReinstateDataGuardAssociationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ReinstateDataGuardAssociationResponse{}
+			}
 		}
 		return
 	}
@@ -4048,8 +10784,9 @@ func (client DatabaseClient) ReinstateDataGuardAssociation(ctx context.Context, 
 }
 
 // reinstateDataGuardAssociation implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) reinstateDataGuardAssociation(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/dataGuardAssociations/{dataGuardAssociationId}/actions/reinstate")
+func (client DatabaseClient) reinstateDataGuardAssociation(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/dataGuardAssociations/{dataGuardAssociationId}/actions/reinstate", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4067,17 +10804,89 @@ func (client DatabaseClient) reinstateDataGuardAssociation(ctx context.Context, 
 	return response, err
 }
 
+// RemoteClonePluggableDatabase Clones a pluggable database (PDB) to a different database from the source PDB. The cloned PDB will be started upon completion of the clone operation. The source PDB must be in the `READ_WRITE` openMode when performing the clone.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/RemoteClonePluggableDatabase.go.html to see an example of how to use RemoteClonePluggableDatabase API.
+func (client DatabaseClient) RemoteClonePluggableDatabase(ctx context.Context, request RemoteClonePluggableDatabaseRequest) (response RemoteClonePluggableDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.remoteClonePluggableDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RemoteClonePluggableDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RemoteClonePluggableDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(RemoteClonePluggableDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into RemoteClonePluggableDatabaseResponse")
+	}
+	return
+}
+
+// remoteClonePluggableDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) remoteClonePluggableDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/pluggableDatabases/{pluggableDatabaseId}/actions/remoteClone", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response RemoteClonePluggableDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // RestartAutonomousContainerDatabase Rolling restarts the specified Autonomous Container Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/RestartAutonomousContainerDatabase.go.html to see an example of how to use RestartAutonomousContainerDatabase API.
 func (client DatabaseClient) RestartAutonomousContainerDatabase(ctx context.Context, request RestartAutonomousContainerDatabaseRequest) (response RestartAutonomousContainerDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.restartAutonomousContainerDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = RestartAutonomousContainerDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RestartAutonomousContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RestartAutonomousContainerDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -4090,8 +10899,9 @@ func (client DatabaseClient) RestartAutonomousContainerDatabase(ctx context.Cont
 }
 
 // restartAutonomousContainerDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) restartAutonomousContainerDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}/actions/restart")
+func (client DatabaseClient) restartAutonomousContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}/actions/restart", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4109,36 +10919,49 @@ func (client DatabaseClient) restartAutonomousContainerDatabase(ctx context.Cont
 	return response, err
 }
 
-// RestoreAutonomousDataWarehouse **Deprecated.** To restore an Autonomous Data Warehouse, use the RestoreAutonomousDatabase operation.
-func (client DatabaseClient) RestoreAutonomousDataWarehouse(ctx context.Context, request RestoreAutonomousDataWarehouseRequest) (response RestoreAutonomousDataWarehouseResponse, err error) {
+// RestartAutonomousDatabase Restarts the specified Autonomous Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/RestartAutonomousDatabase.go.html to see an example of how to use RestartAutonomousDatabase API.
+func (client DatabaseClient) RestartAutonomousDatabase(ctx context.Context, request RestartAutonomousDatabaseRequest) (response RestartAutonomousDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
-	ociResponse, err = common.Retry(ctx, request, client.restoreAutonomousDataWarehouse, policy)
+	ociResponse, err = common.Retry(ctx, request, client.restartAutonomousDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = RestoreAutonomousDataWarehouseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RestartAutonomousDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RestartAutonomousDatabaseResponse{}
+			}
 		}
 		return
 	}
-	if convertedResponse, ok := ociResponse.(RestoreAutonomousDataWarehouseResponse); ok {
+	if convertedResponse, ok := ociResponse.(RestartAutonomousDatabaseResponse); ok {
 		response = convertedResponse
 	} else {
-		err = fmt.Errorf("failed to convert OCIResponse into RestoreAutonomousDataWarehouseResponse")
+		err = fmt.Errorf("failed to convert OCIResponse into RestartAutonomousDatabaseResponse")
 	}
 	return
 }
 
-// restoreAutonomousDataWarehouse implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) restoreAutonomousDataWarehouse(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDataWarehouses/{autonomousDataWarehouseId}/actions/restore")
+// restartAutonomousDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) restartAutonomousDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/restart", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
 
-	var response RestoreAutonomousDataWarehouseResponse
+	var response RestartAutonomousDatabaseResponse
 	var httpResponse *http.Response
 	httpResponse, err = client.Call(ctx, &httpRequest)
 	defer common.CloseBodyIfValid(httpResponse)
@@ -4152,16 +10975,28 @@ func (client DatabaseClient) restoreAutonomousDataWarehouse(ctx context.Context,
 }
 
 // RestoreAutonomousDatabase Restores an Autonomous Database based on the provided request parameters.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/RestoreAutonomousDatabase.go.html to see an example of how to use RestoreAutonomousDatabase API.
 func (client DatabaseClient) RestoreAutonomousDatabase(ctx context.Context, request RestoreAutonomousDatabaseRequest) (response RestoreAutonomousDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.restoreAutonomousDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = RestoreAutonomousDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RestoreAutonomousDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RestoreAutonomousDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -4174,8 +11009,9 @@ func (client DatabaseClient) RestoreAutonomousDatabase(ctx context.Context, requ
 }
 
 // restoreAutonomousDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) restoreAutonomousDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/restore")
+func (client DatabaseClient) restoreAutonomousDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/restore", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4194,16 +11030,28 @@ func (client DatabaseClient) restoreAutonomousDatabase(ctx context.Context, requ
 }
 
 // RestoreDatabase Restore a Database based on the request parameters you provide.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/RestoreDatabase.go.html to see an example of how to use RestoreDatabase API.
 func (client DatabaseClient) RestoreDatabase(ctx context.Context, request RestoreDatabaseRequest) (response RestoreDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.restoreDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = RestoreDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RestoreDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RestoreDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -4216,8 +11064,9 @@ func (client DatabaseClient) RestoreDatabase(ctx context.Context, request Restor
 }
 
 // restoreDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) restoreDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/actions/restore")
+func (client DatabaseClient) restoreDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/actions/restore", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4235,36 +11084,355 @@ func (client DatabaseClient) restoreDatabase(ctx context.Context, request common
 	return response, err
 }
 
-// StartAutonomousDataWarehouse **Deprecated.** To start an Autonomous Data Warehouse, use the StartAutonomousDatabase operation.
-func (client DatabaseClient) StartAutonomousDataWarehouse(ctx context.Context, request StartAutonomousDataWarehouseRequest) (response StartAutonomousDataWarehouseResponse, err error) {
+// RotateAutonomousContainerDatabaseEncryptionKey Creates a new version of an existing Vault service (https://docs.cloud.oracle.com/iaas/Content/KeyManagement/Concepts/keyoverview.htm) key.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/RotateAutonomousContainerDatabaseEncryptionKey.go.html to see an example of how to use RotateAutonomousContainerDatabaseEncryptionKey API.
+func (client DatabaseClient) RotateAutonomousContainerDatabaseEncryptionKey(ctx context.Context, request RotateAutonomousContainerDatabaseEncryptionKeyRequest) (response RotateAutonomousContainerDatabaseEncryptionKeyResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
-	ociResponse, err = common.Retry(ctx, request, client.startAutonomousDataWarehouse, policy)
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.rotateAutonomousContainerDatabaseEncryptionKey, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = StartAutonomousDataWarehouseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RotateAutonomousContainerDatabaseEncryptionKeyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RotateAutonomousContainerDatabaseEncryptionKeyResponse{}
+			}
 		}
 		return
 	}
-	if convertedResponse, ok := ociResponse.(StartAutonomousDataWarehouseResponse); ok {
+	if convertedResponse, ok := ociResponse.(RotateAutonomousContainerDatabaseEncryptionKeyResponse); ok {
 		response = convertedResponse
 	} else {
-		err = fmt.Errorf("failed to convert OCIResponse into StartAutonomousDataWarehouseResponse")
+		err = fmt.Errorf("failed to convert OCIResponse into RotateAutonomousContainerDatabaseEncryptionKeyResponse")
 	}
 	return
 }
 
-// startAutonomousDataWarehouse implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) startAutonomousDataWarehouse(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDataWarehouses/{autonomousDataWarehouseId}/actions/start")
+// rotateAutonomousContainerDatabaseEncryptionKey implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) rotateAutonomousContainerDatabaseEncryptionKey(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}/actions/rotateKey", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
 
-	var response StartAutonomousDataWarehouseResponse
+	var response RotateAutonomousContainerDatabaseEncryptionKeyResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// RotateAutonomousDatabaseEncryptionKey Rotate existing AutonomousDatabase Vault service (https://docs.cloud.oracle.com/iaas/Content/KeyManagement/Concepts/keyoverview.htm) key.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/RotateAutonomousDatabaseEncryptionKey.go.html to see an example of how to use RotateAutonomousDatabaseEncryptionKey API.
+func (client DatabaseClient) RotateAutonomousDatabaseEncryptionKey(ctx context.Context, request RotateAutonomousDatabaseEncryptionKeyRequest) (response RotateAutonomousDatabaseEncryptionKeyResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.rotateAutonomousDatabaseEncryptionKey, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RotateAutonomousDatabaseEncryptionKeyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RotateAutonomousDatabaseEncryptionKeyResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(RotateAutonomousDatabaseEncryptionKeyResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into RotateAutonomousDatabaseEncryptionKeyResponse")
+	}
+	return
+}
+
+// rotateAutonomousDatabaseEncryptionKey implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) rotateAutonomousDatabaseEncryptionKey(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/rotateKey", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response RotateAutonomousDatabaseEncryptionKeyResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// RotateOrdsCerts Rotates Oracle REST Data Services (ORDS) certs for an Autonomous Exadata Infrastructure resource.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/RotateOrdsCerts.go.html to see an example of how to use RotateOrdsCerts API.
+func (client DatabaseClient) RotateOrdsCerts(ctx context.Context, request RotateOrdsCertsRequest) (response RotateOrdsCertsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.rotateOrdsCerts, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RotateOrdsCertsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RotateOrdsCertsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(RotateOrdsCertsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into RotateOrdsCertsResponse")
+	}
+	return
+}
+
+// rotateOrdsCerts implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) rotateOrdsCerts(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousExadataInfrastructures/{autonomousExadataInfrastructureId}/actions/rotateOrdsCerts", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response RotateOrdsCertsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// RotateSslCerts Rotates SSL certs for an Autonomous Exadata Infrastructure resource.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/RotateSslCerts.go.html to see an example of how to use RotateSslCerts API.
+func (client DatabaseClient) RotateSslCerts(ctx context.Context, request RotateSslCertsRequest) (response RotateSslCertsResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.rotateSslCerts, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RotateSslCertsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RotateSslCertsResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(RotateSslCertsResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into RotateSslCertsResponse")
+	}
+	return
+}
+
+// rotateSslCerts implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) rotateSslCerts(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousExadataInfrastructures/{autonomousExadataInfrastructureId}/actions/rotateSslCerts", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response RotateSslCertsResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// RotateVaultKey Creates a new version of an existing Vault service (https://docs.cloud.oracle.com/iaas/Content/KeyManagement/Concepts/keyoverview.htm) key.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/RotateVaultKey.go.html to see an example of how to use RotateVaultKey API.
+func (client DatabaseClient) RotateVaultKey(ctx context.Context, request RotateVaultKeyRequest) (response RotateVaultKeyResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.rotateVaultKey, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = RotateVaultKeyResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = RotateVaultKeyResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(RotateVaultKeyResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into RotateVaultKeyResponse")
+	}
+	return
+}
+
+// rotateVaultKey implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) rotateVaultKey(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/actions/rotateKey", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response RotateVaultKeyResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ScanExternalContainerDatabasePluggableDatabases Scans for pluggable databases in the specified external container database.
+// This operation will return un-registered pluggable databases in the `GetWorkRequest` operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ScanExternalContainerDatabasePluggableDatabases.go.html to see an example of how to use ScanExternalContainerDatabasePluggableDatabases API.
+func (client DatabaseClient) ScanExternalContainerDatabasePluggableDatabases(ctx context.Context, request ScanExternalContainerDatabasePluggableDatabasesRequest) (response ScanExternalContainerDatabasePluggableDatabasesResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.scanExternalContainerDatabasePluggableDatabases, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ScanExternalContainerDatabasePluggableDatabasesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ScanExternalContainerDatabasePluggableDatabasesResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ScanExternalContainerDatabasePluggableDatabasesResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ScanExternalContainerDatabasePluggableDatabasesResponse")
+	}
+	return
+}
+
+// scanExternalContainerDatabasePluggableDatabases implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) scanExternalContainerDatabasePluggableDatabases(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/externalcontainerdatabases/{externalContainerDatabaseId}/actions/scanPluggableDatabases", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ScanExternalContainerDatabasePluggableDatabasesResponse
 	var httpResponse *http.Response
 	httpResponse, err = client.Call(ctx, &httpRequest)
 	defer common.CloseBodyIfValid(httpResponse)
@@ -4278,16 +11446,28 @@ func (client DatabaseClient) startAutonomousDataWarehouse(ctx context.Context, r
 }
 
 // StartAutonomousDatabase Starts the specified Autonomous Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/StartAutonomousDatabase.go.html to see an example of how to use StartAutonomousDatabase API.
 func (client DatabaseClient) StartAutonomousDatabase(ctx context.Context, request StartAutonomousDatabaseRequest) (response StartAutonomousDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.startAutonomousDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = StartAutonomousDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = StartAutonomousDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = StartAutonomousDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -4300,8 +11480,9 @@ func (client DatabaseClient) StartAutonomousDatabase(ctx context.Context, reques
 }
 
 // startAutonomousDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) startAutonomousDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/start")
+func (client DatabaseClient) startAutonomousDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/start", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4319,36 +11500,54 @@ func (client DatabaseClient) startAutonomousDatabase(ctx context.Context, reques
 	return response, err
 }
 
-// StopAutonomousDataWarehouse **Deprecated.** To stop an Autonomous Data Warehouse, use the StopAutonomousDatabase operation.
-func (client DatabaseClient) StopAutonomousDataWarehouse(ctx context.Context, request StopAutonomousDataWarehouseRequest) (response StopAutonomousDataWarehouseResponse, err error) {
+// StartPluggableDatabase Starts a stopped pluggable database. The `openMode` value of the pluggable database will be `READ_WRITE` upon completion.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/StartPluggableDatabase.go.html to see an example of how to use StartPluggableDatabase API.
+func (client DatabaseClient) StartPluggableDatabase(ctx context.Context, request StartPluggableDatabaseRequest) (response StartPluggableDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
-	ociResponse, err = common.Retry(ctx, request, client.stopAutonomousDataWarehouse, policy)
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.startPluggableDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = StopAutonomousDataWarehouseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = StartPluggableDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = StartPluggableDatabaseResponse{}
+			}
 		}
 		return
 	}
-	if convertedResponse, ok := ociResponse.(StopAutonomousDataWarehouseResponse); ok {
+	if convertedResponse, ok := ociResponse.(StartPluggableDatabaseResponse); ok {
 		response = convertedResponse
 	} else {
-		err = fmt.Errorf("failed to convert OCIResponse into StopAutonomousDataWarehouseResponse")
+		err = fmt.Errorf("failed to convert OCIResponse into StartPluggableDatabaseResponse")
 	}
 	return
 }
 
-// stopAutonomousDataWarehouse implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) stopAutonomousDataWarehouse(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDataWarehouses/{autonomousDataWarehouseId}/actions/stop")
+// startPluggableDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) startPluggableDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/pluggableDatabases/{pluggableDatabaseId}/actions/start", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
 
-	var response StopAutonomousDataWarehouseResponse
+	var response StartPluggableDatabaseResponse
 	var httpResponse *http.Response
 	httpResponse, err = client.Call(ctx, &httpRequest)
 	defer common.CloseBodyIfValid(httpResponse)
@@ -4362,16 +11561,28 @@ func (client DatabaseClient) stopAutonomousDataWarehouse(ctx context.Context, re
 }
 
 // StopAutonomousDatabase Stops the specified Autonomous Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/StopAutonomousDatabase.go.html to see an example of how to use StopAutonomousDatabase API.
 func (client DatabaseClient) StopAutonomousDatabase(ctx context.Context, request StopAutonomousDatabaseRequest) (response StopAutonomousDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.stopAutonomousDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = StopAutonomousDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = StopAutonomousDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = StopAutonomousDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -4384,8 +11595,9 @@ func (client DatabaseClient) StopAutonomousDatabase(ctx context.Context, request
 }
 
 // stopAutonomousDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) stopAutonomousDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/stop")
+func (client DatabaseClient) stopAutonomousDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/stop", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4403,19 +11615,207 @@ func (client DatabaseClient) stopAutonomousDatabase(ctx context.Context, request
 	return response, err
 }
 
+// StopPluggableDatabase Stops a pluggable database. The `openMode` value of the pluggable database will be `MOUNTED` upon completion.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/StopPluggableDatabase.go.html to see an example of how to use StopPluggableDatabase API.
+func (client DatabaseClient) StopPluggableDatabase(ctx context.Context, request StopPluggableDatabaseRequest) (response StopPluggableDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.stopPluggableDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = StopPluggableDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = StopPluggableDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(StopPluggableDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into StopPluggableDatabaseResponse")
+	}
+	return
+}
+
+// stopPluggableDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) stopPluggableDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/pluggableDatabases/{pluggableDatabaseId}/actions/stop", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response StopPluggableDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// SwitchoverAutonomousContainerDatabaseDataguardAssociation Switches over the primary Autonomous Container Database of an Autonomous Data Guard peer association to standby role. The standby Autonomous Container Database associated with autonomousContainerDatabaseDataguardAssociationId assumes the primary Autonomous Container Database role.
+// A switchover incurs no data loss.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/SwitchoverAutonomousContainerDatabaseDataguardAssociation.go.html to see an example of how to use SwitchoverAutonomousContainerDatabaseDataguardAssociation API.
+func (client DatabaseClient) SwitchoverAutonomousContainerDatabaseDataguardAssociation(ctx context.Context, request SwitchoverAutonomousContainerDatabaseDataguardAssociationRequest) (response SwitchoverAutonomousContainerDatabaseDataguardAssociationResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.switchoverAutonomousContainerDatabaseDataguardAssociation, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = SwitchoverAutonomousContainerDatabaseDataguardAssociationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = SwitchoverAutonomousContainerDatabaseDataguardAssociationResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(SwitchoverAutonomousContainerDatabaseDataguardAssociationResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into SwitchoverAutonomousContainerDatabaseDataguardAssociationResponse")
+	}
+	return
+}
+
+// switchoverAutonomousContainerDatabaseDataguardAssociation implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) switchoverAutonomousContainerDatabaseDataguardAssociation(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}/autonomousContainerDatabaseDataguardAssociations/{autonomousContainerDatabaseDataguardAssociationId}/actions/switchover", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response SwitchoverAutonomousContainerDatabaseDataguardAssociationResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// SwitchoverAutonomousDatabase Initiates a switchover of the specified Autonomous Database to the associated standby database. Applicable only to databases with Autonomous Data Guard enabled.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/SwitchoverAutonomousDatabase.go.html to see an example of how to use SwitchoverAutonomousDatabase API.
+func (client DatabaseClient) SwitchoverAutonomousDatabase(ctx context.Context, request SwitchoverAutonomousDatabaseRequest) (response SwitchoverAutonomousDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+
+	if !(request.OpcRetryToken != nil && *request.OpcRetryToken != "") {
+		request.OpcRetryToken = common.String(common.RetryToken())
+	}
+
+	ociResponse, err = common.Retry(ctx, request, client.switchoverAutonomousDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = SwitchoverAutonomousDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = SwitchoverAutonomousDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(SwitchoverAutonomousDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into SwitchoverAutonomousDatabaseResponse")
+	}
+	return
+}
+
+// switchoverAutonomousDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) switchoverAutonomousDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/autonomousDatabases/{autonomousDatabaseId}/actions/switchover", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response SwitchoverAutonomousDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // SwitchoverDataGuardAssociation Performs a switchover to transition the primary database of a Data Guard association into a standby role. The
 // standby database associated with the `dataGuardAssociationId` assumes the primary database role.
 // A switchover guarantees no data loss.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/SwitchoverDataGuardAssociation.go.html to see an example of how to use SwitchoverDataGuardAssociation API.
 func (client DatabaseClient) SwitchoverDataGuardAssociation(ctx context.Context, request SwitchoverDataGuardAssociationRequest) (response SwitchoverDataGuardAssociationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.switchoverDataGuardAssociation, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = SwitchoverDataGuardAssociationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = SwitchoverDataGuardAssociationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = SwitchoverDataGuardAssociationResponse{}
+			}
 		}
 		return
 	}
@@ -4428,8 +11828,9 @@ func (client DatabaseClient) SwitchoverDataGuardAssociation(ctx context.Context,
 }
 
 // switchoverDataGuardAssociation implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) switchoverDataGuardAssociation(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/dataGuardAssociations/{dataGuardAssociationId}/actions/switchover")
+func (client DatabaseClient) switchoverDataGuardAssociation(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/dataGuardAssociations/{dataGuardAssociationId}/actions/switchover", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4448,16 +11849,28 @@ func (client DatabaseClient) switchoverDataGuardAssociation(ctx context.Context,
 }
 
 // TerminateAutonomousContainerDatabase Terminates an Autonomous Container Database, which permanently deletes the container database and any databases within the container database. The database data is local to the Autonomous Exadata Infrastructure and will be lost when the container database is terminated. Oracle recommends that you back up any data in the Autonomous Container Database prior to terminating it.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/TerminateAutonomousContainerDatabase.go.html to see an example of how to use TerminateAutonomousContainerDatabase API.
 func (client DatabaseClient) TerminateAutonomousContainerDatabase(ctx context.Context, request TerminateAutonomousContainerDatabaseRequest) (response TerminateAutonomousContainerDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.terminateAutonomousContainerDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = TerminateAutonomousContainerDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = TerminateAutonomousContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = TerminateAutonomousContainerDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -4470,8 +11883,9 @@ func (client DatabaseClient) TerminateAutonomousContainerDatabase(ctx context.Co
 }
 
 // terminateAutonomousContainerDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) terminateAutonomousContainerDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}")
+func (client DatabaseClient) terminateAutonomousContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4489,17 +11903,29 @@ func (client DatabaseClient) terminateAutonomousContainerDatabase(ctx context.Co
 	return response, err
 }
 
-// TerminateAutonomousExadataInfrastructure Terminates an Autonomous Exadata Infrastructure, which permanently deletes the Exadata Infrastructure and any container databases and databases contained in the Exadata Infrastructure. The database data is local to the Autonomous Exadata Infrastructure and will be lost when the system is terminated. Oracle recommends that you back up any data in the Autonomous Exadata Infrastructure prior to terminating it.
+// TerminateAutonomousExadataInfrastructure Terminates an Autonomous Exadata Infrastructure, which permanently deletes the infrastructure resource and any container databases and databases contained in the resource. The database data is local to the Autonomous Exadata Infrastructure and will be lost when the system is terminated. Oracle recommends that you back up any data in the Autonomous Exadata Infrastructure prior to terminating it.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/TerminateAutonomousExadataInfrastructure.go.html to see an example of how to use TerminateAutonomousExadataInfrastructure API.
 func (client DatabaseClient) TerminateAutonomousExadataInfrastructure(ctx context.Context, request TerminateAutonomousExadataInfrastructureRequest) (response TerminateAutonomousExadataInfrastructureResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.terminateAutonomousExadataInfrastructure, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = TerminateAutonomousExadataInfrastructureResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = TerminateAutonomousExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = TerminateAutonomousExadataInfrastructureResponse{}
+			}
 		}
 		return
 	}
@@ -4512,8 +11938,9 @@ func (client DatabaseClient) TerminateAutonomousExadataInfrastructure(ctx contex
 }
 
 // terminateAutonomousExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) terminateAutonomousExadataInfrastructure(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/autonomousExadataInfrastructures/{autonomousExadataInfrastructureId}")
+func (client DatabaseClient) terminateAutonomousExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/autonomousExadataInfrastructures/{autonomousExadataInfrastructureId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4532,16 +11959,30 @@ func (client DatabaseClient) terminateAutonomousExadataInfrastructure(ctx contex
 }
 
 // TerminateDbSystem Terminates a DB system and permanently deletes it and any databases running on it, and any storage volumes attached to it. The database data is local to the DB system and will be lost when the system is terminated. Oracle recommends that you back up any data in the DB system prior to terminating it.
+// **Note:** Deprecated for Exadata Cloud Service systems. Use the new resource model APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem.htm#exaflexsystem_topic-resource_model) instead.
+// For Exadata Cloud Service instances, support for this API will end on May 15th, 2021. See Switching an Exadata DB System to the New Resource Model and APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem_topic-resource_model_conversion.htm) for details on converting existing Exadata DB systems to the new resource model.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/TerminateDbSystem.go.html to see an example of how to use TerminateDbSystem API.
 func (client DatabaseClient) TerminateDbSystem(ctx context.Context, request TerminateDbSystemRequest) (response TerminateDbSystemResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.terminateDbSystem, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = TerminateDbSystemResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = TerminateDbSystemResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = TerminateDbSystemResponse{}
+			}
 		}
 		return
 	}
@@ -4554,8 +11995,9 @@ func (client DatabaseClient) TerminateDbSystem(ctx context.Context, request Term
 }
 
 // terminateDbSystem implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) terminateDbSystem(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/dbSystems/{dbSystemId}")
+func (client DatabaseClient) terminateDbSystem(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/dbSystems/{dbSystemId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4573,17 +12015,29 @@ func (client DatabaseClient) terminateDbSystem(ctx context.Context, request comm
 	return response, err
 }
 
-// UpdateAutonomousContainerDatabase Updates the properties of an Autonomous Container Database, such as the CPU core count and storage size.
+// UpdateAutonomousContainerDatabase Updates the properties of an Autonomous Container Database, such as the OCPU core count and storage size.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateAutonomousContainerDatabase.go.html to see an example of how to use UpdateAutonomousContainerDatabase API.
 func (client DatabaseClient) UpdateAutonomousContainerDatabase(ctx context.Context, request UpdateAutonomousContainerDatabaseRequest) (response UpdateAutonomousContainerDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateAutonomousContainerDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateAutonomousContainerDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAutonomousContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAutonomousContainerDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -4596,8 +12050,9 @@ func (client DatabaseClient) UpdateAutonomousContainerDatabase(ctx context.Conte
 }
 
 // updateAutonomousContainerDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateAutonomousContainerDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}")
+func (client DatabaseClient) updateAutonomousContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autonomousContainerDatabases/{autonomousContainerDatabaseId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4615,59 +12070,29 @@ func (client DatabaseClient) updateAutonomousContainerDatabase(ctx context.Conte
 	return response, err
 }
 
-// UpdateAutonomousDataWarehouse **Deprecated.** To update the CPU core count and storage size of an Autonomous Data Warehouse, use the UpdateAutonomousDatabase operation.
-func (client DatabaseClient) UpdateAutonomousDataWarehouse(ctx context.Context, request UpdateAutonomousDataWarehouseRequest) (response UpdateAutonomousDataWarehouseResponse, err error) {
-	var ociResponse common.OCIResponse
-	policy := common.NoRetryPolicy()
-	if request.RetryPolicy() != nil {
-		policy = *request.RetryPolicy()
-	}
-	ociResponse, err = common.Retry(ctx, request, client.updateAutonomousDataWarehouse, policy)
-	if err != nil {
-		if ociResponse != nil {
-			response = UpdateAutonomousDataWarehouseResponse{RawResponse: ociResponse.HTTPResponse()}
-		}
-		return
-	}
-	if convertedResponse, ok := ociResponse.(UpdateAutonomousDataWarehouseResponse); ok {
-		response = convertedResponse
-	} else {
-		err = fmt.Errorf("failed to convert OCIResponse into UpdateAutonomousDataWarehouseResponse")
-	}
-	return
-}
-
-// updateAutonomousDataWarehouse implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateAutonomousDataWarehouse(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autonomousDataWarehouses/{autonomousDataWarehouseId}")
-	if err != nil {
-		return nil, err
-	}
-
-	var response UpdateAutonomousDataWarehouseResponse
-	var httpResponse *http.Response
-	httpResponse, err = client.Call(ctx, &httpRequest)
-	defer common.CloseBodyIfValid(httpResponse)
-	response.RawResponse = httpResponse
-	if err != nil {
-		return response, err
-	}
-
-	err = common.UnmarshalResponse(httpResponse, &response)
-	return response, err
-}
-
-// UpdateAutonomousDatabase Updates the specified Autonomous Database with a new CPU core count and size.
+// UpdateAutonomousDatabase Updates one or more attributes of the specified Autonomous Database. See the UpdateAutonomousDatabaseDetails resource for a full list of attributes that can be updated.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateAutonomousDatabase.go.html to see an example of how to use UpdateAutonomousDatabase API.
 func (client DatabaseClient) UpdateAutonomousDatabase(ctx context.Context, request UpdateAutonomousDatabaseRequest) (response UpdateAutonomousDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateAutonomousDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateAutonomousDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAutonomousDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAutonomousDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -4680,8 +12105,9 @@ func (client DatabaseClient) UpdateAutonomousDatabase(ctx context.Context, reque
 }
 
 // updateAutonomousDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateAutonomousDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autonomousDatabases/{autonomousDatabaseId}")
+func (client DatabaseClient) updateAutonomousDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autonomousDatabases/{autonomousDatabaseId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4700,16 +12126,28 @@ func (client DatabaseClient) updateAutonomousDatabase(ctx context.Context, reque
 }
 
 // UpdateAutonomousDatabaseRegionalWallet Updates the Autonomous Database regional wallet.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateAutonomousDatabaseRegionalWallet.go.html to see an example of how to use UpdateAutonomousDatabaseRegionalWallet API.
 func (client DatabaseClient) UpdateAutonomousDatabaseRegionalWallet(ctx context.Context, request UpdateAutonomousDatabaseRegionalWalletRequest) (response UpdateAutonomousDatabaseRegionalWalletResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateAutonomousDatabaseRegionalWallet, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateAutonomousDatabaseRegionalWalletResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAutonomousDatabaseRegionalWalletResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAutonomousDatabaseRegionalWalletResponse{}
+			}
 		}
 		return
 	}
@@ -4722,8 +12160,9 @@ func (client DatabaseClient) UpdateAutonomousDatabaseRegionalWallet(ctx context.
 }
 
 // updateAutonomousDatabaseRegionalWallet implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateAutonomousDatabaseRegionalWallet(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autonomousDatabases/wallet")
+func (client DatabaseClient) updateAutonomousDatabaseRegionalWallet(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autonomousDatabases/wallet", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4742,16 +12181,28 @@ func (client DatabaseClient) updateAutonomousDatabaseRegionalWallet(ctx context.
 }
 
 // UpdateAutonomousDatabaseWallet Updates the wallet for the specified Autonomous Database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateAutonomousDatabaseWallet.go.html to see an example of how to use UpdateAutonomousDatabaseWallet API.
 func (client DatabaseClient) UpdateAutonomousDatabaseWallet(ctx context.Context, request UpdateAutonomousDatabaseWalletRequest) (response UpdateAutonomousDatabaseWalletResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateAutonomousDatabaseWallet, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateAutonomousDatabaseWalletResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAutonomousDatabaseWalletResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAutonomousDatabaseWalletResponse{}
+			}
 		}
 		return
 	}
@@ -4764,8 +12215,9 @@ func (client DatabaseClient) UpdateAutonomousDatabaseWallet(ctx context.Context,
 }
 
 // updateAutonomousDatabaseWallet implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateAutonomousDatabaseWallet(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autonomousDatabases/{autonomousDatabaseId}/wallet")
+func (client DatabaseClient) updateAutonomousDatabaseWallet(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autonomousDatabases/{autonomousDatabaseId}/wallet", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4784,16 +12236,28 @@ func (client DatabaseClient) updateAutonomousDatabaseWallet(ctx context.Context,
 }
 
 // UpdateAutonomousExadataInfrastructure Updates the properties of an Autonomous Exadata Infrastructure, such as the CPU core count.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateAutonomousExadataInfrastructure.go.html to see an example of how to use UpdateAutonomousExadataInfrastructure API.
 func (client DatabaseClient) UpdateAutonomousExadataInfrastructure(ctx context.Context, request UpdateAutonomousExadataInfrastructureRequest) (response UpdateAutonomousExadataInfrastructureResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateAutonomousExadataInfrastructure, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateAutonomousExadataInfrastructureResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAutonomousExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAutonomousExadataInfrastructureResponse{}
+			}
 		}
 		return
 	}
@@ -4806,8 +12270,9 @@ func (client DatabaseClient) UpdateAutonomousExadataInfrastructure(ctx context.C
 }
 
 // updateAutonomousExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateAutonomousExadataInfrastructure(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autonomousExadataInfrastructures/{autonomousExadataInfrastructureId}")
+func (client DatabaseClient) updateAutonomousExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autonomousExadataInfrastructures/{autonomousExadataInfrastructureId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4825,19 +12290,86 @@ func (client DatabaseClient) updateAutonomousExadataInfrastructure(ctx context.C
 	return response, err
 }
 
+// UpdateAutonomousVmCluster Updates the specified Autonomous VM cluster for the Exadata Cloud@Customer system.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateAutonomousVmCluster.go.html to see an example of how to use UpdateAutonomousVmCluster API.
+func (client DatabaseClient) UpdateAutonomousVmCluster(ctx context.Context, request UpdateAutonomousVmClusterRequest) (response UpdateAutonomousVmClusterResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateAutonomousVmCluster, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateAutonomousVmClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateAutonomousVmClusterResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateAutonomousVmClusterResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateAutonomousVmClusterResponse")
+	}
+	return
+}
+
+// updateAutonomousVmCluster implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) updateAutonomousVmCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/autonomousVmClusters/{autonomousVmClusterId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateAutonomousVmClusterResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // UpdateBackupDestination If no database is associated with the backup destination:
 // - For a RECOVERY_APPLIANCE backup destination, updates the connection string and/or the list of VPC users.
 // - For an NFS backup destination, updates the NFS location.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateBackupDestination.go.html to see an example of how to use UpdateBackupDestination API.
 func (client DatabaseClient) UpdateBackupDestination(ctx context.Context, request UpdateBackupDestinationRequest) (response UpdateBackupDestinationResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateBackupDestination, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateBackupDestinationResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateBackupDestinationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateBackupDestinationResponse{}
+			}
 		}
 		return
 	}
@@ -4850,8 +12382,9 @@ func (client DatabaseClient) UpdateBackupDestination(ctx context.Context, reques
 }
 
 // updateBackupDestination implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateBackupDestination(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/backupDestinations/{backupDestinationId}")
+func (client DatabaseClient) updateBackupDestination(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/backupDestinations/{backupDestinationId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4869,17 +12402,249 @@ func (client DatabaseClient) updateBackupDestination(ctx context.Context, reques
 	return response, err
 }
 
-// UpdateDatabase Update a Database based on the request parameters you provide.
+// UpdateCloudExadataInfrastructure Updates the Cloud Exadata infrastructure resource. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateCloudExadataInfrastructure.go.html to see an example of how to use UpdateCloudExadataInfrastructure API.
+func (client DatabaseClient) UpdateCloudExadataInfrastructure(ctx context.Context, request UpdateCloudExadataInfrastructureRequest) (response UpdateCloudExadataInfrastructureResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateCloudExadataInfrastructure, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateCloudExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateCloudExadataInfrastructureResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateCloudExadataInfrastructureResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateCloudExadataInfrastructureResponse")
+	}
+	return
+}
+
+// updateCloudExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) updateCloudExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/cloudExadataInfrastructures/{cloudExadataInfrastructureId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateCloudExadataInfrastructureResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdateCloudVmCluster Updates the specified cloud VM cluster. Applies to Exadata Cloud Service instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateCloudVmCluster.go.html to see an example of how to use UpdateCloudVmCluster API.
+func (client DatabaseClient) UpdateCloudVmCluster(ctx context.Context, request UpdateCloudVmClusterRequest) (response UpdateCloudVmClusterResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateCloudVmCluster, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateCloudVmClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateCloudVmClusterResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateCloudVmClusterResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateCloudVmClusterResponse")
+	}
+	return
+}
+
+// updateCloudVmCluster implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) updateCloudVmCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/cloudVmClusters/{cloudVmClusterId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateCloudVmClusterResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdateCloudVmClusterIormConfig Updates the IORM settings for the specified cloud VM cluster in an Exadata Cloud Service instance.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateCloudVmClusterIormConfig.go.html to see an example of how to use UpdateCloudVmClusterIormConfig API.
+func (client DatabaseClient) UpdateCloudVmClusterIormConfig(ctx context.Context, request UpdateCloudVmClusterIormConfigRequest) (response UpdateCloudVmClusterIormConfigResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateCloudVmClusterIormConfig, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateCloudVmClusterIormConfigResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateCloudVmClusterIormConfigResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateCloudVmClusterIormConfigResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateCloudVmClusterIormConfigResponse")
+	}
+	return
+}
+
+// updateCloudVmClusterIormConfig implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) updateCloudVmClusterIormConfig(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/cloudVmClusters/{cloudVmClusterId}/CloudVmClusterIormConfig", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateCloudVmClusterIormConfigResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdateDataGuardAssociation Updates the Data Guard association the specified database. This API can be used to change the `protectionMode` and `transportType` of the Data Guard association.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateDataGuardAssociation.go.html to see an example of how to use UpdateDataGuardAssociation API.
+func (client DatabaseClient) UpdateDataGuardAssociation(ctx context.Context, request UpdateDataGuardAssociationRequest) (response UpdateDataGuardAssociationResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateDataGuardAssociation, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateDataGuardAssociationResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateDataGuardAssociationResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateDataGuardAssociationResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateDataGuardAssociationResponse")
+	}
+	return
+}
+
+// updateDataGuardAssociation implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) updateDataGuardAssociation(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/databases/{databaseId}/dataGuardAssociations/{dataGuardAssociationId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateDataGuardAssociationResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdateDatabase Update the specified database based on the request parameters provided.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateDatabase.go.html to see an example of how to use UpdateDatabase API.
 func (client DatabaseClient) UpdateDatabase(ctx context.Context, request UpdateDatabaseRequest) (response UpdateDatabaseResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateDatabase, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateDatabaseResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateDatabaseResponse{}
+			}
 		}
 		return
 	}
@@ -4892,8 +12657,9 @@ func (client DatabaseClient) UpdateDatabase(ctx context.Context, request UpdateD
 }
 
 // updateDatabase implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateDatabase(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/databases/{databaseId}")
+func (client DatabaseClient) updateDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/databases/{databaseId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4911,17 +12677,84 @@ func (client DatabaseClient) updateDatabase(ctx context.Context, request common.
 	return response, err
 }
 
-// UpdateDbHome Patches the specified dbHome.
+// UpdateDatabaseSoftwareImage Updates the properties of a Database Software Image, like Display Nmae
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateDatabaseSoftwareImage.go.html to see an example of how to use UpdateDatabaseSoftwareImage API.
+func (client DatabaseClient) UpdateDatabaseSoftwareImage(ctx context.Context, request UpdateDatabaseSoftwareImageRequest) (response UpdateDatabaseSoftwareImageResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateDatabaseSoftwareImage, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateDatabaseSoftwareImageResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateDatabaseSoftwareImageResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateDatabaseSoftwareImageResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateDatabaseSoftwareImageResponse")
+	}
+	return
+}
+
+// updateDatabaseSoftwareImage implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) updateDatabaseSoftwareImage(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/databaseSoftwareImages/{databaseSoftwareImageId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateDatabaseSoftwareImageResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdateDbHome Patches the specified Database Home.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateDbHome.go.html to see an example of how to use UpdateDbHome API.
 func (client DatabaseClient) UpdateDbHome(ctx context.Context, request UpdateDbHomeRequest) (response UpdateDbHomeResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateDbHome, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateDbHomeResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateDbHomeResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateDbHomeResponse{}
+			}
 		}
 		return
 	}
@@ -4934,8 +12767,9 @@ func (client DatabaseClient) UpdateDbHome(ctx context.Context, request UpdateDbH
 }
 
 // updateDbHome implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateDbHome(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/dbHomes/{dbHomeId}")
+func (client DatabaseClient) updateDbHome(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/dbHomes/{dbHomeId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4953,17 +12787,31 @@ func (client DatabaseClient) updateDbHome(ctx context.Context, request common.OC
 	return response, err
 }
 
-// UpdateDbSystem Updates the properties of a DB system, such as the CPU core count.
+// UpdateDbSystem Updates the properties of the specified DB system.
+// **Note:** Deprecated for Exadata Cloud Service systems. Use the new resource model APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem.htm#exaflexsystem_topic-resource_model) instead.
+// For Exadata Cloud Service instances, support for this API will end on May 15th, 2021. See Switching an Exadata DB System to the New Resource Model and APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem_topic-resource_model_conversion.htm) for details on converting existing Exadata DB systems to the new resource model.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateDbSystem.go.html to see an example of how to use UpdateDbSystem API.
 func (client DatabaseClient) UpdateDbSystem(ctx context.Context, request UpdateDbSystemRequest) (response UpdateDbSystemResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateDbSystem, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateDbSystemResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateDbSystemResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateDbSystemResponse{}
+			}
 		}
 		return
 	}
@@ -4976,8 +12824,9 @@ func (client DatabaseClient) UpdateDbSystem(ctx context.Context, request UpdateD
 }
 
 // updateDbSystem implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateDbSystem(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/dbSystems/{dbSystemId}")
+func (client DatabaseClient) updateDbSystem(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/dbSystems/{dbSystemId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -4995,17 +12844,30 @@ func (client DatabaseClient) updateDbSystem(ctx context.Context, request common.
 	return response, err
 }
 
-// UpdateExadataInfrastructure Updates the Exadata infrastructure.
+// UpdateExadataInfrastructure Updates the Exadata infrastructure resource. Applies to Exadata Cloud@Customer instances only.
+// To update an Exadata Cloud Service infrastructure resource, use the  UpdateCloudExadataInfrastructure operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateExadataInfrastructure.go.html to see an example of how to use UpdateExadataInfrastructure API.
 func (client DatabaseClient) UpdateExadataInfrastructure(ctx context.Context, request UpdateExadataInfrastructureRequest) (response UpdateExadataInfrastructureResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateExadataInfrastructure, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateExadataInfrastructureResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateExadataInfrastructureResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateExadataInfrastructureResponse{}
+			}
 		}
 		return
 	}
@@ -5018,8 +12880,9 @@ func (client DatabaseClient) UpdateExadataInfrastructure(ctx context.Context, re
 }
 
 // updateExadataInfrastructure implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateExadataInfrastructure(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/exadataInfrastructures/{exadataInfrastructureId}")
+func (client DatabaseClient) updateExadataInfrastructure(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/exadataInfrastructures/{exadataInfrastructureId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -5037,17 +12900,33 @@ func (client DatabaseClient) updateExadataInfrastructure(ctx context.Context, re
 	return response, err
 }
 
-// UpdateExadataIormConfig Update `IORM` Settings for the requested Exadata DB System.
+// UpdateExadataIormConfig Updates IORM settings for the specified Exadata DB system.
+// **Note:** Deprecated for Exadata Cloud Service systems. Use the new resource model APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem.htm#exaflexsystem_topic-resource_model) instead.
+// For Exadata Cloud Service instances, support for this API will end on May 15th, 2021. See Switching an Exadata DB System to the New Resource Model and APIs (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/exaflexsystem_topic-resource_model_conversion.htm) for details on converting existing Exadata DB systems to the new resource model.
+// The UpdateCloudVmClusterIormConfig API is used for Exadata systems using the
+// new resource model.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateExadataIormConfig.go.html to see an example of how to use UpdateExadataIormConfig API.
 func (client DatabaseClient) UpdateExadataIormConfig(ctx context.Context, request UpdateExadataIormConfigRequest) (response UpdateExadataIormConfigResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateExadataIormConfig, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateExadataIormConfigResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateExadataIormConfigResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateExadataIormConfigResponse{}
+			}
 		}
 		return
 	}
@@ -5060,8 +12939,9 @@ func (client DatabaseClient) UpdateExadataIormConfig(ctx context.Context, reques
 }
 
 // updateExadataIormConfig implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateExadataIormConfig(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/dbSystems/{dbSystemId}/ExadataIormConfig")
+func (client DatabaseClient) updateExadataIormConfig(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/dbSystems/{dbSystemId}/ExadataIormConfig", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -5079,17 +12959,308 @@ func (client DatabaseClient) updateExadataIormConfig(ctx context.Context, reques
 	return response, err
 }
 
-// UpdateMaintenanceRun Updates the properties of a Maintenance Run, such as the state of a Maintenance Run.
+// UpdateExternalContainerDatabase Updates the properties of
+// an CreateExternalContainerDatabaseDetails resource,
+// such as the display name.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateExternalContainerDatabase.go.html to see an example of how to use UpdateExternalContainerDatabase API.
+func (client DatabaseClient) UpdateExternalContainerDatabase(ctx context.Context, request UpdateExternalContainerDatabaseRequest) (response UpdateExternalContainerDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateExternalContainerDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateExternalContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateExternalContainerDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateExternalContainerDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateExternalContainerDatabaseResponse")
+	}
+	return
+}
+
+// updateExternalContainerDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) updateExternalContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/externalcontainerdatabases/{externalContainerDatabaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateExternalContainerDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdateExternalDatabaseConnector Updates the properties of an external database connector, such as the display name.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateExternalDatabaseConnector.go.html to see an example of how to use UpdateExternalDatabaseConnector API.
+func (client DatabaseClient) UpdateExternalDatabaseConnector(ctx context.Context, request UpdateExternalDatabaseConnectorRequest) (response UpdateExternalDatabaseConnectorResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateExternalDatabaseConnector, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateExternalDatabaseConnectorResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateExternalDatabaseConnectorResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateExternalDatabaseConnectorResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateExternalDatabaseConnectorResponse")
+	}
+	return
+}
+
+// updateExternalDatabaseConnector implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) updateExternalDatabaseConnector(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/externaldatabaseconnectors/{externalDatabaseConnectorId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateExternalDatabaseConnectorResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponseWithPolymorphicBody(httpResponse, &response, &externaldatabaseconnector{})
+	return response, err
+}
+
+// UpdateExternalNonContainerDatabase Updates the properties of an external non-container database, such as the display name.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateExternalNonContainerDatabase.go.html to see an example of how to use UpdateExternalNonContainerDatabase API.
+func (client DatabaseClient) UpdateExternalNonContainerDatabase(ctx context.Context, request UpdateExternalNonContainerDatabaseRequest) (response UpdateExternalNonContainerDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateExternalNonContainerDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateExternalNonContainerDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateExternalNonContainerDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateExternalNonContainerDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateExternalNonContainerDatabaseResponse")
+	}
+	return
+}
+
+// updateExternalNonContainerDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) updateExternalNonContainerDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/externalnoncontainerdatabases/{externalNonContainerDatabaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateExternalNonContainerDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdateExternalPluggableDatabase Updates the properties of an
+// CreateExternalPluggableDatabaseDetails resource,
+// such as the display name.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateExternalPluggableDatabase.go.html to see an example of how to use UpdateExternalPluggableDatabase API.
+func (client DatabaseClient) UpdateExternalPluggableDatabase(ctx context.Context, request UpdateExternalPluggableDatabaseRequest) (response UpdateExternalPluggableDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateExternalPluggableDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateExternalPluggableDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateExternalPluggableDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateExternalPluggableDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateExternalPluggableDatabaseResponse")
+	}
+	return
+}
+
+// updateExternalPluggableDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) updateExternalPluggableDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/externalpluggabledatabases/{externalPluggableDatabaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateExternalPluggableDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdateKeyStore If no database is associated with the key store, edit the key store.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateKeyStore.go.html to see an example of how to use UpdateKeyStore API.
+func (client DatabaseClient) UpdateKeyStore(ctx context.Context, request UpdateKeyStoreRequest) (response UpdateKeyStoreResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateKeyStore, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateKeyStoreResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateKeyStoreResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateKeyStoreResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateKeyStoreResponse")
+	}
+	return
+}
+
+// updateKeyStore implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) updateKeyStore(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/keyStores/{keyStoreId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateKeyStoreResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdateMaintenanceRun Updates the properties of a maintenance run, such as the state of a maintenance run.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateMaintenanceRun.go.html to see an example of how to use UpdateMaintenanceRun API.
 func (client DatabaseClient) UpdateMaintenanceRun(ctx context.Context, request UpdateMaintenanceRunRequest) (response UpdateMaintenanceRunResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateMaintenanceRun, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateMaintenanceRunResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateMaintenanceRunResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateMaintenanceRunResponse{}
+			}
 		}
 		return
 	}
@@ -5102,8 +13273,9 @@ func (client DatabaseClient) UpdateMaintenanceRun(ctx context.Context, request U
 }
 
 // updateMaintenanceRun implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateMaintenanceRun(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/maintenanceRuns/{maintenanceRunId}")
+func (client DatabaseClient) updateMaintenanceRun(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/maintenanceRuns/{maintenanceRunId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -5121,17 +13293,84 @@ func (client DatabaseClient) updateMaintenanceRun(ctx context.Context, request c
 	return response, err
 }
 
-// UpdateVmCluster Updates the specified VM cluster.
+// UpdatePluggableDatabase Updates the specified pluggable database.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdatePluggableDatabase.go.html to see an example of how to use UpdatePluggableDatabase API.
+func (client DatabaseClient) UpdatePluggableDatabase(ctx context.Context, request UpdatePluggableDatabaseRequest) (response UpdatePluggableDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updatePluggableDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdatePluggableDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdatePluggableDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdatePluggableDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdatePluggableDatabaseResponse")
+	}
+	return
+}
+
+// updatePluggableDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) updatePluggableDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/pluggableDatabases/{pluggableDatabaseId}", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdatePluggableDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// UpdateVmCluster Updates the specified VM cluster. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateVmCluster.go.html to see an example of how to use UpdateVmCluster API.
 func (client DatabaseClient) UpdateVmCluster(ctx context.Context, request UpdateVmClusterRequest) (response UpdateVmClusterResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateVmCluster, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateVmClusterResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateVmClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateVmClusterResponse{}
+			}
 		}
 		return
 	}
@@ -5144,8 +13383,9 @@ func (client DatabaseClient) UpdateVmCluster(ctx context.Context, request Update
 }
 
 // updateVmCluster implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateVmCluster(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/vmClusters/{vmClusterId}")
+func (client DatabaseClient) updateVmCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/vmClusters/{vmClusterId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -5163,17 +13403,30 @@ func (client DatabaseClient) updateVmCluster(ctx context.Context, request common
 	return response, err
 }
 
-// UpdateVmClusterNetwork Updates the specified VM cluster network.
+// UpdateVmClusterNetwork Updates the specified VM cluster network. Applies to Exadata Cloud@Customer instances only.
+// To update a cloud VM cluster in an Exadata Cloud Service instance, use the UpdateCloudVmCluster operation.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpdateVmClusterNetwork.go.html to see an example of how to use UpdateVmClusterNetwork API.
 func (client DatabaseClient) UpdateVmClusterNetwork(ctx context.Context, request UpdateVmClusterNetworkRequest) (response UpdateVmClusterNetworkResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateVmClusterNetwork, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateVmClusterNetworkResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateVmClusterNetworkResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateVmClusterNetworkResponse{}
+			}
 		}
 		return
 	}
@@ -5186,8 +13439,9 @@ func (client DatabaseClient) UpdateVmClusterNetwork(ctx context.Context, request
 }
 
 // updateVmClusterNetwork implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) updateVmClusterNetwork(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/{vmClusterNetworkId}")
+func (client DatabaseClient) updateVmClusterNetwork(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/{vmClusterNetworkId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -5205,10 +13459,72 @@ func (client DatabaseClient) updateVmClusterNetwork(ctx context.Context, request
 	return response, err
 }
 
-// ValidateVmClusterNetwork Validates the specified VM cluster network.
+// UpgradeDatabase Upgrades the specified Oracle Database instance.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/UpgradeDatabase.go.html to see an example of how to use UpgradeDatabase API.
+func (client DatabaseClient) UpgradeDatabase(ctx context.Context, request UpgradeDatabaseRequest) (response UpgradeDatabaseResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.upgradeDatabase, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpgradeDatabaseResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpgradeDatabaseResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpgradeDatabaseResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpgradeDatabaseResponse")
+	}
+	return
+}
+
+// upgradeDatabase implements the OCIOperation interface (enables retrying operations)
+func (client DatabaseClient) upgradeDatabase(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/databases/{databaseId}/actions/upgrade", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpgradeDatabaseResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
+// ValidateVmClusterNetwork Validates the specified VM cluster network. Applies to Exadata Cloud@Customer instances only.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/database/ValidateVmClusterNetwork.go.html to see an example of how to use ValidateVmClusterNetwork API.
 func (client DatabaseClient) ValidateVmClusterNetwork(ctx context.Context, request ValidateVmClusterNetworkRequest) (response ValidateVmClusterNetworkResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -5220,7 +13536,12 @@ func (client DatabaseClient) ValidateVmClusterNetwork(ctx context.Context, reque
 	ociResponse, err = common.Retry(ctx, request, client.validateVmClusterNetwork, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ValidateVmClusterNetworkResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ValidateVmClusterNetworkResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ValidateVmClusterNetworkResponse{}
+			}
 		}
 		return
 	}
@@ -5233,8 +13554,9 @@ func (client DatabaseClient) ValidateVmClusterNetwork(ctx context.Context, reque
 }
 
 // validateVmClusterNetwork implements the OCIOperation interface (enables retrying operations)
-func (client DatabaseClient) validateVmClusterNetwork(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/{vmClusterNetworkId}/actions/validate")
+func (client DatabaseClient) validateVmClusterNetwork(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/exadataInfrastructures/{exadataInfrastructureId}/vmClusterNetworks/{vmClusterNetworkId}/actions/validate", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

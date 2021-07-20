@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Load Balancing API
@@ -11,7 +12,7 @@ package loadbalancer
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // Rule An object that represents an action to apply to a listener.
@@ -52,6 +53,10 @@ func (m *rule) UnmarshalPolymorphicJSON(data []byte) (interface{}, error) {
 		mm := AddHttpRequestHeaderRule{}
 		err = json.Unmarshal(data, &mm)
 		return mm, err
+	case "REDIRECT":
+		mm := RedirectRule{}
+		err = json.Unmarshal(data, &mm)
+		return mm, err
 	case "REMOVE_HTTP_REQUEST_HEADER":
 		mm := RemoveHttpRequestHeaderRule{}
 		err = json.Unmarshal(data, &mm)
@@ -70,6 +75,10 @@ func (m *rule) UnmarshalPolymorphicJSON(data []byte) (interface{}, error) {
 		return mm, err
 	case "ALLOW":
 		mm := AllowRule{}
+		err = json.Unmarshal(data, &mm)
+		return mm, err
+	case "HTTP_HEADER":
+		mm := HttpHeaderRule{}
 		err = json.Unmarshal(data, &mm)
 		return mm, err
 	case "ADD_HTTP_RESPONSE_HEADER":
@@ -102,6 +111,8 @@ const (
 	RuleActionRemoveHttpResponseHeader      RuleActionEnum = "REMOVE_HTTP_RESPONSE_HEADER"
 	RuleActionAllow                         RuleActionEnum = "ALLOW"
 	RuleActionControlAccessUsingHttpMethods RuleActionEnum = "CONTROL_ACCESS_USING_HTTP_METHODS"
+	RuleActionRedirect                      RuleActionEnum = "REDIRECT"
+	RuleActionHttpHeader                    RuleActionEnum = "HTTP_HEADER"
 )
 
 var mappingRuleAction = map[string]RuleActionEnum{
@@ -111,8 +122,10 @@ var mappingRuleAction = map[string]RuleActionEnum{
 	"ADD_HTTP_RESPONSE_HEADER":          RuleActionAddHttpResponseHeader,
 	"EXTEND_HTTP_RESPONSE_HEADER_VALUE": RuleActionExtendHttpResponseHeaderValue,
 	"REMOVE_HTTP_RESPONSE_HEADER":       RuleActionRemoveHttpResponseHeader,
-	"ALLOW": RuleActionAllow,
+	"ALLOW":                             RuleActionAllow,
 	"CONTROL_ACCESS_USING_HTTP_METHODS": RuleActionControlAccessUsingHttpMethods,
+	"REDIRECT":                          RuleActionRedirect,
+	"HTTP_HEADER":                       RuleActionHttpHeader,
 }
 
 // GetRuleActionEnumValues Enumerates the set of values for RuleActionEnum

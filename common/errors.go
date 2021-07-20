@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 package common
 
@@ -6,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 )
 
@@ -96,3 +98,24 @@ func (deadlineExceededByBackoffError) Error() string {
 // force the user to wait past the request deadline before re-issuing a request. This enables us to exit early, since
 // we cannot succeed based on the configured retry policy.
 var DeadlineExceededByBackoff error = deadlineExceededByBackoffError{}
+
+// NonSeekableRequestRetryFailure is the error returned when the request is with binary request body, and is configured
+// retry, but the request body is not retryable
+type NonSeekableRequestRetryFailure struct {
+	err error
+}
+
+func (ne NonSeekableRequestRetryFailure) Error() string {
+	if ne.err == nil {
+		return fmt.Sprintf("Unable to perform Retry on this request body type, which did not implement seek() interface")
+	}
+	return fmt.Sprintf("%s. Unable to perform Retry on this request body type, which did not implement seek() interface", ne.err.Error())
+}
+
+// IsNetworkError validatas if an error is a net.Error and check if it's temporary or timeout
+func IsNetworkError(err error) bool {
+	if r, ok := err.(net.Error); ok && (r.Temporary() || r.Timeout()) {
+		return true
+	}
+	return false
+}

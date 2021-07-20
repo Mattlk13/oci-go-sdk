@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Analytics API
@@ -9,7 +10,8 @@
 package analytics
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"encoding/json"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // AnalyticsInstance Analytics Instance metadata.
@@ -32,6 +34,8 @@ type AnalyticsInstance struct {
 
 	Capacity *Capacity `mandatory:"true" json:"capacity"`
 
+	NetworkEndpointDetails NetworkEndpointDetails `mandatory:"true" json:"networkEndpointDetails"`
+
 	// The date and time the instance was created, in the format defined by RFC3339.
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
@@ -44,6 +48,12 @@ type AnalyticsInstance struct {
 
 	// Email address receiving notifications.
 	EmailNotification *string `mandatory:"false" json:"emailNotification"`
+
+	// Map of PrivateAccessChannel unique identifier key as KEY and PrivateAccessChannel Object as VALUE.
+	PrivateAccessChannels map[string]PrivateAccessChannel `mandatory:"false" json:"privateAccessChannels"`
+
+	// Map of VanityUrl unique identifier key as KEY and VanityUrl Object as VALUE.
+	VanityUrlDetails map[string]VanityUrlDetails `mandatory:"false" json:"vanityUrlDetails"`
 
 	// URL of the Analytics service.
 	ServiceUrl *string `mandatory:"false" json:"serviceUrl"`
@@ -66,4 +76,76 @@ type AnalyticsInstance struct {
 
 func (m AnalyticsInstance) String() string {
 	return common.PointerString(m)
+}
+
+// UnmarshalJSON unmarshals from json
+func (m *AnalyticsInstance) UnmarshalJSON(data []byte) (e error) {
+	model := struct {
+		Description            *string                             `json:"description"`
+		LicenseType            LicenseTypeEnum                     `json:"licenseType"`
+		EmailNotification      *string                             `json:"emailNotification"`
+		PrivateAccessChannels  map[string]PrivateAccessChannel     `json:"privateAccessChannels"`
+		VanityUrlDetails       map[string]VanityUrlDetails         `json:"vanityUrlDetails"`
+		ServiceUrl             *string                             `json:"serviceUrl"`
+		DefinedTags            map[string]map[string]interface{}   `json:"definedTags"`
+		FreeformTags           map[string]string                   `json:"freeformTags"`
+		TimeUpdated            *common.SDKTime                     `json:"timeUpdated"`
+		Id                     *string                             `json:"id"`
+		Name                   *string                             `json:"name"`
+		CompartmentId          *string                             `json:"compartmentId"`
+		LifecycleState         AnalyticsInstanceLifecycleStateEnum `json:"lifecycleState"`
+		FeatureSet             FeatureSetEnum                      `json:"featureSet"`
+		Capacity               *Capacity                           `json:"capacity"`
+		NetworkEndpointDetails networkendpointdetails              `json:"networkEndpointDetails"`
+		TimeCreated            *common.SDKTime                     `json:"timeCreated"`
+	}{}
+
+	e = json.Unmarshal(data, &model)
+	if e != nil {
+		return
+	}
+	var nn interface{}
+	m.Description = model.Description
+
+	m.LicenseType = model.LicenseType
+
+	m.EmailNotification = model.EmailNotification
+
+	m.PrivateAccessChannels = model.PrivateAccessChannels
+
+	m.VanityUrlDetails = model.VanityUrlDetails
+
+	m.ServiceUrl = model.ServiceUrl
+
+	m.DefinedTags = model.DefinedTags
+
+	m.FreeformTags = model.FreeformTags
+
+	m.TimeUpdated = model.TimeUpdated
+
+	m.Id = model.Id
+
+	m.Name = model.Name
+
+	m.CompartmentId = model.CompartmentId
+
+	m.LifecycleState = model.LifecycleState
+
+	m.FeatureSet = model.FeatureSet
+
+	m.Capacity = model.Capacity
+
+	nn, e = model.NetworkEndpointDetails.UnmarshalPolymorphicJSON(model.NetworkEndpointDetails.JsonData)
+	if e != nil {
+		return
+	}
+	if nn != nil {
+		m.NetworkEndpointDetails = nn.(NetworkEndpointDetails)
+	} else {
+		m.NetworkEndpointDetails = nil
+	}
+
+	m.TimeCreated = model.TimeCreated
+
+	return
 }

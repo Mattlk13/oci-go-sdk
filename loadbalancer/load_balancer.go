@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Load Balancing API
@@ -10,7 +11,7 @@
 package loadbalancer
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // LoadBalancer The properties that define a load balancer. For more information, see
@@ -49,6 +50,8 @@ type LoadBalancer struct {
 	// An array of IP addresses.
 	IpAddresses []IpAddress `mandatory:"false" json:"ipAddresses"`
 
+	ShapeDetails *ShapeDetails `mandatory:"false" json:"shapeDetails"`
+
 	// Whether the load balancer has a VCN-local (private) IP address.
 	// If "true", the service assigns a private IP address to the load balancer.
 	// If "false", the service assigns a public IP address to the load balancer.
@@ -75,6 +78,8 @@ type LoadBalancer struct {
 
 	Hostnames map[string]Hostname `mandatory:"false" json:"hostnames"`
 
+	SslCipherSuites map[string]SslCipherSuite `mandatory:"false" json:"sslCipherSuites"`
+
 	Certificates map[string]Certificate `mandatory:"false" json:"certificates"`
 
 	BackendSets map[string]BackendSet `mandatory:"false" json:"backendSets"`
@@ -98,6 +103,8 @@ type LoadBalancer struct {
 	SystemTags map[string]map[string]interface{} `mandatory:"false" json:"systemTags"`
 
 	RuleSets map[string]RuleSet `mandatory:"false" json:"ruleSets"`
+
+	RoutingPolicies map[string]RoutingPolicy `mandatory:"false" json:"routingPolicies"`
 }
 
 func (m LoadBalancer) String() string {

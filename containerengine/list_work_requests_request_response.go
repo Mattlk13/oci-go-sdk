@@ -1,14 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package containerengine
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // ListWorkRequestsRequest wrapper for the ListWorkRequests operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/ListWorkRequests.go.html to see an example of how to use ListWorkRequestsRequest.
 type ListWorkRequestsRequest struct {
 
 	// The OCID of the compartment.
@@ -24,7 +29,7 @@ type ListWorkRequestsRequest struct {
 	ResourceType ListWorkRequestsResourceTypeEnum `mandatory:"false" contributesTo:"query" name:"resourceType" omitEmpty:"true"`
 
 	// A work request status to filter on. Can have multiple parameters of this name.
-	Status []ListWorkRequestsStatusEnum `contributesTo:"query" name:"status" omitEmpty:"true" collectionFormat:"multi"`
+	Status []string `contributesTo:"query" name:"status" collectionFormat:"multi"`
 
 	// For list pagination. The maximum number of results per page, or items to return in a paginated "List" call.
 	// 1 is the minimum, 1000 is the maximum. For important details about how pagination works,
@@ -55,8 +60,16 @@ func (request ListWorkRequestsRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request ListWorkRequestsRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request ListWorkRequestsRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request ListWorkRequestsRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.
@@ -109,37 +122,6 @@ var mappingListWorkRequestsResourceType = map[string]ListWorkRequestsResourceTyp
 func GetListWorkRequestsResourceTypeEnumValues() []ListWorkRequestsResourceTypeEnum {
 	values := make([]ListWorkRequestsResourceTypeEnum, 0)
 	for _, v := range mappingListWorkRequestsResourceType {
-		values = append(values, v)
-	}
-	return values
-}
-
-// ListWorkRequestsStatusEnum Enum with underlying type: string
-type ListWorkRequestsStatusEnum string
-
-// Set of constants representing the allowable values for ListWorkRequestsStatusEnum
-const (
-	ListWorkRequestsStatusAccepted   ListWorkRequestsStatusEnum = "ACCEPTED"
-	ListWorkRequestsStatusInProgress ListWorkRequestsStatusEnum = "IN_PROGRESS"
-	ListWorkRequestsStatusFailed     ListWorkRequestsStatusEnum = "FAILED"
-	ListWorkRequestsStatusSucceeded  ListWorkRequestsStatusEnum = "SUCCEEDED"
-	ListWorkRequestsStatusCanceling  ListWorkRequestsStatusEnum = "CANCELING"
-	ListWorkRequestsStatusCanceled   ListWorkRequestsStatusEnum = "CANCELED"
-)
-
-var mappingListWorkRequestsStatus = map[string]ListWorkRequestsStatusEnum{
-	"ACCEPTED":    ListWorkRequestsStatusAccepted,
-	"IN_PROGRESS": ListWorkRequestsStatusInProgress,
-	"FAILED":      ListWorkRequestsStatusFailed,
-	"SUCCEEDED":   ListWorkRequestsStatusSucceeded,
-	"CANCELING":   ListWorkRequestsStatusCanceling,
-	"CANCELED":    ListWorkRequestsStatusCanceled,
-}
-
-// GetListWorkRequestsStatusEnumValues Enumerates the set of values for ListWorkRequestsStatusEnum
-func GetListWorkRequestsStatusEnumValues() []ListWorkRequestsStatusEnum {
-	values := make([]ListWorkRequestsStatusEnum, 0)
-	for _, v := range mappingListWorkRequestsStatus {
 		values = append(values, v)
 	}
 	return values

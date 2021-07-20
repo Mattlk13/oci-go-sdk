@@ -1,14 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package dns
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // DeleteSteeringPolicyRequest wrapper for the DeleteSteeringPolicy operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/dns/DeleteSteeringPolicy.go.html to see an example of how to use DeleteSteeringPolicyRequest.
 type DeleteSteeringPolicyRequest struct {
 
 	// The OCID of the target steering policy.
@@ -28,9 +33,13 @@ type DeleteSteeringPolicyRequest struct {
 	// agent does not have an entity-tag for the representation.
 	IfUnmodifiedSince *string `mandatory:"false" contributesTo:"header" name:"If-Unmodified-Since"`
 
-	// Unique Oracle-assigned identifier for the request.
-	// If you need to contact Oracle about a particular request, please provide the request ID.
+	// Unique Oracle-assigned identifier for the request. If you need
+	// to contact Oracle about a particular request, please provide
+	// the request ID.
 	OpcRequestId *string `mandatory:"false" contributesTo:"header" name:"opc-request-id"`
+
+	// Specifies to operate only on resources that have a matching DNS scope.
+	Scope DeleteSteeringPolicyScopeEnum `mandatory:"false" contributesTo:"query" name:"scope" omitEmpty:"true"`
 
 	// Metadata about the request. This information will not be transmitted to the service, but
 	// represents information that the SDK will consume to drive retry behavior.
@@ -42,8 +51,16 @@ func (request DeleteSteeringPolicyRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request DeleteSteeringPolicyRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request DeleteSteeringPolicyRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request DeleteSteeringPolicyRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.
@@ -57,9 +74,8 @@ type DeleteSteeringPolicyResponse struct {
 	// The underlying http response
 	RawResponse *http.Response
 
-	// Unique Oracle-assigned identifier for the request. If you need
-	// to contact Oracle about a particular request, please provide
-	// the request ID.
+	// Unique Oracle-assigned identifier for the request. If you need to
+	// contact Oracle about a particular request, please provide the request ID.
 	OpcRequestId *string `presentIn:"header" name:"opc-request-id"`
 }
 
@@ -70,4 +86,27 @@ func (response DeleteSteeringPolicyResponse) String() string {
 // HTTPResponse implements the OCIResponse interface
 func (response DeleteSteeringPolicyResponse) HTTPResponse() *http.Response {
 	return response.RawResponse
+}
+
+// DeleteSteeringPolicyScopeEnum Enum with underlying type: string
+type DeleteSteeringPolicyScopeEnum string
+
+// Set of constants representing the allowable values for DeleteSteeringPolicyScopeEnum
+const (
+	DeleteSteeringPolicyScopeGlobal  DeleteSteeringPolicyScopeEnum = "GLOBAL"
+	DeleteSteeringPolicyScopePrivate DeleteSteeringPolicyScopeEnum = "PRIVATE"
+)
+
+var mappingDeleteSteeringPolicyScope = map[string]DeleteSteeringPolicyScopeEnum{
+	"GLOBAL":  DeleteSteeringPolicyScopeGlobal,
+	"PRIVATE": DeleteSteeringPolicyScopePrivate,
+}
+
+// GetDeleteSteeringPolicyScopeEnumValues Enumerates the set of values for DeleteSteeringPolicyScopeEnum
+func GetDeleteSteeringPolicyScopeEnumValues() []DeleteSteeringPolicyScopeEnum {
+	values := make([]DeleteSteeringPolicyScopeEnum, 0)
+	for _, v := range mappingDeleteSteeringPolicyScope {
+		values = append(values, v)
+	}
+	return values
 }

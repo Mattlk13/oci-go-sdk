@@ -1,15 +1,16 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
-// Service limits APIs
+// Service Limits APIs
 //
-// APIs that interact with the resource limits of a specific resource type
+// APIs that interact with the resource limits of a specific resource type.
 //
 
 package limits
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // LimitDefinitionSummary The metadata specific to a resource limit definition.
@@ -24,15 +25,24 @@ type LimitDefinitionSummary struct {
 	// The limit description.
 	Description *string `mandatory:"false" json:"description"`
 
-	// Reflects the scope of the resource limit: which can be Global (across all regions), regional or ad specific.
+	// Reflects the scope of the resource limit, whether Global (across all regions), regional, or availability domain-specific.
 	ScopeType LimitDefinitionSummaryScopeTypeEnum `mandatory:"false" json:"scopeType,omitempty"`
 
 	// If true, quota policies can be created on top of this resource limit.
 	AreQuotasSupported *bool `mandatory:"false" json:"areQuotasSupported"`
 
-	// Reflects if the GetResourceAvailability API is supported for this limit or not.
-	// If not, the API will return an empty JSON response.
+	// Reflects whether or not the GetResourceAvailability API is supported for this limit.
+	// If not, the API returns an empty JSON response.
 	IsResourceAvailabilitySupported *bool `mandatory:"false" json:"isResourceAvailabilitySupported"`
+
+	// Indicates if the limit has been deprecated.
+	IsDeprecated *bool `mandatory:"false" json:"isDeprecated"`
+
+	// Indicates if the customer can request a limit increase for this resource.
+	IsEligibleForLimitIncrease *bool `mandatory:"false" json:"isEligibleForLimitIncrease"`
+
+	// The limit for this resource has a dynamic value that is based on consumption across all OCI services.
+	IsDynamic *bool `mandatory:"false" json:"isDynamic"`
 }
 
 func (m LimitDefinitionSummary) String() string {

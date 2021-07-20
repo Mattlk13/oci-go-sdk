@@ -1,7 +1,8 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
-// OceInstance API
+// Oracle Content and Experience API
 //
 // Oracle Content and Experience is a cloud-based content hub to drive omni-channel content management and accelerate experience delivery
 //
@@ -11,7 +12,8 @@ package oce
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -24,11 +26,30 @@ type OceInstanceClient struct {
 // NewOceInstanceClientWithConfigurationProvider Creates a new default OceInstance client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewOceInstanceClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client OceInstanceClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newOceInstanceClientFromBaseClient(baseClient, provider)
+}
+
+// NewOceInstanceClientWithOboToken Creates a new default OceInstance client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewOceInstanceClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client OceInstanceClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newOceInstanceClientFromBaseClient(baseClient, configProvider)
+}
+
+func newOceInstanceClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client OceInstanceClient, err error) {
 	client = OceInstanceClient{BaseClient: baseClient}
 	client.BasePath = "20190912"
 	err = client.setConfigurationProvider(configProvider)
@@ -59,9 +80,16 @@ func (client *OceInstanceClient) ConfigurationProvider() *common.ConfigurationPr
 }
 
 // ChangeOceInstanceCompartment Moves a OceInstance into a different compartment
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/oce/ChangeOceInstanceCompartment.go.html to see an example of how to use ChangeOceInstanceCompartment API.
 func (client OceInstanceClient) ChangeOceInstanceCompartment(ctx context.Context, request ChangeOceInstanceCompartmentRequest) (response ChangeOceInstanceCompartmentResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -73,7 +101,12 @@ func (client OceInstanceClient) ChangeOceInstanceCompartment(ctx context.Context
 	ociResponse, err = common.Retry(ctx, request, client.changeOceInstanceCompartment, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ChangeOceInstanceCompartmentResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ChangeOceInstanceCompartmentResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ChangeOceInstanceCompartmentResponse{}
+			}
 		}
 		return
 	}
@@ -86,8 +119,9 @@ func (client OceInstanceClient) ChangeOceInstanceCompartment(ctx context.Context
 }
 
 // changeOceInstanceCompartment implements the OCIOperation interface (enables retrying operations)
-func (client OceInstanceClient) changeOceInstanceCompartment(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/oceInstances/{oceInstanceId}/actions/changeCompartment")
+func (client OceInstanceClient) changeOceInstanceCompartment(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/oceInstances/{oceInstanceId}/actions/changeCompartment", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -106,9 +140,16 @@ func (client OceInstanceClient) changeOceInstanceCompartment(ctx context.Context
 }
 
 // CreateOceInstance Creates a new OceInstance.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/oce/CreateOceInstance.go.html to see an example of how to use CreateOceInstance API.
 func (client OceInstanceClient) CreateOceInstance(ctx context.Context, request CreateOceInstanceRequest) (response CreateOceInstanceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -120,7 +161,12 @@ func (client OceInstanceClient) CreateOceInstance(ctx context.Context, request C
 	ociResponse, err = common.Retry(ctx, request, client.createOceInstance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateOceInstanceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateOceInstanceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateOceInstanceResponse{}
+			}
 		}
 		return
 	}
@@ -133,8 +179,9 @@ func (client OceInstanceClient) CreateOceInstance(ctx context.Context, request C
 }
 
 // createOceInstance implements the OCIOperation interface (enables retrying operations)
-func (client OceInstanceClient) createOceInstance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/oceInstances")
+func (client OceInstanceClient) createOceInstance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/oceInstances", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -153,16 +200,28 @@ func (client OceInstanceClient) createOceInstance(ctx context.Context, request c
 }
 
 // DeleteOceInstance Deletes a OceInstance resource by identifier
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/oce/DeleteOceInstance.go.html to see an example of how to use DeleteOceInstance API.
 func (client OceInstanceClient) DeleteOceInstance(ctx context.Context, request DeleteOceInstanceRequest) (response DeleteOceInstanceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteOceInstance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteOceInstanceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteOceInstanceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteOceInstanceResponse{}
+			}
 		}
 		return
 	}
@@ -175,8 +234,9 @@ func (client OceInstanceClient) DeleteOceInstance(ctx context.Context, request D
 }
 
 // deleteOceInstance implements the OCIOperation interface (enables retrying operations)
-func (client OceInstanceClient) deleteOceInstance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/oceInstances/{oceInstanceId}")
+func (client OceInstanceClient) deleteOceInstance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/oceInstances/{oceInstanceId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -195,16 +255,28 @@ func (client OceInstanceClient) deleteOceInstance(ctx context.Context, request c
 }
 
 // GetOceInstance Gets a OceInstance by identifier
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/oce/GetOceInstance.go.html to see an example of how to use GetOceInstance API.
 func (client OceInstanceClient) GetOceInstance(ctx context.Context, request GetOceInstanceRequest) (response GetOceInstanceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getOceInstance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetOceInstanceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetOceInstanceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetOceInstanceResponse{}
+			}
 		}
 		return
 	}
@@ -217,8 +289,9 @@ func (client OceInstanceClient) GetOceInstance(ctx context.Context, request GetO
 }
 
 // getOceInstance implements the OCIOperation interface (enables retrying operations)
-func (client OceInstanceClient) getOceInstance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/oceInstances/{oceInstanceId}")
+func (client OceInstanceClient) getOceInstance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/oceInstances/{oceInstanceId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -237,16 +310,28 @@ func (client OceInstanceClient) getOceInstance(ctx context.Context, request comm
 }
 
 // GetWorkRequest Gets the status of the work request with the given ID.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/oce/GetWorkRequest.go.html to see an example of how to use GetWorkRequest API.
 func (client OceInstanceClient) GetWorkRequest(ctx context.Context, request GetWorkRequestRequest) (response GetWorkRequestResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getWorkRequest, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetWorkRequestResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetWorkRequestResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetWorkRequestResponse{}
+			}
 		}
 		return
 	}
@@ -259,8 +344,9 @@ func (client OceInstanceClient) GetWorkRequest(ctx context.Context, request GetW
 }
 
 // getWorkRequest implements the OCIOperation interface (enables retrying operations)
-func (client OceInstanceClient) getWorkRequest(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}")
+func (client OceInstanceClient) getWorkRequest(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -279,16 +365,28 @@ func (client OceInstanceClient) getWorkRequest(ctx context.Context, request comm
 }
 
 // ListOceInstances Returns a list of OceInstances.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/oce/ListOceInstances.go.html to see an example of how to use ListOceInstances API.
 func (client OceInstanceClient) ListOceInstances(ctx context.Context, request ListOceInstancesRequest) (response ListOceInstancesResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listOceInstances, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListOceInstancesResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListOceInstancesResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListOceInstancesResponse{}
+			}
 		}
 		return
 	}
@@ -301,8 +399,9 @@ func (client OceInstanceClient) ListOceInstances(ctx context.Context, request Li
 }
 
 // listOceInstances implements the OCIOperation interface (enables retrying operations)
-func (client OceInstanceClient) listOceInstances(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/oceInstances")
+func (client OceInstanceClient) listOceInstances(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/oceInstances", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -321,16 +420,28 @@ func (client OceInstanceClient) listOceInstances(ctx context.Context, request co
 }
 
 // ListWorkRequestErrors Return a (paginated) list of errors for a given work request.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/oce/ListWorkRequestErrors.go.html to see an example of how to use ListWorkRequestErrors API.
 func (client OceInstanceClient) ListWorkRequestErrors(ctx context.Context, request ListWorkRequestErrorsRequest) (response ListWorkRequestErrorsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listWorkRequestErrors, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListWorkRequestErrorsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListWorkRequestErrorsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListWorkRequestErrorsResponse{}
+			}
 		}
 		return
 	}
@@ -343,8 +454,9 @@ func (client OceInstanceClient) ListWorkRequestErrors(ctx context.Context, reque
 }
 
 // listWorkRequestErrors implements the OCIOperation interface (enables retrying operations)
-func (client OceInstanceClient) listWorkRequestErrors(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}/errors")
+func (client OceInstanceClient) listWorkRequestErrors(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}/errors", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -363,16 +475,28 @@ func (client OceInstanceClient) listWorkRequestErrors(ctx context.Context, reque
 }
 
 // ListWorkRequestLogs Return a (paginated) list of logs for a given work request.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/oce/ListWorkRequestLogs.go.html to see an example of how to use ListWorkRequestLogs API.
 func (client OceInstanceClient) ListWorkRequestLogs(ctx context.Context, request ListWorkRequestLogsRequest) (response ListWorkRequestLogsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listWorkRequestLogs, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListWorkRequestLogsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListWorkRequestLogsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListWorkRequestLogsResponse{}
+			}
 		}
 		return
 	}
@@ -385,8 +509,9 @@ func (client OceInstanceClient) ListWorkRequestLogs(ctx context.Context, request
 }
 
 // listWorkRequestLogs implements the OCIOperation interface (enables retrying operations)
-func (client OceInstanceClient) listWorkRequestLogs(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}/logs")
+func (client OceInstanceClient) listWorkRequestLogs(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}/logs", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -405,16 +530,28 @@ func (client OceInstanceClient) listWorkRequestLogs(ctx context.Context, request
 }
 
 // ListWorkRequests Lists the work requests in a compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/oce/ListWorkRequests.go.html to see an example of how to use ListWorkRequests API.
 func (client OceInstanceClient) ListWorkRequests(ctx context.Context, request ListWorkRequestsRequest) (response ListWorkRequestsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listWorkRequests, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListWorkRequestsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListWorkRequestsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListWorkRequestsResponse{}
+			}
 		}
 		return
 	}
@@ -427,8 +564,9 @@ func (client OceInstanceClient) ListWorkRequests(ctx context.Context, request Li
 }
 
 // listWorkRequests implements the OCIOperation interface (enables retrying operations)
-func (client OceInstanceClient) listWorkRequests(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests")
+func (client OceInstanceClient) listWorkRequests(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -447,16 +585,28 @@ func (client OceInstanceClient) listWorkRequests(ctx context.Context, request co
 }
 
 // UpdateOceInstance Updates the OceInstance
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/oce/UpdateOceInstance.go.html to see an example of how to use UpdateOceInstance API.
 func (client OceInstanceClient) UpdateOceInstance(ctx context.Context, request UpdateOceInstanceRequest) (response UpdateOceInstanceResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateOceInstance, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateOceInstanceResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateOceInstanceResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateOceInstanceResponse{}
+			}
 		}
 		return
 	}
@@ -469,8 +619,9 @@ func (client OceInstanceClient) UpdateOceInstance(ctx context.Context, request U
 }
 
 // updateOceInstance implements the OCIOperation interface (enables retrying operations)
-func (client OceInstanceClient) updateOceInstance(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/oceInstances/{oceInstanceId}")
+func (client OceInstanceClient) updateOceInstance(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/oceInstances/{oceInstanceId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

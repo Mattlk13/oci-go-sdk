@@ -1,15 +1,18 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Object Storage Service API
 //
 // Common set of Object Storage and Archive Storage APIs for managing buckets, objects, and related resources.
+// For more information, see Overview of Object Storage (https://docs.cloud.oracle.com/Content/Object/Concepts/objectstorageoverview.htm) and
+// Overview of Archive Storage (https://docs.cloud.oracle.com/Content/Archive/Concepts/archivestorageoverview.htm).
 //
 
 package objectstorage
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // MultipartUpload Multipart uploads provide efficient and resilient uploads, especially for large objects. Multipart uploads also accommodate
@@ -34,8 +37,11 @@ type MultipartUpload struct {
 	// The unique identifier for the in-progress multipart upload.
 	UploadId *string `mandatory:"true" json:"uploadId"`
 
-	// The date and time the upload was created, as described in RFC 2616 (https://tools.ietf.org/rfc/rfc2616), section 14.29.
+	// The date and time the upload was created, as described in RFC 2616 (https://tools.ietf.org/html/rfc2616#section-14.29).
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
+
+	// The storage tier that the object is stored in.
+	StorageTier StorageTierEnum `mandatory:"false" json:"storageTier,omitempty"`
 }
 
 func (m MultipartUpload) String() string {

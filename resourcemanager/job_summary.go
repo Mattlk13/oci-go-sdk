@@ -1,16 +1,20 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Resource Manager API
 //
-// API for the Resource Manager service. Use this API to install, configure, and manage resources via the "infrastructure-as-code" model. For more information, see Overview of Resource Manager (https://docs.cloud.oracle.com/iaas/Content/ResourceManager/Concepts/resourcemanager.htm).
+// API for the Resource Manager service.
+// Use this API to install, configure, and manage resources via the "infrastructure-as-code" model.
+// For more information, see
+// Overview of Resource Manager (https://docs.cloud.oracle.com/iaas/Content/ResourceManager/Concepts/resourcemanager.htm).
 //
 
 package resourcemanager
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // JobSummary Returns a listing of all of the specified job's properties and their values.
@@ -40,12 +44,19 @@ type JobSummary struct {
 	ResolvedPlanJobId *string `mandatory:"false" json:"resolvedPlanJobId"`
 
 	// The date and time the job was created.
+	// Format is defined by RFC3339.
+	// Example: `2020-01-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"false" json:"timeCreated"`
 
 	// The date and time the job succeeded or failed.
+	// Format is defined by RFC3339.
+	// Example: `2020-01-25T21:10:29.600Z`
 	TimeFinished *common.SDKTime `mandatory:"false" json:"timeFinished"`
 
-	// Current state of the specified job. Allowed values are:
+	// Current state of the specified job.
+	// For more information about job lifecycle states in Resource Manager, see
+	// Key Concepts (https://docs.cloud.oracle.com/iaas/Content/ResourceManager/Concepts/resourcemanager.htm#JobStates).
+	// Allowable values:
 	// - ACCEPTED
 	// - IN_PROGRESS
 	// - FAILED
@@ -91,12 +102,18 @@ func (m *JobSummary) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.Id = model.Id
+
 	m.StackId = model.StackId
+
 	m.CompartmentId = model.CompartmentId
+
 	m.DisplayName = model.DisplayName
+
 	m.Operation = model.Operation
-	nn, e := model.JobOperationDetails.UnmarshalPolymorphicJSON(model.JobOperationDetails.JsonData)
+
+	nn, e = model.JobOperationDetails.UnmarshalPolymorphicJSON(model.JobOperationDetails.JsonData)
 	if e != nil {
 		return
 	}
@@ -105,12 +122,20 @@ func (m *JobSummary) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.JobOperationDetails = nil
 	}
+
 	m.ApplyJobPlanResolution = model.ApplyJobPlanResolution
+
 	m.ResolvedPlanJobId = model.ResolvedPlanJobId
+
 	m.TimeCreated = model.TimeCreated
+
 	m.TimeFinished = model.TimeFinished
+
 	m.LifecycleState = model.LifecycleState
+
 	m.FreeformTags = model.FreeformTags
+
 	m.DefinedTags = model.DefinedTags
+
 	return
 }

@@ -1,7 +1,7 @@
-// Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
-//
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
+
 // Example code for DNS API
-//
 
 package example
 
@@ -11,10 +11,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/oracle/oci-go-sdk/dns"
+	"github.com/oracle/oci-go-sdk/v45/dns"
 
-	"github.com/oracle/oci-go-sdk/common"
-	"github.com/oracle/oci-go-sdk/example/helpers"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/example/helpers"
 )
 
 // ExampleDnsZone creates, gets, lists, and deletes a DNS Zone.
@@ -30,7 +30,7 @@ func ExampleDnsZone() {
 	ctx := context.Background()
 
 	// Create a new zone
-	zoneName := common.String(helpers.GetRandomString(15))
+	zoneName := common.String("testdomain." + helpers.GetRandomString(15))
 	createReq := dns.CreateZoneRequest{
 		CreateZoneDetails: dns.CreateZoneDetails{
 			CompartmentId: helpers.CompartmentID(),

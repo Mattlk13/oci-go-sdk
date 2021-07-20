@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Container Engine for Kubernetes API
@@ -11,7 +12,7 @@
 package containerengine
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // Node The properties that define a node.
@@ -23,6 +24,9 @@ type Node struct {
 	// The name of the node.
 	Name *string `mandatory:"false" json:"name"`
 
+	// The version of Kubernetes this node is running.
+	KubernetesVersion *string `mandatory:"false" json:"kubernetesVersion"`
+
 	// The name of the availability domain in which this node is placed.
 	AvailabilityDomain *string `mandatory:"false" json:"availabilityDomain"`
 
@@ -31,6 +35,12 @@ type Node struct {
 
 	// The OCID of the node pool to which this node belongs.
 	NodePoolId *string `mandatory:"false" json:"nodePoolId"`
+
+	// The fault domain of this node.
+	FaultDomain *string `mandatory:"false" json:"faultDomain"`
+
+	// The private IP address of this node.
+	PrivateIp *string `mandatory:"false" json:"privateIp"`
 
 	// The public IP address of this node.
 	PublicIp *string `mandatory:"false" json:"publicIp"`

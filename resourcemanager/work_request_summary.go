@@ -1,15 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Resource Manager API
 //
-// API for the Resource Manager service. Use this API to install, configure, and manage resources via the "infrastructure-as-code" model. For more information, see Overview of Resource Manager (https://docs.cloud.oracle.com/iaas/Content/ResourceManager/Concepts/resourcemanager.htm).
+// API for the Resource Manager service.
+// Use this API to install, configure, and manage resources via the "infrastructure-as-code" model.
+// For more information, see
+// Overview of Resource Manager (https://docs.cloud.oracle.com/iaas/Content/ResourceManager/Concepts/resourcemanager.htm).
 //
 
 package resourcemanager
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // WorkRequestSummary A summary of the status of a work request.
@@ -33,13 +37,19 @@ type WorkRequestSummary struct {
 	// Percentage of the work request completed.
 	PercentComplete *float32 `mandatory:"true" json:"percentComplete"`
 
-	// When the work request was created.
+	// The date and time when the work request was created.
+	// Format is defined by RFC3339.
+	// Example: `2020-01-25T21:10:29.600Z`
 	TimeAccepted *common.SDKTime `mandatory:"true" json:"timeAccepted"`
 
-	// When the work request transitioned from ACCEPTED to IN_PROGRESS.
+	// The date and time when the work request transitioned from ACCEPTED to IN_PROGRESS.
+	// Format is defined by RFC3339.
+	// Example: `2020-01-25T21:10:29.600Z`
 	TimeStarted *common.SDKTime `mandatory:"false" json:"timeStarted"`
 
-	// When the work request reached a terminal state (FAILED or SUCCEEDED).
+	// The date and time when the work request reached a terminal state (FAILED or SUCCEEDED).
+	// Format is defined by RFC3339.
+	// Example: `2020-01-25T21:10:29.600Z`
 	TimeFinished *common.SDKTime `mandatory:"false" json:"timeFinished"`
 }
 

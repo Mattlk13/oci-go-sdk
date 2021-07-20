@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,7 +14,7 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateVirtualCircuitDetails The representation of CreateVirtualCircuitDetails
@@ -27,7 +28,7 @@ type CreateVirtualCircuitDetails struct {
 	// (10.0.0.0/8, 172.16/12, and 192.168/16).
 	Type CreateVirtualCircuitDetailsTypeEnum `mandatory:"true" json:"type"`
 
-	// The provisioned data rate of the connection.  To get a list of the
+	// The provisioned data rate of the connection. To get a list of the
 	// available bandwidth levels (that is, shapes), see
 	// ListFastConnectProviderVirtualCircuitBandwidthShapes.
 	// Example: `10 Gbps`
@@ -37,13 +38,25 @@ type CreateVirtualCircuitDetails struct {
 	// group this virtual circuit will run on.
 	CrossConnectMappings []CrossConnectMapping `mandatory:"false" json:"crossConnectMappings"`
 
+	// The routing policy sets how routing information about the Oracle cloud is shared over a public virtual circuit.
+	// Policies available are: `ORACLE_SERVICE_NETWORK`, `REGIONAL`, `MARKET_LEVEL`, and `GLOBAL`.
+	// See Route Filtering (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/routingonprem.htm#route_filtering) for details.
+	// By default, routing information is shared for all routes in the same market.
+	RoutingPolicy []CreateVirtualCircuitDetailsRoutingPolicyEnum `mandatory:"false" json:"routingPolicy,omitempty"`
+
+	// Deprecated. Instead use `customerAsn`.
+	// If you specify values for both, the request will be rejected.
+	CustomerBgpAsn *int `mandatory:"false" json:"customerBgpAsn"`
+
 	// Your BGP ASN (either public or private). Provide this value only if
 	// there's a BGP session that goes from your edge router to Oracle.
 	// Otherwise, leave this empty or null.
-	CustomerBgpAsn *int `mandatory:"false" json:"customerBgpAsn"`
+	// Can be a 2-byte or 4-byte ASN. Uses "asplain" format.
+	// Example: `12345` (2-byte) or `1587232876` (4-byte)
+	CustomerAsn *int64 `mandatory:"false" json:"customerAsn"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
@@ -51,7 +64,7 @@ type CreateVirtualCircuitDetails struct {
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
@@ -89,6 +102,33 @@ type CreateVirtualCircuitDetails struct {
 
 func (m CreateVirtualCircuitDetails) String() string {
 	return common.PointerString(m)
+}
+
+// CreateVirtualCircuitDetailsRoutingPolicyEnum Enum with underlying type: string
+type CreateVirtualCircuitDetailsRoutingPolicyEnum string
+
+// Set of constants representing the allowable values for CreateVirtualCircuitDetailsRoutingPolicyEnum
+const (
+	CreateVirtualCircuitDetailsRoutingPolicyOracleServiceNetwork CreateVirtualCircuitDetailsRoutingPolicyEnum = "ORACLE_SERVICE_NETWORK"
+	CreateVirtualCircuitDetailsRoutingPolicyRegional             CreateVirtualCircuitDetailsRoutingPolicyEnum = "REGIONAL"
+	CreateVirtualCircuitDetailsRoutingPolicyMarketLevel          CreateVirtualCircuitDetailsRoutingPolicyEnum = "MARKET_LEVEL"
+	CreateVirtualCircuitDetailsRoutingPolicyGlobal               CreateVirtualCircuitDetailsRoutingPolicyEnum = "GLOBAL"
+)
+
+var mappingCreateVirtualCircuitDetailsRoutingPolicy = map[string]CreateVirtualCircuitDetailsRoutingPolicyEnum{
+	"ORACLE_SERVICE_NETWORK": CreateVirtualCircuitDetailsRoutingPolicyOracleServiceNetwork,
+	"REGIONAL":               CreateVirtualCircuitDetailsRoutingPolicyRegional,
+	"MARKET_LEVEL":           CreateVirtualCircuitDetailsRoutingPolicyMarketLevel,
+	"GLOBAL":                 CreateVirtualCircuitDetailsRoutingPolicyGlobal,
+}
+
+// GetCreateVirtualCircuitDetailsRoutingPolicyEnumValues Enumerates the set of values for CreateVirtualCircuitDetailsRoutingPolicyEnum
+func GetCreateVirtualCircuitDetailsRoutingPolicyEnumValues() []CreateVirtualCircuitDetailsRoutingPolicyEnum {
+	values := make([]CreateVirtualCircuitDetailsRoutingPolicyEnum, 0)
+	for _, v := range mappingCreateVirtualCircuitDetailsRoutingPolicy {
+		values = append(values, v)
+	}
+	return values
 }
 
 // CreateVirtualCircuitDetailsTypeEnum Enum with underlying type: string

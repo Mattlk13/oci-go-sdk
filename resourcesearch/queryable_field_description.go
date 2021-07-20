@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Search Service API
@@ -9,7 +10,7 @@
 package resourcesearch
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // QueryableFieldDescription An individual field that can be used as part of a query filter.
@@ -21,10 +22,10 @@ type QueryableFieldDescription struct {
 	// The name of the field to use when constructing the query. Field names are present for all types except `OBJECT`.
 	FieldName *string `mandatory:"true" json:"fieldName"`
 
-	// Indicates this field is actually an array of the specified field type.
+	// Indicates that this field is actually an array of the specified field type.
 	IsArray *bool `mandatory:"false" json:"isArray"`
 
-	// If the field type is `OBJECT`, then this property will provide all the individual properties on the object that can
+	// If the field type is `OBJECT`, then this property will provide all the individual properties of the object that can
 	// be queried.
 	ObjectProperties []QueryableFieldDescription `mandatory:"false" json:"objectProperties"`
 }

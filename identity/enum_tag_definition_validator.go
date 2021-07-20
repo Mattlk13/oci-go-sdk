@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Identity and Access Management Service API
@@ -10,11 +11,12 @@ package identity
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// EnumTagDefinitionValidator Validates the 'value' set for a definedTag is contained in the list of allowable 'values'.
-// If the 'validatorType' is 'ENUM', then at least one valid value must be specified in the 'values' array.
+// EnumTagDefinitionValidator Used to validate the value set for a defined tag and contains the list of allowable `values`.
+// You must specify at least one valid value in the `values` array. You can't have blank or
+// or empty strings (`""`). Duplicate values are not allowed.
 type EnumTagDefinitionValidator struct {
 
 	// The list of allowed values for a definedTag value.

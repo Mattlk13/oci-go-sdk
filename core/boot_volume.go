@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -14,14 +15,14 @@ package core
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // BootVolume A detachable boot volume device that contains the image used to boot a Compute instance. For more information, see
-// Overview of Boot Volumes (https://docs.cloud.oracle.com/Content/Block/Concepts/bootvolumes.htm).
+// Overview of Boot Volumes (https://docs.cloud.oracle.com/iaas/Content/Block/Concepts/bootvolumes.htm).
 // To use any of the API operations, you must be authorized in an IAM policy. If you're not authorized,
 // talk to an administrator. If you're an administrator who needs to write policies to give users access, see
-// Getting Started with Policies (https://docs.cloud.oracle.com/Content/Identity/Concepts/policygetstarted.htm).
+// Getting Started with Policies (https://docs.cloud.oracle.com/iaas/Content/Identity/Concepts/policygetstarted.htm).
 // **Warning:** Oracle recommends that you avoid using any confidential information when you
 // supply string values using the API.
 type BootVolume struct {
@@ -43,11 +44,12 @@ type BootVolume struct {
 	// This field is deprecated. Please use sizeInGBs.
 	SizeInMBs *int64 `mandatory:"true" json:"sizeInMBs"`
 
-	// The date and time the boot volume was created. Format defined by RFC3339.
+	// The date and time the boot volume was created. Format defined
+	// by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
@@ -60,28 +62,44 @@ type BootVolume struct {
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
 	// The image OCID used to create the boot volume.
 	ImageId *string `mandatory:"false" json:"imageId"`
 
-	// Specifies whether the boot volume's data has finished copying from the source boot volume or boot volume backup.
+	// Specifies whether the boot volume's data has finished copying
+	// from the source boot volume or boot volume backup.
 	IsHydrated *bool `mandatory:"false" json:"isHydrated"`
+
+	// The number of volume performance units (VPUs) that will be applied to this boot volume per GB,
+	// representing the Block Volume service's elastic performance options.
+	// See Block Volume Elastic Performance (https://docs.cloud.oracle.com/iaas/Content/Block/Concepts/blockvolumeelasticperformance.htm) for more information.
+	// Allowed values:
+	//   * `10`: Represents Balanced option.
+	//   * `20`: Represents Higher Performance option.
+	VpusPerGB *int64 `mandatory:"false" json:"vpusPerGB"`
 
 	// The size of the boot volume in GBs.
 	SizeInGBs *int64 `mandatory:"false" json:"sizeInGBs"`
 
-	// The boot volume source, either an existing boot volume in the same availability domain or a boot volume backup.
-	// If null, this means that the boot volume was created from an image.
 	SourceDetails BootVolumeSourceDetails `mandatory:"false" json:"sourceDetails"`
 
 	// The OCID of the source volume group.
 	VolumeGroupId *string `mandatory:"false" json:"volumeGroupId"`
 
-	// The OCID of the KMS key which is the master encryption key for the boot volume.
+	// The OCID of the Key Management master encryption key assigned to the boot volume.
 	KmsKeyId *string `mandatory:"false" json:"kmsKeyId"`
+
+	// Specifies whether the auto-tune performance is enabled for this boot volume.
+	IsAutoTuneEnabled *bool `mandatory:"false" json:"isAutoTuneEnabled"`
+
+	// The number of Volume Performance Units per GB that this boot volume is effectively tuned to when it's idle.
+	AutoTunedVpusPerGB *int64 `mandatory:"false" json:"autoTunedVpusPerGB"`
+
+	// The list of boot volume replicas of this boot volume
+	BootVolumeReplicas []BootVolumeReplicaInfo `mandatory:"false" json:"bootVolumeReplicas"`
 }
 
 func (m BootVolume) String() string {
@@ -97,10 +115,14 @@ func (m *BootVolume) UnmarshalJSON(data []byte) (e error) {
 		FreeformTags       map[string]string                 `json:"freeformTags"`
 		ImageId            *string                           `json:"imageId"`
 		IsHydrated         *bool                             `json:"isHydrated"`
+		VpusPerGB          *int64                            `json:"vpusPerGB"`
 		SizeInGBs          *int64                            `json:"sizeInGBs"`
 		SourceDetails      bootvolumesourcedetails           `json:"sourceDetails"`
 		VolumeGroupId      *string                           `json:"volumeGroupId"`
 		KmsKeyId           *string                           `json:"kmsKeyId"`
+		IsAutoTuneEnabled  *bool                             `json:"isAutoTuneEnabled"`
+		AutoTunedVpusPerGB *int64                            `json:"autoTunedVpusPerGB"`
+		BootVolumeReplicas []BootVolumeReplicaInfo           `json:"bootVolumeReplicas"`
 		AvailabilityDomain *string                           `json:"availabilityDomain"`
 		CompartmentId      *string                           `json:"compartmentId"`
 		Id                 *string                           `json:"id"`
@@ -113,14 +135,24 @@ func (m *BootVolume) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.DefinedTags = model.DefinedTags
+
 	m.SystemTags = model.SystemTags
+
 	m.DisplayName = model.DisplayName
+
 	m.FreeformTags = model.FreeformTags
+
 	m.ImageId = model.ImageId
+
 	m.IsHydrated = model.IsHydrated
+
+	m.VpusPerGB = model.VpusPerGB
+
 	m.SizeInGBs = model.SizeInGBs
-	nn, e := model.SourceDetails.UnmarshalPolymorphicJSON(model.SourceDetails.JsonData)
+
+	nn, e = model.SourceDetails.UnmarshalPolymorphicJSON(model.SourceDetails.JsonData)
 	if e != nil {
 		return
 	}
@@ -129,14 +161,32 @@ func (m *BootVolume) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.SourceDetails = nil
 	}
+
 	m.VolumeGroupId = model.VolumeGroupId
+
 	m.KmsKeyId = model.KmsKeyId
+
+	m.IsAutoTuneEnabled = model.IsAutoTuneEnabled
+
+	m.AutoTunedVpusPerGB = model.AutoTunedVpusPerGB
+
+	m.BootVolumeReplicas = make([]BootVolumeReplicaInfo, len(model.BootVolumeReplicas))
+	for i, n := range model.BootVolumeReplicas {
+		m.BootVolumeReplicas[i] = n
+	}
+
 	m.AvailabilityDomain = model.AvailabilityDomain
+
 	m.CompartmentId = model.CompartmentId
+
 	m.Id = model.Id
+
 	m.LifecycleState = model.LifecycleState
+
 	m.SizeInMBs = model.SizeInMBs
+
 	m.TimeCreated = model.TimeCreated
+
 	return
 }
 

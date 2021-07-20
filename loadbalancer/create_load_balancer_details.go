@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Load Balancing API
@@ -10,7 +11,7 @@
 package loadbalancer
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateLoadBalancerDetails The configuration details for creating a load balancer.
@@ -34,6 +35,9 @@ type CreateLoadBalancerDetails struct {
 	// An array of subnet OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm).
 	SubnetIds []string `mandatory:"true" json:"subnetIds"`
 
+	// The configuration details to create load balancer using Flexible shape. This is required only if shapeName is `Flexible`.
+	ShapeDetails *ShapeDetails `mandatory:"false" json:"shapeDetails"`
+
 	// Whether the load balancer has a VCN-local (private) IP address.
 	// If "true", the service assigns a private IP address to the load balancer.
 	// If "false", the service assigns a public IP address to the load balancer.
@@ -48,6 +52,9 @@ type CreateLoadBalancerDetails struct {
 	// If "IPV6", the service assigns an IPv6 address and the load balancer supports IPv6 traffic.
 	// Example: "ipMode":"IPV6"
 	IpMode CreateLoadBalancerDetailsIpModeEnum `mandatory:"false" json:"ipMode,omitempty"`
+
+	// An array of reserved Ips.
+	ReservedIps []ReservedIp `mandatory:"false" json:"reservedIps"`
 
 	Listeners map[string]ListenerDetails `mandatory:"false" json:"listeners"`
 
@@ -65,6 +72,8 @@ type CreateLoadBalancerDetails struct {
 	NetworkSecurityGroupIds []string `mandatory:"false" json:"networkSecurityGroupIds"`
 
 	Certificates map[string]CertificateDetails `mandatory:"false" json:"certificates"`
+
+	SslCipherSuites map[string]SslCipherSuiteDetails `mandatory:"false" json:"sslCipherSuites"`
 
 	PathRouteSets map[string]PathRouteSetDetails `mandatory:"false" json:"pathRouteSets"`
 

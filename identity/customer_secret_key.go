@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Identity and Access Management Service API
@@ -9,12 +10,12 @@
 package identity
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CustomerSecretKey A `CustomerSecretKey` is an Oracle-provided key for using the Object Storage Service's
-// Amazon S3 compatible API (https://docs.cloud.oracle.com/Content/Object/Tasks/s3compatibleapi.htm).
-// A user can have up to two secret keys at a time.
+// Amazon S3 compatible API (https://docs.cloud.oracle.com/Content/Object/Tasks/s3compatibleapi.htm). The key consists of a
+// secret key/access key pair. A user can have up to two secret keys at a time.
 // **Note:** The secret key is always an Oracle-generated string; you can't change it to a string of your choice.
 // For more information, see Managing User Credentials (https://docs.cloud.oracle.com/Content/Identity/Tasks/managingcredentials.htm).
 type CustomerSecretKey struct {
@@ -22,7 +23,7 @@ type CustomerSecretKey struct {
 	// The secret key.
 	Key *string `mandatory:"false" json:"key"`
 
-	// The OCID of the secret key.
+	// The access key portion of the key pair.
 	Id *string `mandatory:"false" json:"id"`
 
 	// The OCID of the user the password belongs to.

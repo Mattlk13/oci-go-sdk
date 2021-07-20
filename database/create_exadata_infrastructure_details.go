@@ -1,18 +1,20 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
-// CreateExadataInfrastructureDetails Request to create Exadata infrastructure.
+// CreateExadataInfrastructureDetails Request to create Exadata infrastructure resource. Applies to Exadata Cloud@Customer instances only.
+// See CreateCloudExadataInfrastructureDetails for information on creating a cloud Exadata infrastructure resource in an Exadata Cloud Service instance.
 type CreateExadataInfrastructureDetails struct {
 
 	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the compartment.
@@ -45,14 +47,26 @@ type CreateExadataInfrastructureDetails struct {
 	// The CIDR block for the Exadata InfiniBand interconnect.
 	InfiniBandNetworkCIDR *string `mandatory:"true" json:"infiniBandNetworkCIDR"`
 
-	// The corporate network proxy for access to the control plane network.
-	CorporateProxy *string `mandatory:"true" json:"corporateProxy"`
-
 	// The list of DNS server IP addresses. Maximum of 3 allowed.
 	DnsServer []string `mandatory:"true" json:"dnsServer"`
 
 	// The list of NTP server IP addresses. Maximum of 3 allowed.
 	NtpServer []string `mandatory:"true" json:"ntpServer"`
+
+	// The corporate network proxy for access to the control plane network. Oracle recommends using an HTTPS proxy when possible
+	// for enhanced security.
+	CorporateProxy *string `mandatory:"false" json:"corporateProxy"`
+
+	// The list of contacts for the Exadata infrastructure.
+	Contacts []ExadataInfrastructureContact `mandatory:"false" json:"contacts"`
+
+	MaintenanceWindow *MaintenanceWindow `mandatory:"false" json:"maintenanceWindow"`
+
+	// The number of storage servers for the Exadata infrastructure.
+	StorageCount *int `mandatory:"false" json:"storageCount"`
+
+	// The number of compute servers for the Exadata infrastructure.
+	ComputeCount *int `mandatory:"false" json:"computeCount"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no predefined name, type, or namespace.
 	// For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).

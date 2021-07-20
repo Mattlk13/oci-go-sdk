@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 package common
 
@@ -10,11 +11,17 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+)
+
+const (
+	//UsingExpectHeaderEnvVar is the key to determine whether expect 100-continue is enabled or not
+	UsingExpectHeaderEnvVar = "OCI_GOSDK_USING_EXPECT_HEADER"
 )
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,9 +64,9 @@ func toStringValue(v reflect.Value, field reflect.StructField) (string, error) {
 	case reflect.String:
 		return v.String(), nil
 	case reflect.Float32:
-		return strconv.FormatFloat(v.Float(), 'f', 6, 32), nil
+		return strconv.FormatFloat(v.Float(), 'f', -1, 32), nil
 	case reflect.Float64:
-		return strconv.FormatFloat(v.Float(), 'f', 6, 64), nil
+		return strconv.FormatFloat(v.Float(), 'f', -1, 64), nil
 	default:
 		return "", fmt.Errorf("marshaling structure to a http.Request does not support field named: %s of type: %v",
 			field.Name, v.Type().String())
@@ -74,7 +81,7 @@ func addBinaryBody(request *http.Request, value reflect.Value, field reflect.Str
 	}
 
 	if isMandatory && !ok {
-		e = fmt.Errorf("body of the request is mandatory and needs  to be an io.ReadCloser interface. Can not marshal body of binary request")
+		e = fmt.Errorf("body of the request is mandatory and needs to be an io.ReadCloser interface. Can not marshal body of binary request")
 		return
 	}
 
@@ -248,7 +255,7 @@ func removeNilFieldsInJSONWithTaggedStruct(rawJSON []byte, value reflect.Value) 
 	return json.Marshal(fixedMap)
 }
 
-func addToBody(request *http.Request, value reflect.Value, field reflect.StructField) (e error) {
+func addToBody(request *http.Request, value reflect.Value, field reflect.StructField, binaryBodySpecified *bool) (e error) {
 	Debugln("Marshaling to body from field:", field.Name)
 	if request.Body != nil {
 		Logf("The body of the request is already set. Structure: %s will overwrite it\n", field.Name)
@@ -257,6 +264,7 @@ func addToBody(request *http.Request, value reflect.Value, field reflect.StructF
 	encoding := tag.Get("encoding")
 
 	if encoding == "binary" {
+		*binaryBodySpecified = true
 		return addBinaryBody(request, value, field)
 	}
 
@@ -278,10 +286,50 @@ func addToBody(request *http.Request, value reflect.Value, field reflect.StructF
 	request.Header.Set(requestHeaderContentLength, strconv.FormatInt(request.ContentLength, 10))
 	request.Header.Set(requestHeaderContentType, "application/json")
 	request.Body = ioutil.NopCloser(bodyBytes)
+	snapshot := *bodyBytes
 	request.GetBody = func() (io.ReadCloser, error) {
-		return ioutil.NopCloser(bodyBytes), nil
+		r := snapshot
+		return ioutil.NopCloser(&r), nil
 	}
+
 	return
+}
+
+func checkBinaryBodyLength(request *http.Request) (contentLen int64, err error) {
+	if reflect.TypeOf(request.Body) == reflect.TypeOf(ioutil.NopCloser(nil)) {
+		ioReader := reflect.ValueOf(request.Body).Field(0).Interface().(io.Reader)
+		switch t := ioReader.(type) {
+		case *bytes.Reader:
+			return int64(t.Len()), nil
+		case *bytes.Buffer:
+			return int64(t.Len()), nil
+		case *strings.Reader:
+			return int64(t.Len()), nil
+		default:
+			return getNormalBinaryBodyLength(request)
+		}
+	}
+	if reflect.TypeOf(request.Body) == reflect.TypeOf((*os.File)(nil)) {
+		fi, err := (request.Body.(*os.File)).Stat()
+		if err != nil {
+			return contentLen, err
+		}
+		return fi.Size(), nil
+	}
+	return getNormalBinaryBodyLength(request)
+}
+
+func getNormalBinaryBodyLength(request *http.Request) (contentLen int64, err error) {
+	dumpRequestBody := ioutil.NopCloser(bytes.NewBuffer(nil))
+	if dumpRequestBody, request.Body, err = drainBody(request.Body); err != nil {
+		dumpRequestBody = ioutil.NopCloser(bytes.NewBuffer(nil))
+		return contentLen, err
+	}
+	contentBody, err := ioutil.ReadAll(dumpRequestBody)
+	if err != nil {
+		return contentLen, err
+	}
+	return int64(len(contentBody)), nil
 }
 
 func addToQuery(request *http.Request, value reflect.Value, field reflect.StructField) (e error) {
@@ -400,7 +448,7 @@ func addToPath(request *http.Request, value reflect.Value, field reflect.StructF
 	return
 }
 
-func setWellKnownHeaders(request *http.Request, headerName, headerValue string) (e error) {
+func setWellKnownHeaders(request *http.Request, headerName, headerValue string, contentLenSpecified *bool) (e error) {
 	switch strings.ToLower(headerName) {
 	case "content-length":
 		var len int
@@ -409,11 +457,12 @@ func setWellKnownHeaders(request *http.Request, headerName, headerValue string) 
 			return
 		}
 		request.ContentLength = int64(len)
+		*contentLenSpecified = true
 	}
 	return nil
 }
 
-func addToHeader(request *http.Request, value reflect.Value, field reflect.StructField) (e error) {
+func addToHeader(request *http.Request, value reflect.Value, field reflect.StructField, contentLenSpecified *bool) (e error) {
 	Debugln("Marshaling to header from field: ", field.Name)
 	if request.Header == nil {
 		request.Header = http.Header{}
@@ -444,12 +493,21 @@ func addToHeader(request *http.Request, value reflect.Value, field reflect.Struc
 		return
 	}
 
-	if e = setWellKnownHeaders(request, headerName, headerValue); e != nil {
+	if e = setWellKnownHeaders(request, headerName, headerValue, contentLenSpecified); e != nil {
 		return
 	}
 
-	request.Header.Add(headerName, headerValue)
+	if isUniqueHeaderRequired(headerName) {
+		request.Header.Set(headerName, headerValue)
+	} else {
+		request.Header.Add(headerName, headerValue)
+	}
 	return
+}
+
+// Check if the header is required to be unique
+func isUniqueHeaderRequired(headerName string) bool {
+	return strings.EqualFold(headerName, requestHeaderContentType) || strings.EqualFold(headerName, requestHeaderContentLength)
 }
 
 // Header collection is a map of string to string that gets rendered as individual headers with a given prefix
@@ -516,6 +574,8 @@ func checkForValidRequestStruct(s interface{}) (*reflect.Value, error) {
 // nested structs are followed recursively depth-first.
 func structToRequestPart(request *http.Request, val reflect.Value) (err error) {
 	typ := val.Type()
+	contentLenSpecified := false
+	binaryBodySpecified := false
 	for i := 0; i < typ.NumField(); i++ {
 		if err != nil {
 			return
@@ -531,7 +591,7 @@ func structToRequestPart(request *http.Request, val reflect.Value) (err error) {
 		tag := sf.Tag.Get("contributesTo")
 		switch tag {
 		case "header":
-			err = addToHeader(request, sv, sf)
+			err = addToHeader(request, sv, sf, &contentLenSpecified)
 		case "header-collection":
 			err = addToHeaderCollection(request, sv, sf)
 		case "path":
@@ -539,7 +599,7 @@ func structToRequestPart(request *http.Request, val reflect.Value) (err error) {
 		case "query":
 			err = addToQuery(request, sv, sf)
 		case "body":
-			err = addToBody(request, sv, sf)
+			err = addToBody(request, sv, sf, &binaryBodySpecified)
 		case "":
 			Debugln(sf.Name, " does not contain contributes tag. Skipping.")
 		default:
@@ -547,6 +607,20 @@ func structToRequestPart(request *http.Request, val reflect.Value) (err error) {
 		}
 	}
 
+	// if content-length is not specified but with binary body, calculate the content length according to request body
+	if !contentLenSpecified && binaryBodySpecified && request.Body != nil && request.Body != http.NoBody {
+		contentLen, err := checkBinaryBodyLength(request)
+		if err == nil {
+			request.Header.Set(requestHeaderContentLength, strconv.FormatInt(contentLen, 10))
+			request.ContentLength = contentLen
+		}
+	}
+
+	//If content length is zero, to avoid sending transfer-coding: chunked header, need to explicitly set the body to nil/Nobody.
+	if request.Header != nil && request.Body != nil && request.Body != http.NoBody &&
+		parseContentLength(request.Header.Get(requestHeaderContentLength)) == 0 {
+		request.Body = http.NoBody
+	}
 	//If headers are and the content type was not set, we default to application/json
 	if request.Header != nil && request.Header.Get(requestHeaderContentType) == "" {
 		request.Header.Set(requestHeaderContentType, "application/json")
@@ -602,6 +676,30 @@ func MakeDefaultHTTPRequest(method, path string) (httpRequest http.Request) {
 func MakeDefaultHTTPRequestWithTaggedStruct(method, path string, requestStruct interface{}) (httpRequest http.Request, err error) {
 	httpRequest = MakeDefaultHTTPRequest(method, path)
 	err = HTTPRequestMarshaller(requestStruct, &httpRequest)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+// MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders creates an http request from an struct with tagged fields, see HTTPRequestMarshaller
+// for more information
+func MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path string, requestStruct interface{}, extraHeaders map[string]string) (httpRequest http.Request, err error) {
+	httpRequest, err = MakeDefaultHTTPRequestWithTaggedStruct(method, path, requestStruct)
+	for key, val := range extraHeaders {
+		httpRequest.Header.Set(key, val)
+	}
+	return
+}
+
+// UpdateRequestBinaryBody updates the http request's body once it is binary request and the request body is seekable
+// if the content length is zero, no need to update request body(since it's already been set to http.Nody)
+func UpdateRequestBinaryBody(httpRequest *http.Request, rsc *OCIReadSeekCloser) {
+	if parseContentLength(httpRequest.Header.Get(requestHeaderContentLength)) == 0 {
+		return
+	}
+	httpRequest.Body = rsc
 	return
 }
 
@@ -740,7 +838,7 @@ func analyzeValue(stringValue string, kind reflect.Kind, field reflect.StructFie
 	return
 }
 
-// Sets the field of a struct, with the appropiate value of the string
+// Sets the field of a struct, with the appropriate value of the string
 // Only sets basic types
 func fromStringValue(newValue string, val *reflect.Value, field reflect.StructField) (err error) {
 
@@ -757,11 +855,12 @@ func fromStringValue(newValue string, val *reflect.Value, field reflect.StructFi
 	}
 
 	value, valPtr, err := analyzeValue(newValue, kind, field)
+	valueType := val.Type()
 	if err != nil {
 		return
 	}
 	if !isPointer {
-		val.Set(value)
+		val.Set(value.Convert(valueType))
 	} else {
 		val.Set(valPtr)
 	}

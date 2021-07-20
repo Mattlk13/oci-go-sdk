@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Audit API
@@ -11,25 +12,10 @@
 package audit
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // Identity A container object for identity attributes.
-// Example:
-//   -----
-//     {
-//       "principalName": "ExampleName",
-//       "principalId": "ocid1.user.oc1..<unique_ID>",
-//       "authType": "natv",
-//       "callerName": null,
-//       "callerId": null,
-//       "tenantId": "ocid1.tenancy.oc1..<unique_ID>",
-//       "ipAddress": "172.24.80.88",
-//       "credentials": null,
-//       "userAgent": "Jersey/2.23 (HttpUrlConnection 1.8.0_212)",
-//       "consoleSessionId": null
-//     }
-//   -----
 type Identity struct {
 
 	// The name of the user or service. This value is the friendly name associated with `principalId`.

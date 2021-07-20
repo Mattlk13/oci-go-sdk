@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -14,7 +15,7 @@ package core
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // EmulatedVolumeAttachment An Emulated volume attachment.
@@ -33,7 +34,7 @@ type EmulatedVolumeAttachment struct {
 	// The OCID of the instance the volume is attached to.
 	InstanceId *string `mandatory:"true" json:"instanceId"`
 
-	// The date and time the volume was created, in the format defined by RFC3339.
+	// The date and time the volume was created, in the format defined by RFC3339 (https://tools.ietf.org/html/rfc3339).
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 
@@ -51,11 +52,24 @@ type EmulatedVolumeAttachment struct {
 	// Whether the attachment was created in read-only mode.
 	IsReadOnly *bool `mandatory:"false" json:"isReadOnly"`
 
+	// Whether the attachment should be created in shareable mode. If an attachment
+	// is created in shareable mode, then other instances can attach the same volume, provided
+	// that they also create their attachments in shareable mode. Only certain volume types can
+	// be attached in shareable mode. Defaults to false if not specified.
+	IsShareable *bool `mandatory:"false" json:"isShareable"`
+
 	// Whether in-transit encryption for the data volume's paravirtualized attachment is enabled or not.
 	IsPvEncryptionInTransitEnabled *bool `mandatory:"false" json:"isPvEncryptionInTransitEnabled"`
 
+	// Whether the attachment is multipath or not.
+	IsMultipath *bool `mandatory:"false" json:"isMultipath"`
+
 	// The current state of the volume attachment.
 	LifecycleState VolumeAttachmentLifecycleStateEnum `mandatory:"true" json:"lifecycleState"`
+
+	// The iscsi login state of the volume attachment. For a multipath volume attachment,
+	// all iscsi sessions need to be all logged-in or logged-out to be in logged-in or logged-out state.
+	IscsiLoginState VolumeAttachmentIscsiLoginStateEnum `mandatory:"false" json:"iscsiLoginState,omitempty"`
 }
 
 //GetAvailabilityDomain returns AvailabilityDomain
@@ -93,6 +107,11 @@ func (m EmulatedVolumeAttachment) GetIsReadOnly() *bool {
 	return m.IsReadOnly
 }
 
+//GetIsShareable returns IsShareable
+func (m EmulatedVolumeAttachment) GetIsShareable() *bool {
+	return m.IsShareable
+}
+
 //GetLifecycleState returns LifecycleState
 func (m EmulatedVolumeAttachment) GetLifecycleState() VolumeAttachmentLifecycleStateEnum {
 	return m.LifecycleState
@@ -111,6 +130,16 @@ func (m EmulatedVolumeAttachment) GetVolumeId() *string {
 //GetIsPvEncryptionInTransitEnabled returns IsPvEncryptionInTransitEnabled
 func (m EmulatedVolumeAttachment) GetIsPvEncryptionInTransitEnabled() *bool {
 	return m.IsPvEncryptionInTransitEnabled
+}
+
+//GetIsMultipath returns IsMultipath
+func (m EmulatedVolumeAttachment) GetIsMultipath() *bool {
+	return m.IsMultipath
+}
+
+//GetIscsiLoginState returns IscsiLoginState
+func (m EmulatedVolumeAttachment) GetIscsiLoginState() VolumeAttachmentIscsiLoginStateEnum {
+	return m.IscsiLoginState
 }
 
 func (m EmulatedVolumeAttachment) String() string {

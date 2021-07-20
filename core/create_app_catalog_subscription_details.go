@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,33 +14,33 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateAppCatalogSubscriptionDetails details for creating a subscription for a listing resource version.
 type CreateAppCatalogSubscriptionDetails struct {
 
 	// The compartmentID for the subscription.
-	CompartmentId *string `mandatory:"false" json:"compartmentId"`
+	CompartmentId *string `mandatory:"true" json:"compartmentId"`
 
 	// The OCID of the listing.
-	ListingId *string `mandatory:"false" json:"listingId"`
+	ListingId *string `mandatory:"true" json:"listingId"`
 
 	// Listing resource version.
-	ListingResourceVersion *string `mandatory:"false" json:"listingResourceVersion"`
+	ListingResourceVersion *string `mandatory:"true" json:"listingResourceVersion"`
 
 	// Oracle TOU link
-	OracleTermsOfUseLink *string `mandatory:"false" json:"oracleTermsOfUseLink"`
+	OracleTermsOfUseLink *string `mandatory:"true" json:"oracleTermsOfUseLink"`
+
+	// Date and time the agreements were retrieved, in RFC3339 (https://tools.ietf.org/html/rfc3339) format.
+	// Example: `2018-03-20T12:32:53.532Z`
+	TimeRetrieved *common.SDKTime `mandatory:"true" json:"timeRetrieved"`
+
+	// A generated signature for this listing resource version retrieved the agreements API.
+	Signature *string `mandatory:"true" json:"signature"`
 
 	// EULA link
 	EulaLink *string `mandatory:"false" json:"eulaLink"`
-
-	// Date and time the agreements were retrieved, in RFC3339 format.
-	// Example: `2018-03-20T12:32:53.532Z`
-	TimeRetrieved *common.SDKTime `mandatory:"false" json:"timeRetrieved"`
-
-	// A generated signature for this listing resource version retrieved the agreements API.
-	Signature *string `mandatory:"false" json:"signature"`
 }
 
 func (m CreateAppCatalogSubscriptionDetails) String() string {

@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -13,7 +14,7 @@
 package core
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateIpSecConnectionDetails The representation of CreateIpSecConnectionDetails
@@ -25,7 +26,7 @@ type CreateIpSecConnectionDetails struct {
 	// The OCID of the Cpe object.
 	CpeId *string `mandatory:"true" json:"cpeId"`
 
-	// The OCID of the DRG.
+	// The OCID (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the DRG.
 	DrgId *string `mandatory:"true" json:"drgId"`
 
 	// Static routes to the CPE. A static route's CIDR must not be a
@@ -35,22 +36,23 @@ type CreateIpSecConnectionDetails struct {
 	// you must provide at least one valid static route. If you configure both
 	// tunnels to use BGP dynamic routing, you can provide an empty list for the static routes.
 	// For more information, see the important note in IPSecConnection.
-	// The CIDR can be either IPv4 or IPv6. Note that IPv6 addressing is currently supported only
-	// in the Government Cloud.
+	// The CIDR can be either IPv4 or IPv6. IPv6 addressing is supported for all commercial and government regions.
+	// See IPv6 Addresses (https://docs.cloud.oracle.com/iaas/Content/Network/Concepts/ipv6.htm).
 	// Example: `10.0.1.0/24`
 	// Example: `2001:db8::/32`
 	StaticRoutes []string `mandatory:"true" json:"staticRoutes"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
-	// A user-friendly name. Does not have to be unique, and it's changeable. Avoid entering confidential information.
+	// A user-friendly name. Does not have to be unique, and it's changeable.
+	// Avoid entering confidential information.
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
@@ -60,7 +62,7 @@ type CreateIpSecConnectionDetails struct {
 	// If you don't provide a value, the `ipAddress` attribute for the Cpe
 	// object specified by `cpeId` is used as the `cpeLocalIdentifier`.
 	// For information about why you'd provide this value, see
-	// If Your CPE Is Behind a NAT Device (https://docs.cloud.oracle.com/Content/Network/Tasks/overviewIPsec.htm#nat).
+	// If Your CPE Is Behind a NAT Device (https://docs.cloud.oracle.com/iaas/Content/Network/Tasks/overviewIPsec.htm#nat).
 	// Example IP address: `10.0.3.3`
 	// Example hostname: `cpe.example.com`
 	CpeLocalIdentifier *string `mandatory:"false" json:"cpeLocalIdentifier"`

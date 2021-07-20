@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 package common
 
@@ -64,6 +65,7 @@ yptNH3FsyqeyM9kDwbDpBQAvpsDIQJfwAbQPLAiQJhpbixZyG9lqhkKOhYTZhU3l
 ufFtnLEj/5G9a8A//MFrXsXePUeBDEzjtEcjPGNxe0ZkuOgYx11Zc0R4oLI7LoHO
 07vtw4qCH4hztCJ5+JOUac6sGcILFRc4vSQQ15Cg5QEdBiSbQ/yo1P0hbNtSvnwO
 -----END RSA PRIVATE KEY-----`
+	testSecurityToken = "testSecurityToken"
 	testKeyPassphrase = "goisfun"
 )
 
@@ -527,6 +529,32 @@ compartment = somecompartment
 
 }
 
+func TestFileConfigurationProvider_SecurityToken(t *testing.T) {
+	dataTpl := `[security_token_based_auth]
+fingerprint=somefingerprint
+key_file=%s
+tenancy=sometenancy
+region=someregion
+security_token_file=%s
+`
+
+	keyFile := writeTempFile(testPrivateKeyConf)
+	tokenFile := writeTempFile(testSecurityToken)
+	data := fmt.Sprintf(dataTpl, keyFile, tokenFile)
+	tmpConfFile := writeTempFile(data)
+
+	defer removeFileFn(tmpConfFile)
+	defer removeFileFn(tokenFile)
+	defer removeFileFn(keyFile)
+
+	c, e0 := ConfigurationProviderFromFileWithProfile(tmpConfFile, "security_token_based_auth", "")
+	assert.NoError(t, e0)
+	_, e1 := c.PrivateRSAKey()
+	assert.NoError(t, e1)
+	_, e1 = c.KeyID()
+	assert.NoError(t, e1)
+}
+
 func TestComposingConfigurationProvider_MultipleFiles(t *testing.T) {
 	dataTpl0 := ``
 	dataTpl := `[DEFAULT]
@@ -764,6 +792,37 @@ region=someregion
 	key, err := provider.PrivateRSAKey()
 	assert.NoError(t, err)
 	assert.NotNil(t, key)
+}
+
+func TestComposingConfigurationProvider_WithRegionEnvVar(t *testing.T) {
+	dataTpl := `[DEFAULT]
+user=someuser
+fingerprint=somefingerprint
+key_file=%s
+tenancy=sometenancy
+compartment = somecompartment
+`
+	os.Unsetenv("OCI_REGION")
+	os.Setenv("OCI_REGION", "us-phoenix-1")
+
+	keyFile := writeTempFile(testEncryptedPrivateKeyConf)
+	data := fmt.Sprintf(dataTpl, keyFile)
+	tmpConfFile := writeTempFile(data)
+
+	defer removeFileFn(tmpConfFile)
+	defer removeFileFn(keyFile)
+
+	provider, err := ConfigurationProviderFromFile(tmpConfFile, testKeyPassphrase)
+	assert.NoError(t, err)
+	ok, err := IsConfigurationProviderValid(provider)
+	assert.NoError(t, err)
+	assert.True(t, ok)
+
+	os.Unsetenv("OCI_REGION")
+	provider, err = ConfigurationProviderFromFile(tmpConfFile, testKeyPassphrase)
+	assert.NoError(t, err)
+	ok, err = IsConfigurationProviderValid(provider)
+	assert.Error(t, err)
 }
 
 func TestConfigurationWithTilde(t *testing.T) {

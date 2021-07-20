@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Web Application Acceleration and Security Services API
@@ -9,7 +10,7 @@
 package waas
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // Certificate The details of the SSL certificate.
@@ -66,6 +67,13 @@ type Certificate struct {
 
 	// The date and time the certificate was created, expressed in RFC 3339 timestamp format.
 	TimeCreated *common.SDKTime `mandatory:"false" json:"timeCreated"`
+
+	// This indicates whether trust verification was disabled during the creation of SSL certificate.
+	// If `true` SSL certificate trust verification was disabled and this SSL certificate is most likely self-signed.
+	IsTrustVerificationDisabled *bool `mandatory:"false" json:"isTrustVerificationDisabled"`
+
+	// The data of the SSL certificate.
+	CertificateData *string `mandatory:"false" json:"certificateData"`
 }
 
 func (m Certificate) String() string {

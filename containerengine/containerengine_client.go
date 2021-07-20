@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Container Engine for Kubernetes API
@@ -13,7 +14,8 @@ package containerengine
 import (
 	"context"
 	"fmt"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/common/auth"
 	"net/http"
 )
 
@@ -26,11 +28,30 @@ type ContainerEngineClient struct {
 // NewContainerEngineClientWithConfigurationProvider Creates a new default ContainerEngine client with the given configuration provider.
 // the configuration provider will be used for the default signer as well as reading the region
 func NewContainerEngineClientWithConfigurationProvider(configProvider common.ConfigurationProvider) (client ContainerEngineClient, err error) {
-	baseClient, err := common.NewClientWithConfig(configProvider)
+	provider, err := auth.GetGenericConfigurationProvider(configProvider)
 	if err != nil {
-		return
+		return client, err
+	}
+	baseClient, e := common.NewClientWithConfig(provider)
+	if e != nil {
+		return client, e
+	}
+	return newContainerEngineClientFromBaseClient(baseClient, provider)
+}
+
+// NewContainerEngineClientWithOboToken Creates a new default ContainerEngine client with the given configuration provider.
+// The obotoken will be added to default headers and signed; the configuration provider will be used for the signer
+//  as well as reading the region
+func NewContainerEngineClientWithOboToken(configProvider common.ConfigurationProvider, oboToken string) (client ContainerEngineClient, err error) {
+	baseClient, err := common.NewClientWithOboToken(configProvider, oboToken)
+	if err != nil {
+		return client, err
 	}
 
+	return newContainerEngineClientFromBaseClient(baseClient, configProvider)
+}
+
+func newContainerEngineClientFromBaseClient(baseClient common.BaseClient, configProvider common.ConfigurationProvider) (client ContainerEngineClient, err error) {
 	client = ContainerEngineClient{BaseClient: baseClient}
 	client.BasePath = "20180222"
 	err = client.setConfigurationProvider(configProvider)
@@ -39,7 +60,7 @@ func NewContainerEngineClientWithConfigurationProvider(configProvider common.Con
 
 // SetRegion overrides the region of this client.
 func (client *ContainerEngineClient) SetRegion(region string) {
-	client.Host = common.StringToRegion(region).EndpointForTemplate("containerengine", "https://containerengine.{region}.{secondLevelDomain}")
+	client.Host = common.StringToRegion(region).EndpointForTemplate("containerengine", "https://containerengine.{region}.oci.{secondLevelDomain}")
 }
 
 // SetConfigurationProvider sets the configuration provider including the region, returns an error if is not valid
@@ -60,10 +81,72 @@ func (client *ContainerEngineClient) ConfigurationProvider() *common.Configurati
 	return client.config
 }
 
+// ClusterMigrateToNativeVcn Initiates cluster migration to use native VCN.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/ClusterMigrateToNativeVcn.go.html to see an example of how to use ClusterMigrateToNativeVcn API.
+func (client ContainerEngineClient) ClusterMigrateToNativeVcn(ctx context.Context, request ClusterMigrateToNativeVcnRequest) (response ClusterMigrateToNativeVcnResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.clusterMigrateToNativeVcn, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ClusterMigrateToNativeVcnResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ClusterMigrateToNativeVcnResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(ClusterMigrateToNativeVcnResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into ClusterMigrateToNativeVcnResponse")
+	}
+	return
+}
+
+// clusterMigrateToNativeVcn implements the OCIOperation interface (enables retrying operations)
+func (client ContainerEngineClient) clusterMigrateToNativeVcn(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/clusters/{clusterId}/actions/migrateToNativeVcn", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response ClusterMigrateToNativeVcnResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // CreateCluster Create a new cluster.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/CreateCluster.go.html to see an example of how to use CreateCluster API.
 func (client ContainerEngineClient) CreateCluster(ctx context.Context, request CreateClusterRequest) (response CreateClusterResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -75,7 +158,12 @@ func (client ContainerEngineClient) CreateCluster(ctx context.Context, request C
 	ociResponse, err = common.Retry(ctx, request, client.createCluster, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateClusterResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateClusterResponse{}
+			}
 		}
 		return
 	}
@@ -88,8 +176,9 @@ func (client ContainerEngineClient) CreateCluster(ctx context.Context, request C
 }
 
 // createCluster implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) createCluster(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/clusters")
+func (client ContainerEngineClient) createCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/clusters", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -108,16 +197,28 @@ func (client ContainerEngineClient) createCluster(ctx context.Context, request c
 }
 
 // CreateKubeconfig Create the Kubeconfig YAML for a cluster.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/CreateKubeconfig.go.html to see an example of how to use CreateKubeconfig API.
 func (client ContainerEngineClient) CreateKubeconfig(ctx context.Context, request CreateKubeconfigRequest) (response CreateKubeconfigResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.createKubeconfig, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateKubeconfigResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateKubeconfigResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateKubeconfigResponse{}
+			}
 		}
 		return
 	}
@@ -130,8 +231,9 @@ func (client ContainerEngineClient) CreateKubeconfig(ctx context.Context, reques
 }
 
 // createKubeconfig implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) createKubeconfig(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/clusters/{clusterId}/kubeconfig/content")
+func (client ContainerEngineClient) createKubeconfig(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/clusters/{clusterId}/kubeconfig/content", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -149,9 +251,16 @@ func (client ContainerEngineClient) createKubeconfig(ctx context.Context, reques
 }
 
 // CreateNodePool Create a new node pool.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/CreateNodePool.go.html to see an example of how to use CreateNodePool API.
 func (client ContainerEngineClient) CreateNodePool(ctx context.Context, request CreateNodePoolRequest) (response CreateNodePoolResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
@@ -163,7 +272,12 @@ func (client ContainerEngineClient) CreateNodePool(ctx context.Context, request 
 	ociResponse, err = common.Retry(ctx, request, client.createNodePool, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = CreateNodePoolResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = CreateNodePoolResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = CreateNodePoolResponse{}
+			}
 		}
 		return
 	}
@@ -176,8 +290,9 @@ func (client ContainerEngineClient) CreateNodePool(ctx context.Context, request 
 }
 
 // createNodePool implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) createNodePool(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPost, "/nodePools")
+func (client ContainerEngineClient) createNodePool(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/nodePools", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -196,16 +311,28 @@ func (client ContainerEngineClient) createNodePool(ctx context.Context, request 
 }
 
 // DeleteCluster Delete a cluster.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/DeleteCluster.go.html to see an example of how to use DeleteCluster API.
 func (client ContainerEngineClient) DeleteCluster(ctx context.Context, request DeleteClusterRequest) (response DeleteClusterResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteCluster, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteClusterResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteClusterResponse{}
+			}
 		}
 		return
 	}
@@ -218,8 +345,9 @@ func (client ContainerEngineClient) DeleteCluster(ctx context.Context, request D
 }
 
 // deleteCluster implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) deleteCluster(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/clusters/{clusterId}")
+func (client ContainerEngineClient) deleteCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/clusters/{clusterId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -238,16 +366,28 @@ func (client ContainerEngineClient) deleteCluster(ctx context.Context, request c
 }
 
 // DeleteNodePool Delete a node pool.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/DeleteNodePool.go.html to see an example of how to use DeleteNodePool API.
 func (client ContainerEngineClient) DeleteNodePool(ctx context.Context, request DeleteNodePoolRequest) (response DeleteNodePoolResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteNodePool, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteNodePoolResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteNodePoolResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteNodePoolResponse{}
+			}
 		}
 		return
 	}
@@ -260,8 +400,9 @@ func (client ContainerEngineClient) DeleteNodePool(ctx context.Context, request 
 }
 
 // deleteNodePool implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) deleteNodePool(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/nodePools/{nodePoolId}")
+func (client ContainerEngineClient) deleteNodePool(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/nodePools/{nodePoolId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -280,16 +421,28 @@ func (client ContainerEngineClient) deleteNodePool(ctx context.Context, request 
 }
 
 // DeleteWorkRequest Cancel a work request that has not started.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/DeleteWorkRequest.go.html to see an example of how to use DeleteWorkRequest API.
 func (client ContainerEngineClient) DeleteWorkRequest(ctx context.Context, request DeleteWorkRequestRequest) (response DeleteWorkRequestResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.deleteWorkRequest, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = DeleteWorkRequestResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = DeleteWorkRequestResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = DeleteWorkRequestResponse{}
+			}
 		}
 		return
 	}
@@ -302,8 +455,9 @@ func (client ContainerEngineClient) DeleteWorkRequest(ctx context.Context, reque
 }
 
 // deleteWorkRequest implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) deleteWorkRequest(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/workRequests/{workRequestId}")
+func (client ContainerEngineClient) deleteWorkRequest(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodDelete, "/workRequests/{workRequestId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -322,16 +476,28 @@ func (client ContainerEngineClient) deleteWorkRequest(ctx context.Context, reque
 }
 
 // GetCluster Get the details of a cluster.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/GetCluster.go.html to see an example of how to use GetCluster API.
 func (client ContainerEngineClient) GetCluster(ctx context.Context, request GetClusterRequest) (response GetClusterResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getCluster, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetClusterResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetClusterResponse{}
+			}
 		}
 		return
 	}
@@ -344,8 +510,9 @@ func (client ContainerEngineClient) GetCluster(ctx context.Context, request GetC
 }
 
 // getCluster implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) getCluster(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/clusters/{clusterId}")
+func (client ContainerEngineClient) getCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/clusters/{clusterId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -363,17 +530,84 @@ func (client ContainerEngineClient) getCluster(ctx context.Context, request comm
 	return response, err
 }
 
+// GetClusterMigrateToNativeVcnStatus Get details on a cluster's migration to native VCN.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/GetClusterMigrateToNativeVcnStatus.go.html to see an example of how to use GetClusterMigrateToNativeVcnStatus API.
+func (client ContainerEngineClient) GetClusterMigrateToNativeVcnStatus(ctx context.Context, request GetClusterMigrateToNativeVcnStatusRequest) (response GetClusterMigrateToNativeVcnStatusResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.getClusterMigrateToNativeVcnStatus, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetClusterMigrateToNativeVcnStatusResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetClusterMigrateToNativeVcnStatusResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(GetClusterMigrateToNativeVcnStatusResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into GetClusterMigrateToNativeVcnStatusResponse")
+	}
+	return
+}
+
+// getClusterMigrateToNativeVcnStatus implements the OCIOperation interface (enables retrying operations)
+func (client ContainerEngineClient) getClusterMigrateToNativeVcnStatus(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/clusters/{clusterId}/migrateToNativeVcnStatus", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response GetClusterMigrateToNativeVcnStatusResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // GetClusterOptions Get options available for clusters.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/GetClusterOptions.go.html to see an example of how to use GetClusterOptions API.
 func (client ContainerEngineClient) GetClusterOptions(ctx context.Context, request GetClusterOptionsRequest) (response GetClusterOptionsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getClusterOptions, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetClusterOptionsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetClusterOptionsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetClusterOptionsResponse{}
+			}
 		}
 		return
 	}
@@ -386,8 +620,9 @@ func (client ContainerEngineClient) GetClusterOptions(ctx context.Context, reque
 }
 
 // getClusterOptions implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) getClusterOptions(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/clusterOptions/{clusterOptionId}")
+func (client ContainerEngineClient) getClusterOptions(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/clusterOptions/{clusterOptionId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -406,16 +641,28 @@ func (client ContainerEngineClient) getClusterOptions(ctx context.Context, reque
 }
 
 // GetNodePool Get the details of a node pool.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/GetNodePool.go.html to see an example of how to use GetNodePool API.
 func (client ContainerEngineClient) GetNodePool(ctx context.Context, request GetNodePoolRequest) (response GetNodePoolResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getNodePool, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetNodePoolResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetNodePoolResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetNodePoolResponse{}
+			}
 		}
 		return
 	}
@@ -428,8 +675,9 @@ func (client ContainerEngineClient) GetNodePool(ctx context.Context, request Get
 }
 
 // getNodePool implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) getNodePool(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/nodePools/{nodePoolId}")
+func (client ContainerEngineClient) getNodePool(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/nodePools/{nodePoolId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -448,16 +696,28 @@ func (client ContainerEngineClient) getNodePool(ctx context.Context, request com
 }
 
 // GetNodePoolOptions Get options available for node pools.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/GetNodePoolOptions.go.html to see an example of how to use GetNodePoolOptions API.
 func (client ContainerEngineClient) GetNodePoolOptions(ctx context.Context, request GetNodePoolOptionsRequest) (response GetNodePoolOptionsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getNodePoolOptions, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetNodePoolOptionsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetNodePoolOptionsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetNodePoolOptionsResponse{}
+			}
 		}
 		return
 	}
@@ -470,8 +730,9 @@ func (client ContainerEngineClient) GetNodePoolOptions(ctx context.Context, requ
 }
 
 // getNodePoolOptions implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) getNodePoolOptions(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/nodePoolOptions/{nodePoolOptionId}")
+func (client ContainerEngineClient) getNodePoolOptions(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/nodePoolOptions/{nodePoolOptionId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -490,16 +751,28 @@ func (client ContainerEngineClient) getNodePoolOptions(ctx context.Context, requ
 }
 
 // GetWorkRequest Get the details of a work request.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/GetWorkRequest.go.html to see an example of how to use GetWorkRequest API.
 func (client ContainerEngineClient) GetWorkRequest(ctx context.Context, request GetWorkRequestRequest) (response GetWorkRequestResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.getWorkRequest, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = GetWorkRequestResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = GetWorkRequestResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = GetWorkRequestResponse{}
+			}
 		}
 		return
 	}
@@ -512,8 +785,9 @@ func (client ContainerEngineClient) GetWorkRequest(ctx context.Context, request 
 }
 
 // getWorkRequest implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) getWorkRequest(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}")
+func (client ContainerEngineClient) getWorkRequest(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -532,16 +806,28 @@ func (client ContainerEngineClient) getWorkRequest(ctx context.Context, request 
 }
 
 // ListClusters List all the cluster objects in a compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/ListClusters.go.html to see an example of how to use ListClusters API.
 func (client ContainerEngineClient) ListClusters(ctx context.Context, request ListClustersRequest) (response ListClustersResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listClusters, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListClustersResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListClustersResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListClustersResponse{}
+			}
 		}
 		return
 	}
@@ -554,8 +840,9 @@ func (client ContainerEngineClient) ListClusters(ctx context.Context, request Li
 }
 
 // listClusters implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) listClusters(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/clusters")
+func (client ContainerEngineClient) listClusters(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/clusters", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -574,16 +861,28 @@ func (client ContainerEngineClient) listClusters(ctx context.Context, request co
 }
 
 // ListNodePools List all the node pools in a compartment, and optionally filter by cluster.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/ListNodePools.go.html to see an example of how to use ListNodePools API.
 func (client ContainerEngineClient) ListNodePools(ctx context.Context, request ListNodePoolsRequest) (response ListNodePoolsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listNodePools, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListNodePoolsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListNodePoolsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListNodePoolsResponse{}
+			}
 		}
 		return
 	}
@@ -596,8 +895,9 @@ func (client ContainerEngineClient) ListNodePools(ctx context.Context, request L
 }
 
 // listNodePools implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) listNodePools(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/nodePools")
+func (client ContainerEngineClient) listNodePools(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/nodePools", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -616,16 +916,28 @@ func (client ContainerEngineClient) listNodePools(ctx context.Context, request c
 }
 
 // ListWorkRequestErrors Get the errors of a work request.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/ListWorkRequestErrors.go.html to see an example of how to use ListWorkRequestErrors API.
 func (client ContainerEngineClient) ListWorkRequestErrors(ctx context.Context, request ListWorkRequestErrorsRequest) (response ListWorkRequestErrorsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listWorkRequestErrors, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListWorkRequestErrorsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListWorkRequestErrorsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListWorkRequestErrorsResponse{}
+			}
 		}
 		return
 	}
@@ -638,8 +950,9 @@ func (client ContainerEngineClient) ListWorkRequestErrors(ctx context.Context, r
 }
 
 // listWorkRequestErrors implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) listWorkRequestErrors(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}/errors")
+func (client ContainerEngineClient) listWorkRequestErrors(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}/errors", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -658,16 +971,28 @@ func (client ContainerEngineClient) listWorkRequestErrors(ctx context.Context, r
 }
 
 // ListWorkRequestLogs Get the logs of a work request.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/ListWorkRequestLogs.go.html to see an example of how to use ListWorkRequestLogs API.
 func (client ContainerEngineClient) ListWorkRequestLogs(ctx context.Context, request ListWorkRequestLogsRequest) (response ListWorkRequestLogsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listWorkRequestLogs, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListWorkRequestLogsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListWorkRequestLogsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListWorkRequestLogsResponse{}
+			}
 		}
 		return
 	}
@@ -680,8 +1005,9 @@ func (client ContainerEngineClient) ListWorkRequestLogs(ctx context.Context, req
 }
 
 // listWorkRequestLogs implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) listWorkRequestLogs(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}/logs")
+func (client ContainerEngineClient) listWorkRequestLogs(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests/{workRequestId}/logs", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -700,16 +1026,28 @@ func (client ContainerEngineClient) listWorkRequestLogs(ctx context.Context, req
 }
 
 // ListWorkRequests List all work requests in a compartment.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/ListWorkRequests.go.html to see an example of how to use ListWorkRequests API.
 func (client ContainerEngineClient) ListWorkRequests(ctx context.Context, request ListWorkRequestsRequest) (response ListWorkRequestsResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.listWorkRequests, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = ListWorkRequestsResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = ListWorkRequestsResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = ListWorkRequestsResponse{}
+			}
 		}
 		return
 	}
@@ -722,8 +1060,9 @@ func (client ContainerEngineClient) ListWorkRequests(ctx context.Context, reques
 }
 
 // listWorkRequests implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) listWorkRequests(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests")
+func (client ContainerEngineClient) listWorkRequests(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodGet, "/workRequests", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -742,16 +1081,28 @@ func (client ContainerEngineClient) listWorkRequests(ctx context.Context, reques
 }
 
 // UpdateCluster Update the details of a cluster.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/UpdateCluster.go.html to see an example of how to use UpdateCluster API.
 func (client ContainerEngineClient) UpdateCluster(ctx context.Context, request UpdateClusterRequest) (response UpdateClusterResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateCluster, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateClusterResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateClusterResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateClusterResponse{}
+			}
 		}
 		return
 	}
@@ -764,8 +1115,9 @@ func (client ContainerEngineClient) UpdateCluster(ctx context.Context, request U
 }
 
 // updateCluster implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) updateCluster(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/clusters/{clusterId}")
+func (client ContainerEngineClient) updateCluster(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/clusters/{clusterId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
@@ -783,17 +1135,84 @@ func (client ContainerEngineClient) updateCluster(ctx context.Context, request c
 	return response, err
 }
 
+// UpdateClusterEndpointConfig Update the details of the cluster endpoint configuration.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/UpdateClusterEndpointConfig.go.html to see an example of how to use UpdateClusterEndpointConfig API.
+func (client ContainerEngineClient) UpdateClusterEndpointConfig(ctx context.Context, request UpdateClusterEndpointConfigRequest) (response UpdateClusterEndpointConfigResponse, err error) {
+	var ociResponse common.OCIResponse
+	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
+	if request.RetryPolicy() != nil {
+		policy = *request.RetryPolicy()
+	}
+	ociResponse, err = common.Retry(ctx, request, client.updateClusterEndpointConfig, policy)
+	if err != nil {
+		if ociResponse != nil {
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateClusterEndpointConfigResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateClusterEndpointConfigResponse{}
+			}
+		}
+		return
+	}
+	if convertedResponse, ok := ociResponse.(UpdateClusterEndpointConfigResponse); ok {
+		response = convertedResponse
+	} else {
+		err = fmt.Errorf("failed to convert OCIResponse into UpdateClusterEndpointConfigResponse")
+	}
+	return
+}
+
+// updateClusterEndpointConfig implements the OCIOperation interface (enables retrying operations)
+func (client ContainerEngineClient) updateClusterEndpointConfig(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPost, "/clusters/{clusterId}/actions/updateEndpointConfig", binaryReqBody, extraHeaders)
+	if err != nil {
+		return nil, err
+	}
+
+	var response UpdateClusterEndpointConfigResponse
+	var httpResponse *http.Response
+	httpResponse, err = client.Call(ctx, &httpRequest)
+	defer common.CloseBodyIfValid(httpResponse)
+	response.RawResponse = httpResponse
+	if err != nil {
+		return response, err
+	}
+
+	err = common.UnmarshalResponse(httpResponse, &response)
+	return response, err
+}
+
 // UpdateNodePool Update the details of a node pool.
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/containerengine/UpdateNodePool.go.html to see an example of how to use UpdateNodePool API.
 func (client ContainerEngineClient) UpdateNodePool(ctx context.Context, request UpdateNodePoolRequest) (response UpdateNodePoolResponse, err error) {
 	var ociResponse common.OCIResponse
 	policy := common.NoRetryPolicy()
+	if client.RetryPolicy() != nil {
+		policy = *client.RetryPolicy()
+	}
 	if request.RetryPolicy() != nil {
 		policy = *request.RetryPolicy()
 	}
 	ociResponse, err = common.Retry(ctx, request, client.updateNodePool, policy)
 	if err != nil {
 		if ociResponse != nil {
-			response = UpdateNodePoolResponse{RawResponse: ociResponse.HTTPResponse()}
+			if httpResponse := ociResponse.HTTPResponse(); httpResponse != nil {
+				opcRequestId := httpResponse.Header.Get("opc-request-id")
+				response = UpdateNodePoolResponse{RawResponse: httpResponse, OpcRequestId: &opcRequestId}
+			} else {
+				response = UpdateNodePoolResponse{}
+			}
 		}
 		return
 	}
@@ -806,8 +1225,9 @@ func (client ContainerEngineClient) UpdateNodePool(ctx context.Context, request 
 }
 
 // updateNodePool implements the OCIOperation interface (enables retrying operations)
-func (client ContainerEngineClient) updateNodePool(ctx context.Context, request common.OCIRequest) (common.OCIResponse, error) {
-	httpRequest, err := request.HTTPRequest(http.MethodPut, "/nodePools/{nodePoolId}")
+func (client ContainerEngineClient) updateNodePool(ctx context.Context, request common.OCIRequest, binaryReqBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (common.OCIResponse, error) {
+
+	httpRequest, err := request.HTTPRequest(http.MethodPut, "/nodePools/{nodePoolId}", binaryReqBody, extraHeaders)
 	if err != nil {
 		return nil, err
 	}

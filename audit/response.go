@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Audit API
@@ -11,42 +12,10 @@
 package audit
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // Response A container object for response attributes.
-// Example:
-//   -----
-//     {
-//       "status": "200",
-//       "responseTime": "2019-09-18T00:10:59.278Z",
-//       "headers": {
-//         "ETag": [
-//           "<unique_ID>"
-//         ],
-//         "Connection": [
-//           "close"
-//         ],
-//         "Content-Length": [
-//           "1828"
-//         ],
-//         "opc-request-id": [
-//           "<unique_ID>"
-//         ],
-//         "Date": [
-//           "Wed, 18 Sep 2019 00:10:59 GMT"
-//         ],
-//         "Content-Type": [
-//           "application/json"
-//         ]
-//       },
-//       "payload": {
-//         "resourceName": "my_instance",
-//         "id": "ocid1.instance.oc1.phx.<unique_ID>"
-//       },
-//       "message": null
-//     }
-//   -----
 type Response struct {
 
 	// The status code of the response.

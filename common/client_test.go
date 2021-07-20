@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 package common
 
@@ -6,15 +7,18 @@ import (
 	"bytes"
 	"context"
 	"crypto/rsa"
+	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type customConfig struct {
@@ -40,6 +44,10 @@ func (c customConfig) PrivateRSAKey() (*rsa.PrivateKey, error) {
 }
 func (c customConfig) KeyID() (string, error) {
 	return "b/b/b", nil
+}
+
+func (c customConfig) AuthType() (AuthConfig, error) {
+	return AuthConfig{UserPrincipal, false, nil}, nil
 }
 
 func testClientWithRegion(r Region) BaseClient {
@@ -102,14 +110,6 @@ func TestClient_prepareRequestUpdatesDateHeader(t *testing.T) {
 	c.prepareRequest(&request)
 	d2 := request.Header.Get(requestHeaderDate)
 	assert.NotEqual(t, d1, d2)
-}
-
-func TestDefaultHTTPDispatcher_transportNotSet(t *testing.T) {
-	client := defaultHTTPDispatcher()
-
-	if client.Transport != nil {
-		t.Errorf("Expecting default http transport to be nil")
-	}
 }
 
 func TestClient_prepareRequestSetScheme(t *testing.T) {
@@ -289,11 +289,15 @@ type retryableOCIRequest struct {
 	retryPolicy *RetryPolicy
 }
 
-func (request retryableOCIRequest) HTTPRequest(method, path string) (http.Request, error) {
+func (request retryableOCIRequest) HTTPRequest(method, path string, binaryRequestBody *OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
 	r := http.Request{}
 	r.Method = method
 	r.URL = &url.URL{Path: path}
 	return r, nil
+}
+
+func (request retryableOCIRequest) BinaryRequestBody() (*OCIReadSeekCloser, bool) {
+	return nil, false
 }
 
 func (request retryableOCIRequest) RetryPolicy() *RetryPolicy {
@@ -312,6 +316,7 @@ func TestRetry_NeverGetSuccessfulResponse(t *testing.T) {
 			StatusCode: 400,
 		},
 	}
+	errorMessage := "TestRetryError"
 	totalNumberAttempts := uint(5)
 	numberOfTimesWeEnterShouldRetry := uint(0)
 	numberOfTimesWeEnterGetNextDuration := uint(0)
@@ -327,15 +332,16 @@ func TestRetry_NeverGetSuccessfulResponse(t *testing.T) {
 	retryableRequest := retryableOCIRequest{
 		retryPolicy: &retryPolicy,
 	}
-	// type OCIOperation func(context.Context, OCIRequest) (OCIResponse, error)
-	fakeOperation := func(context.Context, OCIRequest) (OCIResponse, error) {
-		return errorResponse, nil
+	// type OCIOperation func(context.Context, OCIRequest, OCIReadSeekCloser) (OCIResponse, error)
+	fakeOperation := func(context.Context, OCIRequest, *OCIReadSeekCloser, map[string]string) (OCIResponse, error) {
+		return errorResponse, errors.New(errorMessage)
 	}
 
 	response, err := Retry(context.Background(), retryableRequest, fakeOperation, retryPolicy)
 	assert.Equal(t, totalNumberAttempts, numberOfTimesWeEnterShouldRetry)
-	assert.Nil(t, response)
-	assert.Equal(t, err.Error(), "maximum number of attempts exceeded (5)")
+	assert.NotNil(t, response)
+	assert.Equal(t, 400, response.HTTPResponse().StatusCode)
+	assert.Equal(t, err.Error(), errorMessage)
 }
 
 func TestRetry_ImmediatelyGetsSuccessfulResponse(t *testing.T) {
@@ -360,8 +366,8 @@ func TestRetry_ImmediatelyGetsSuccessfulResponse(t *testing.T) {
 	retryableRequest := retryableOCIRequest{
 		retryPolicy: &retryPolicy,
 	}
-	// type OCIOperation func(context.Context, OCIRequest) (OCIResponse, error)
-	fakeOperation := func(context.Context, OCIRequest) (OCIResponse, error) {
+	// type OCIOperation func(context.Context, OCIRequest, OCIReadSeekCloser) (OCIResponse, error)
+	fakeOperation := func(context.Context, OCIRequest, *OCIReadSeekCloser, map[string]string) (OCIResponse, error) {
 		return successResponse, nil
 	}
 
@@ -394,8 +400,8 @@ func TestRetry_RaisesDeadlineExceededException(t *testing.T) {
 	retryableRequest := retryableOCIRequest{
 		retryPolicy: &retryPolicy,
 	}
-	// type OCIOperation func(context.Context, OCIRequest) (OCIResponse, error)
-	fakeOperation := func(context.Context, OCIRequest) (OCIResponse, error) {
+	// type OCIOperation func(context.Context, OCIReadSeekCloser) (OCIResponse, error)
+	fakeOperation := func(context.Context, OCIRequest, *OCIReadSeekCloser, map[string]string) (OCIResponse, error) {
 		return errorResponse, nil
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -436,8 +442,8 @@ func TestRetry_GetsSuccessfulResponseAfterMultipleAttempts(t *testing.T) {
 	retryableRequest := retryableOCIRequest{
 		retryPolicy: &retryPolicy,
 	}
-	// type OCIOperation func(context.Context, OCIRequest) (OCIResponse, error)
-	fakeOperation := func(context.Context, OCIRequest) (OCIResponse, error) {
+	// type OCIOperation func(context.Context, OCIRequest, OCIReadSeekCloser) (OCIResponse, error)
+	fakeOperation := func(context.Context, OCIRequest, *OCIReadSeekCloser, map[string]string) (OCIResponse, error) {
 		if numberOfTimesWeEnterShouldRetry < 7 {
 			return errorResponse, nil
 		}
@@ -464,7 +470,9 @@ func TestRetry_CancelContextWhileSleeping(t *testing.T) {
 	}
 	pol := NewRetryPolicy(uint(10), shouldRetryOperation, getNextDuration)
 	req := retryableOCIRequest{retryPolicy: &pol}
-	fakeOperation := func(context.Context, OCIRequest) (OCIResponse, error) { return errorResponse, nil }
+	fakeOperation := func(context.Context, OCIRequest, *OCIReadSeekCloser, map[string]string) (OCIResponse, error) {
+		return errorResponse, nil
+	}
 
 	ctx, cancelFn := context.WithDeadline(context.Background(), time.Now().Add(10*time.Second))
 
@@ -524,7 +532,98 @@ region=us-ashburn-1
 
 	configurationProvider, errConf := ConfigurationProviderFromFile(tmpConfFile, "")
 	assert.NoError(t, errConf)
+	authConfig, err := configurationProvider.AuthType()
+	assert.Nil(t, err)
+	assert.Equal(t, authConfig.AuthType, UserPrincipal)
 
+	client, err := NewClientWithConfig(configurationProvider)
+	assert.NotNil(t, client)
+	assert.NoError(t, err)
+}
+
+func TestBaseClient_CreateWithAuthConfig(t *testing.T) {
+	delegationTokenContent := `fakeContent`
+	tokenFile := writeTempFile(delegationTokenContent)
+	dataTpl := `[DEFAULT]
+tenancy=sometenancy
+user=someuser
+fingerprint=somefingerprint
+key_file=%s
+region=us-ashburn-1
+authentication_type=instance_principal
+delegation_token_file=%s
+`
+
+	keyFile := writeTempFile(testPrivateKeyConf)
+	data := fmt.Sprintf(dataTpl, keyFile, tokenFile)
+	tmpConfFile := writeTempFile(data)
+
+	defer removeFileFn(tmpConfFile)
+	defer removeFileFn(keyFile)
+	defer removeFileFn(tokenFile)
+
+	configurationProvider, errConf := ConfigurationProviderFromFile(tmpConfFile, "")
+	assert.NoError(t, errConf)
+	authConfig, err := configurationProvider.AuthType()
+	assert.Nil(t, err)
+	assert.Equal(t, *authConfig.OboToken, delegationTokenContent)
+	assert.Equal(t, authConfig.AuthType, InstancePrincipalDelegationToken)
+
+	client, err := NewClientWithConfig(configurationProvider)
+	assert.NotNil(t, client)
+	assert.NotNil(t, client.Signer)
+	assert.NotNil(t, client.Interceptor)
+	assert.NoError(t, err)
+}
+
+func TestBaseClient_CreateWithErrorAuthConfig(t *testing.T) {
+	dataTpl := `[DEFAULT]
+tenancy=sometenancy
+user=someuser
+fingerprint=somefingerprint
+key_file=%s
+region=us-ashburn-1
+authentication_type=instance_principal
+delegation_token_file=/nothingThere
+`
+	keyFile := writeTempFile(testPrivateKeyConf)
+	data := fmt.Sprintf(dataTpl, keyFile)
+	tmpConfFile := writeTempFile(data)
+
+	defer removeFileFn(tmpConfFile)
+	defer removeFileFn(keyFile)
+
+	configurationProvider, errConf := ConfigurationProviderFromFile(tmpConfFile, "")
+	assert.NoError(t, errConf)
+	authConfig, err := configurationProvider.AuthType()
+	assert.Nil(t, err)
+	assert.Nil(t, authConfig.OboToken)
+	assert.Equal(t, authConfig.AuthType, UnknownAuthenticationType)
+
+	client, err := NewClientWithConfig(configurationProvider)
+	assert.NotNil(t, client)
+	assert.NotNil(t, client.Signer)
+	assert.Nil(t, client.Interceptor)
+	assert.NoError(t, err)
+}
+
+func TestCustomProfileClient_CreateWithConfig(t *testing.T) {
+	dataTpl := `[DEFAULT]
+tenancy=sometenancy
+[PROFILE1]
+user=someuser
+fingerprint=somefingerprint
+key_file=%s
+region=us-ashburn-1
+`
+
+	keyFile := writeTempFile(testPrivateKeyConf)
+	data := fmt.Sprintf(dataTpl, keyFile)
+	tmpConfFile := writeTempFile(data)
+
+	defer removeFileFn(tmpConfFile)
+	defer removeFileFn(keyFile)
+	configurationProvider := CustomProfileConfigProvider(tmpConfFile, "PROFILE1")
 	client, err := NewClientWithConfig(configurationProvider)
 	assert.NotNil(t, client)
 	assert.NoError(t, err)
@@ -550,6 +649,32 @@ region=noregion
 	assert.NoError(t, errConf)
 
 	_, err := NewClientWithConfig(configurationProvider)
+	assert.NoError(t, err)
+}
+
+func TestCustomProfileClient_CreateWithBadRegion(t *testing.T) {
+	dataTpl := `[DEFAULT]
+region=someregion
+[PROFILE1]
+tenancy=sometenancy
+user=someuser
+fingerprint=somefingerprint
+key_file=%s
+region=noregion
+`
+
+	keyFile := writeTempFile(testPrivateKeyConf)
+	data := fmt.Sprintf(dataTpl, keyFile)
+	tmpConfFile := writeTempFile(data)
+
+	defer removeFileFn(tmpConfFile)
+	defer removeFileFn(keyFile)
+
+	configurationProvider := CustomProfileConfigProvider(tmpConfFile, "PROFILE1")
+
+	_, err := NewClientWithConfig(configurationProvider)
+	region, _ := configurationProvider.Region()
+	assert.Equal(t, "noregion", region)
 	assert.NoError(t, err)
 }
 
@@ -579,4 +704,66 @@ func TestHomeDir(t *testing.T) {
 	h := getHomeFolder()
 	_, e := os.Stat(h)
 	assert.NoError(t, e)
+}
+
+func TestSeekable(t *testing.T) {
+	file, err := ioutil.TempFile("", "TEMPFILE")
+	assert.NoError(t, err)
+	_, err = file.WriteString("Hello World")
+	assert.NoError(t, err)
+	defer file.Close()
+	ocirsc := NewOCIReadSeekCloser(file)
+	assert.True(t, ocirsc.Seekable())
+
+	wrappedFile := ioutil.NopCloser(file)
+	wrappedOcirsc := NewOCIReadSeekCloser(wrappedFile)
+	assert.True(t, wrappedOcirsc.Seekable())
+
+	byteArray := []byte("test for section reader")
+	reader := bytes.NewReader(byteArray)
+
+	offset := int64(2)
+	sectionLength := int64(5)
+	sectionReader := io.NewSectionReader(reader, offset, sectionLength)
+	ocirsc = NewOCIReadSeekCloser(ioutil.NopCloser(sectionReader))
+	assert.True(t, ocirsc.Seekable())
+
+	ocirsc = NewOCIReadSeekCloser(ioutil.NopCloser(reader))
+	assert.True(t, ocirsc.Seekable())
+
+	nilOcirsc := NewOCIReadSeekCloser(nil)
+	assert.False(t, nilOcirsc.Seekable())
+
+}
+
+func TestSeek(t *testing.T) {
+	file, err := ioutil.TempFile("", "TEMPFILE")
+	assert.NoError(t, err)
+	_, err = file.WriteString("Hello World1")
+	assert.NoError(t, err)
+	defer file.Close()
+	offset := int64(0)
+	ocirsc := NewOCIReadSeekCloser(file)
+	curPos, e := ocirsc.Seek(offset, io.SeekCurrent)
+	if info, err := file.Stat(); err == nil {
+		length := info.Size()
+		assert.Equal(t, curPos, length)
+	}
+	offset = int64(2)
+	curPos, e = ocirsc.Seek(offset, io.SeekStart)
+	assert.Nil(t, e)
+	assert.Equal(t, curPos, offset)
+
+	byteArray := []byte("test for bytes.reader")
+	reader := bytes.NewReader(byteArray)
+	ocirsc = NewOCIReadSeekCloser(ioutil.NopCloser(reader))
+	offset = int64(6)
+	curPos, e = ocirsc.Seek(offset, io.SeekCurrent)
+	assert.Nil(t, e)
+	assert.Equal(t, curPos, offset)
+
+	offset = int64(0)
+	curPos, e = ocirsc.Seek(offset, io.SeekStart)
+	assert.Nil(t, e)
+	assert.Equal(t, curPos, offset)
 }

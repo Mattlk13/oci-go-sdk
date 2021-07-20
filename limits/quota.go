@@ -1,23 +1,24 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
-// Service limits APIs
+// Service Limits APIs
 //
-// APIs that interact with the resource limits of a specific resource type
+// APIs that interact with the resource limits of a specific resource type.
 //
 
 package limits
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // Quota Quotas are applied on top of the service limits and inherited through the nested compartment hierarchy.
-// They allow compartment admins to limit resource consumption and set boundaries around acceptable resource use.
-// The word "quota" is used by people in different ways:
-//   * An individual statement written in the declarative language
-//   * A collection of statements in a single, named "quota" object (which has an Oracle Cloud ID (OCID) assigned to it)
-//   * The overall body of quotas your organization uses to control access to resources
+// Quotas allow compartment admins to limit resource consumption and set boundaries around acceptable resource use.
+// The term "quota" can be interpreted as the following:
+//   * An individual statement written in the declarative language.
+//   * A collection of statements in a single, named "quota" object (which has an Oracle Cloud ID (OCID) assigned to it).
+//   * The overall body of quotas your organization uses to control access to resources.
 type Quota struct {
 
 	// The OCID of the quota.
@@ -36,7 +37,7 @@ type Quota struct {
 	// The description you assign to the quota.
 	Description *string `mandatory:"true" json:"description"`
 
-	// Date and time the quota was created, in the format defined by RFC3339.
+	// Date and time the quota was created, in the format defined by RFC 3339.
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 

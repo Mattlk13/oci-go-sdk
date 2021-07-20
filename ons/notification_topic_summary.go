@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Notifications API
@@ -10,7 +11,7 @@
 package ons
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // NotificationTopicSummary A summary of the properties that define a topic.
@@ -31,8 +32,11 @@ type NotificationTopicSummary struct {
 	// The time the topic was created.
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 
-	// The endpoint for managing topic subscriptions or publishing messages to the topic.
+	// The endpoint for managing subscriptions or publishing messages to the topic.
 	ApiEndpoint *string `mandatory:"true" json:"apiEndpoint"`
+
+	// A unique short topic Id. This is used only for SMS subscriptions.
+	ShortTopicId *string `mandatory:"false" json:"shortTopicId"`
 
 	// The description of the topic.
 	Description *string `mandatory:"false" json:"description"`

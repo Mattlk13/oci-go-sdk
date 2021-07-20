@@ -1,17 +1,21 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Autoscaling API
 //
-// APIs for dynamically scaling Compute resources to meet application requirements.
-// For information about the Compute service, see Overview of the Compute Service (https://docs.cloud.oracle.com/Content/Compute/Concepts/computeoverview.htm).
+// APIs for dynamically scaling Compute resources to meet application requirements. For more information about
+// autoscaling, see Autoscaling (https://docs.cloud.oracle.com/Content/Compute/Tasks/autoscalinginstancepools.htm). For information about the
+// Compute service, see Overview of the Compute Service (https://docs.cloud.oracle.com/Content/Compute/Concepts/computeoverview.htm).
+// **Note:** Autoscaling is not available in US Government Cloud tenancies. For more information, see
+// Oracle Cloud Infrastructure US Government Cloud (https://docs.cloud.oracle.com/Content/General/Concepts/govoverview.htm).
 //
 
 package autoscaling
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // AutoScalingConfigurationSummary Summary information for an autoscaling configuration.
@@ -23,21 +27,23 @@ type AutoScalingConfigurationSummary struct {
 	// The OCID (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the autoscaling configuration.
 	Id *string `mandatory:"true" json:"id"`
 
-	// The date and time the AutoScalingConfiguration was created, in the format defined by RFC3339.
+	Resource Resource `mandatory:"true" json:"resource"`
+
+	// The date and time the autoscaling configuration was created, in the format defined by RFC3339.
 	// Example: `2016-08-25T21:10:29.600Z`
 	TimeCreated *common.SDKTime `mandatory:"true" json:"timeCreated"`
 
 	// A user-friendly name. Does not have to be unique, and it's changeable. Avoid entering confidential information.
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
-	// The minimum period of time to wait between scaling actions. The cooldown period gives the system time to stabilize
-	// before rescaling. The minimum value is 300 seconds, which is also the default.
+	// For threshold-based autoscaling policies, this value is the minimum period of time to wait between scaling actions.
+	// The cooldown period gives the system time to stabilize before rescaling. The minimum value is 300 seconds, which
+	// is also the default. The cooldown period starts when the instance pool reaches the running state.
+	// For schedule-based autoscaling policies, this value is not used.
 	CoolDownInSeconds *int `mandatory:"false" json:"coolDownInSeconds"`
 
 	// Whether the autoscaling configuration is enabled.
 	IsEnabled *bool `mandatory:"false" json:"isEnabled"`
-
-	Resource Resource `mandatory:"false" json:"resource"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
 	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
@@ -60,11 +66,11 @@ func (m *AutoScalingConfigurationSummary) UnmarshalJSON(data []byte) (e error) {
 		DisplayName       *string                           `json:"displayName"`
 		CoolDownInSeconds *int                              `json:"coolDownInSeconds"`
 		IsEnabled         *bool                             `json:"isEnabled"`
-		Resource          resource                          `json:"resource"`
 		DefinedTags       map[string]map[string]interface{} `json:"definedTags"`
 		FreeformTags      map[string]string                 `json:"freeformTags"`
 		CompartmentId     *string                           `json:"compartmentId"`
 		Id                *string                           `json:"id"`
+		Resource          resource                          `json:"resource"`
 		TimeCreated       *common.SDKTime                   `json:"timeCreated"`
 	}{}
 
@@ -72,10 +78,22 @@ func (m *AutoScalingConfigurationSummary) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.DisplayName = model.DisplayName
+
 	m.CoolDownInSeconds = model.CoolDownInSeconds
+
 	m.IsEnabled = model.IsEnabled
-	nn, e := model.Resource.UnmarshalPolymorphicJSON(model.Resource.JsonData)
+
+	m.DefinedTags = model.DefinedTags
+
+	m.FreeformTags = model.FreeformTags
+
+	m.CompartmentId = model.CompartmentId
+
+	m.Id = model.Id
+
+	nn, e = model.Resource.UnmarshalPolymorphicJSON(model.Resource.JsonData)
 	if e != nil {
 		return
 	}
@@ -84,10 +102,8 @@ func (m *AutoScalingConfigurationSummary) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.Resource = nil
 	}
-	m.DefinedTags = model.DefinedTags
-	m.FreeformTags = model.FreeformTags
-	m.CompartmentId = model.CompartmentId
-	m.Id = model.Id
+
 	m.TimeCreated = model.TimeCreated
+
 	return
 }

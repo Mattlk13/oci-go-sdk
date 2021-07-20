@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Container Engine for Kubernetes API
@@ -11,7 +12,7 @@
 package containerengine
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // ClusterSummary The properties that define a cluster summary.
@@ -25,6 +26,9 @@ type ClusterSummary struct {
 
 	// The OCID of the compartment in which the cluster exists.
 	CompartmentId *string `mandatory:"false" json:"compartmentId"`
+
+	// The network configuration for access to the Cluster control plane.
+	EndpointConfig *ClusterEndpointConfig `mandatory:"false" json:"endpointConfig"`
 
 	// The OCID of the virtual cloud network (VCN) in which the cluster exists
 	VcnId *string `mandatory:"false" json:"vcnId"`
@@ -49,6 +53,9 @@ type ClusterSummary struct {
 
 	// Available Kubernetes versions to which the clusters masters may be upgraded.
 	AvailableKubernetesUpgrades []string `mandatory:"false" json:"availableKubernetesUpgrades"`
+
+	// The image verification policy for signature validation.
+	ImagePolicyConfig *ImagePolicyConfig `mandatory:"false" json:"imagePolicyConfig"`
 }
 
 func (m ClusterSummary) String() string {

@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Load Balancing API
@@ -11,7 +12,7 @@ package loadbalancer
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // ExtendHttpResponseHeaderValueRule An object that represents the action of modifying a response header value. This rule applies only to HTTP listeners.
@@ -30,10 +31,16 @@ type ExtendHttpResponseHeaderValueRule struct {
 	Header *string `mandatory:"true" json:"header"`
 
 	// A string to prepend to the header value. The resulting header value must still conform to RFC 7230.
+	// With the following exceptions:
+	// *  value cannot contain `$`
+	// *  value cannot contain patterns like `{variable_name}`. They are reserved for future extensions. Currently, such values are invalid.
 	// Example: `example_prefix_value`
 	Prefix *string `mandatory:"false" json:"prefix"`
 
 	// A string to append to the header value. The resulting header value must still conform to RFC 7230.
+	// With the following exceptions:
+	// *  value cannot contain `$`
+	// *  value cannot contain patterns like `{variable_name}`. They are reserved for future extensions. Currently, such values are invalid.
 	// Example: `example_suffix_value`
 	Suffix *string `mandatory:"false" json:"suffix"`
 }

@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -14,7 +15,7 @@ package core
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // InstanceConfigurationBlockVolumeDetails Create new block volumes or attach to an existing volume. Specify either createDetails or volumeId.
@@ -43,7 +44,8 @@ func (m *InstanceConfigurationBlockVolumeDetails) UnmarshalJSON(data []byte) (e 
 	if e != nil {
 		return
 	}
-	nn, e := model.AttachDetails.UnmarshalPolymorphicJSON(model.AttachDetails.JsonData)
+	var nn interface{}
+	nn, e = model.AttachDetails.UnmarshalPolymorphicJSON(model.AttachDetails.JsonData)
 	if e != nil {
 		return
 	}
@@ -52,7 +54,10 @@ func (m *InstanceConfigurationBlockVolumeDetails) UnmarshalJSON(data []byte) (e 
 	} else {
 		m.AttachDetails = nil
 	}
+
 	m.CreateDetails = model.CreateDetails
+
 	m.VolumeId = model.VolumeId
+
 	return
 }

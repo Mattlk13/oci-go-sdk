@@ -1,8 +1,7 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
-//
-// Example code for Compartments Service API
-//
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
+// Example code for Compartments Service API
 // This script provides an example on how to move a compartment to a different compartment
 // This script will
 //
@@ -17,9 +16,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/oracle/oci-go-sdk/common"
-	"github.com/oracle/oci-go-sdk/example/helpers"
-	"github.com/oracle/oci-go-sdk/identity"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/example/helpers"
+	"github.com/oracle/oci-go-sdk/v45/identity"
 )
 
 // ExampleMoveCompartment Moves an active compartment under a different parent

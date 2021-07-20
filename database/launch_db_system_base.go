@@ -1,16 +1,17 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Database Service API
 //
-// The API for the Database Service.
+// The API for the Database Service. Use this API to manage resources such as databases and DB Systems. For more information, see Overview of the Database Service (https://docs.cloud.oracle.com/iaas/Content/Database/Concepts/databaseoverview.htm).
 //
 
 package database
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // LaunchDbSystemBase Parameters for provisioning a bare metal, virtual machine, or Exadata DB system.
@@ -84,10 +85,12 @@ type LaunchDbSystemBase interface {
 	// **Subnet Restrictions:** See the subnet restrictions information for **subnetId**.
 	GetBackupSubnetId() *string
 
-	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that this DB system belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm).
+	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that this resource belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm).
+	// **NsgIds restrictions:**
+	// - Autonomous Databases with private access require at least 1 Network Security Group (NSG). The nsgIds array cannot be empty.
 	GetNsgIds() []string
 
-	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that the backup network of this DB system belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm). Applicable only to Exadata DB systems.
+	// A list of the OCIDs (https://docs.cloud.oracle.com/Content/General/Concepts/identifiers.htm) of the network security groups (NSGs) that the backup network of this DB system belongs to. Setting this to an empty array after the list is created removes the resource from all NSGs. For more information about NSGs, see Security Rules (https://docs.cloud.oracle.com/Content/Network/Concepts/securityrules.htm). Applicable only to Exadata systems.
 	GetBackupNetworkNsgIds() []string
 
 	// The time zone to use for the DB system. For details, see DB System Time Zones (https://docs.cloud.oracle.com/Content/Database/References/timezones.htm).
@@ -103,7 +106,7 @@ type LaunchDbSystemBase interface {
 	// (do not provide one). Otherwise, provide a valid DNS domain name. Hyphens (-) are not permitted.
 	GetDomain() *string
 
-	// The cluster name for Exadata and 2-node RAC virtual machine DB systems. The cluster name must begin with an an alphabetic character, and may contain hyphens (-). Underscores (_) are not permitted. The cluster name can be no longer than 11 characters and is not case sensitive.
+	// The cluster name for Exadata and 2-node RAC virtual machine DB systems. The cluster name must begin with an alphabetic character, and may contain hyphens (-). Underscores (_) are not permitted. The cluster name can be no longer than 11 characters and is not case sensitive.
 	GetClusterName() *string
 
 	// The percentage assigned to DATA storage (user data and database files).
@@ -114,7 +117,13 @@ type LaunchDbSystemBase interface {
 	// Size (in GB) of the initial data volume that will be created and attached to a virtual machine DB system. You can scale up storage after provisioning, as needed. Note that the total storage size attached will be more than the amount you specify to allow for REDO/RECO space and software volume.
 	GetInitialDataStorageSizeInGB() *int
 
-	// The number of nodes to launch for a 2-node RAC virtual machine DB system.
+	// The OCID of the key container that is used as the master encryption key in database transparent data encryption (TDE) operations.
+	GetKmsKeyId() *string
+
+	// The OCID of the key container version that is used in database transparent data encryption (TDE) operations KMS Key can have multiple key versions. If none is specified, the current key version (latest) of the Key Id is used for the operation.
+	GetKmsKeyVersionId() *string
+
+	// The number of nodes to launch for a 2-node RAC virtual machine DB system. Specify either 1 or 2.
 	GetNodeCount() *int
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no predefined name, type, or namespace.
@@ -125,6 +134,10 @@ type LaunchDbSystemBase interface {
 	// Defined tags for this resource. Each key is predefined and scoped to a namespace.
 	// For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
 	GetDefinedTags() map[string]map[string]interface{}
+
+	// A private IP address of your choice. Must be an available IP address within the subnet's CIDR.
+	// If you don't specify a value, Oracle automatically assigns a private IP address from the subnet.
+	GetPrivateIp() *string
 }
 
 type launchdbsystembase struct {
@@ -148,9 +161,12 @@ type launchdbsystembase struct {
 	ClusterName                *string                           `mandatory:"false" json:"clusterName"`
 	DataStoragePercentage      *int                              `mandatory:"false" json:"dataStoragePercentage"`
 	InitialDataStorageSizeInGB *int                              `mandatory:"false" json:"initialDataStorageSizeInGB"`
+	KmsKeyId                   *string                           `mandatory:"false" json:"kmsKeyId"`
+	KmsKeyVersionId            *string                           `mandatory:"false" json:"kmsKeyVersionId"`
 	NodeCount                  *int                              `mandatory:"false" json:"nodeCount"`
 	FreeformTags               map[string]string                 `mandatory:"false" json:"freeformTags"`
 	DefinedTags                map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
+	PrivateIp                  *string                           `mandatory:"false" json:"privateIp"`
 	Source                     string                            `json:"source"`
 }
 
@@ -184,9 +200,12 @@ func (m *launchdbsystembase) UnmarshalJSON(data []byte) error {
 	m.ClusterName = s.Model.ClusterName
 	m.DataStoragePercentage = s.Model.DataStoragePercentage
 	m.InitialDataStorageSizeInGB = s.Model.InitialDataStorageSizeInGB
+	m.KmsKeyId = s.Model.KmsKeyId
+	m.KmsKeyVersionId = s.Model.KmsKeyVersionId
 	m.NodeCount = s.Model.NodeCount
 	m.FreeformTags = s.Model.FreeformTags
 	m.DefinedTags = s.Model.DefinedTags
+	m.PrivateIp = s.Model.PrivateIp
 	m.Source = s.Model.Source
 
 	return err
@@ -203,6 +222,14 @@ func (m *launchdbsystembase) UnmarshalPolymorphicJSON(data []byte) (interface{},
 	switch m.Source {
 	case "NONE":
 		mm := LaunchDbSystemDetails{}
+		err = json.Unmarshal(data, &mm)
+		return mm, err
+	case "DB_SYSTEM":
+		mm := LaunchDbSystemFromDbSystemDetails{}
+		err = json.Unmarshal(data, &mm)
+		return mm, err
+	case "DATABASE":
+		mm := LaunchDbSystemFromDatabaseDetails{}
 		err = json.Unmarshal(data, &mm)
 		return mm, err
 	case "DB_BACKUP":
@@ -309,6 +336,16 @@ func (m launchdbsystembase) GetInitialDataStorageSizeInGB() *int {
 	return m.InitialDataStorageSizeInGB
 }
 
+//GetKmsKeyId returns KmsKeyId
+func (m launchdbsystembase) GetKmsKeyId() *string {
+	return m.KmsKeyId
+}
+
+//GetKmsKeyVersionId returns KmsKeyVersionId
+func (m launchdbsystembase) GetKmsKeyVersionId() *string {
+	return m.KmsKeyVersionId
+}
+
 //GetNodeCount returns NodeCount
 func (m launchdbsystembase) GetNodeCount() *int {
 	return m.NodeCount
@@ -324,6 +361,11 @@ func (m launchdbsystembase) GetDefinedTags() map[string]map[string]interface{} {
 	return m.DefinedTags
 }
 
+//GetPrivateIp returns PrivateIp
+func (m launchdbsystembase) GetPrivateIp() *string {
+	return m.PrivateIp
+}
+
 func (m launchdbsystembase) String() string {
 	return common.PointerString(m)
 }
@@ -335,11 +377,15 @@ type LaunchDbSystemBaseSourceEnum string
 const (
 	LaunchDbSystemBaseSourceNone     LaunchDbSystemBaseSourceEnum = "NONE"
 	LaunchDbSystemBaseSourceDbBackup LaunchDbSystemBaseSourceEnum = "DB_BACKUP"
+	LaunchDbSystemBaseSourceDatabase LaunchDbSystemBaseSourceEnum = "DATABASE"
+	LaunchDbSystemBaseSourceDbSystem LaunchDbSystemBaseSourceEnum = "DB_SYSTEM"
 )
 
 var mappingLaunchDbSystemBaseSource = map[string]LaunchDbSystemBaseSourceEnum{
 	"NONE":      LaunchDbSystemBaseSourceNone,
 	"DB_BACKUP": LaunchDbSystemBaseSourceDbBackup,
+	"DATABASE":  LaunchDbSystemBaseSourceDatabase,
+	"DB_SYSTEM": LaunchDbSystemBaseSourceDbSystem,
 }
 
 // GetLaunchDbSystemBaseSourceEnumValues Enumerates the set of values for LaunchDbSystemBaseSourceEnum

@@ -1,7 +1,8 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
-// OceInstance API
+// Oracle Content and Experience API
 //
 // Oracle Content and Experience is a cloud-based content hub to drive omni-channel content management and accelerate experience delivery
 //
@@ -9,7 +10,7 @@
 package oce
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // OceInstanceSummary Summary of the OceInstance.
@@ -45,6 +46,22 @@ type OceInstanceSummary struct {
 	// OceInstance description, can be updated
 	Description *string `mandatory:"false" json:"description"`
 
+	// Instance type based on its usage
+	InstanceUsageType OceInstanceSummaryInstanceUsageTypeEnum `mandatory:"false" json:"instanceUsageType,omitempty"`
+
+	// Upgrade schedule type representing service to be upgraded immediately whenever latest version is released
+	// or delay upgrade of the service to previous released version
+	UpgradeSchedule OceInstanceUpgradeScheduleEnum `mandatory:"false" json:"upgradeSchedule,omitempty"`
+
+	// Web Application Firewall(WAF) primary domain
+	WafPrimaryDomain *string `mandatory:"false" json:"wafPrimaryDomain"`
+
+	// Flag indicating whether the instance access is private or public
+	InstanceAccessType OceInstanceSummaryInstanceAccessTypeEnum `mandatory:"false" json:"instanceAccessType,omitempty"`
+
+	// Flag indicating whether the instance license is new cloud or bring your own license
+	InstanceLicenseType LicenseTypeEnum `mandatory:"false" json:"instanceLicenseType,omitempty"`
+
 	// The time the the OceInstance was created. An RFC3339 formatted datetime string
 	TimeCreated *common.SDKTime `mandatory:"false" json:"timeCreated"`
 
@@ -68,10 +85,60 @@ type OceInstanceSummary struct {
 	// Usage of predefined tag keys. These predefined keys are scoped to namespaces.
 	// Example: `{"foo-namespace": {"bar-key": "value"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
+
+	// Usage of system tag keys. These predefined keys are scoped to namespaces.
+	// Example: `{"orcl-cloud": {"free-tier-retained": "true"}}`
+	SystemTags map[string]map[string]interface{} `mandatory:"false" json:"systemTags"`
 }
 
 func (m OceInstanceSummary) String() string {
 	return common.PointerString(m)
+}
+
+// OceInstanceSummaryInstanceUsageTypeEnum Enum with underlying type: string
+type OceInstanceSummaryInstanceUsageTypeEnum string
+
+// Set of constants representing the allowable values for OceInstanceSummaryInstanceUsageTypeEnum
+const (
+	OceInstanceSummaryInstanceUsageTypePrimary    OceInstanceSummaryInstanceUsageTypeEnum = "PRIMARY"
+	OceInstanceSummaryInstanceUsageTypeNonprimary OceInstanceSummaryInstanceUsageTypeEnum = "NONPRIMARY"
+)
+
+var mappingOceInstanceSummaryInstanceUsageType = map[string]OceInstanceSummaryInstanceUsageTypeEnum{
+	"PRIMARY":    OceInstanceSummaryInstanceUsageTypePrimary,
+	"NONPRIMARY": OceInstanceSummaryInstanceUsageTypeNonprimary,
+}
+
+// GetOceInstanceSummaryInstanceUsageTypeEnumValues Enumerates the set of values for OceInstanceSummaryInstanceUsageTypeEnum
+func GetOceInstanceSummaryInstanceUsageTypeEnumValues() []OceInstanceSummaryInstanceUsageTypeEnum {
+	values := make([]OceInstanceSummaryInstanceUsageTypeEnum, 0)
+	for _, v := range mappingOceInstanceSummaryInstanceUsageType {
+		values = append(values, v)
+	}
+	return values
+}
+
+// OceInstanceSummaryInstanceAccessTypeEnum Enum with underlying type: string
+type OceInstanceSummaryInstanceAccessTypeEnum string
+
+// Set of constants representing the allowable values for OceInstanceSummaryInstanceAccessTypeEnum
+const (
+	OceInstanceSummaryInstanceAccessTypePublic  OceInstanceSummaryInstanceAccessTypeEnum = "PUBLIC"
+	OceInstanceSummaryInstanceAccessTypePrivate OceInstanceSummaryInstanceAccessTypeEnum = "PRIVATE"
+)
+
+var mappingOceInstanceSummaryInstanceAccessType = map[string]OceInstanceSummaryInstanceAccessTypeEnum{
+	"PUBLIC":  OceInstanceSummaryInstanceAccessTypePublic,
+	"PRIVATE": OceInstanceSummaryInstanceAccessTypePrivate,
+}
+
+// GetOceInstanceSummaryInstanceAccessTypeEnumValues Enumerates the set of values for OceInstanceSummaryInstanceAccessTypeEnum
+func GetOceInstanceSummaryInstanceAccessTypeEnumValues() []OceInstanceSummaryInstanceAccessTypeEnum {
+	values := make([]OceInstanceSummaryInstanceAccessTypeEnum, 0)
+	for _, v := range mappingOceInstanceSummaryInstanceAccessType {
+		values = append(values, v)
+	}
+	return values
 }
 
 // OceInstanceSummaryLifecycleStateEnum Enum with underlying type: string

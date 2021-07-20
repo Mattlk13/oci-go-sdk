@@ -1,14 +1,19 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 package objectstorage
 
 import (
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 	"net/http"
 )
 
 // CommitMultipartUploadRequest wrapper for the CommitMultipartUpload operation
+//
+// See also
+//
+// Click https://docs.cloud.oracle.com/en-us/iaas/tools/go-sdk-examples/latest/objectstorage/CommitMultipartUpload.go.html to see an example of how to use CommitMultipartUploadRequest.
 type CommitMultipartUploadRequest struct {
 
 	// The Object Storage namespace used for the request.
@@ -28,13 +33,13 @@ type CommitMultipartUploadRequest struct {
 	// The part numbers and entity tags (ETags) for the parts you want to commit.
 	CommitMultipartUploadDetails `contributesTo:"body"`
 
-	// The entity tag (ETag) to match. For creating and committing a multipart upload to an object, this is the entity tag of the target object.
-	// For uploading a part, this is the entity tag of the target part.
+	// The entity tag (ETag) to match with the ETag of an existing resource. If the specified ETag matches the ETag of
+	// the existing resource, GET and HEAD requests will return the resource and PUT and POST requests will upload
+	// the resource.
 	IfMatch *string `mandatory:"false" contributesTo:"header" name:"if-match"`
 
-	// The entity tag (ETag) to avoid matching. The only valid value is '*', which indicates that the request should fail if the object
-	// already exists. For creating and committing a multipart upload, this is the entity tag of the target object. For uploading a
-	// part, this is the entity tag of the target part.
+	// The entity tag (ETag) to avoid matching. The only valid value is '*', which indicates that the request should
+	// fail if the resource already exists.
 	IfNoneMatch *string `mandatory:"false" contributesTo:"header" name:"if-none-match"`
 
 	// The client request ID for tracing.
@@ -50,8 +55,16 @@ func (request CommitMultipartUploadRequest) String() string {
 }
 
 // HTTPRequest implements the OCIRequest interface
-func (request CommitMultipartUploadRequest) HTTPRequest(method, path string) (http.Request, error) {
-	return common.MakeDefaultHTTPRequestWithTaggedStruct(method, path, request)
+func (request CommitMultipartUploadRequest) HTTPRequest(method, path string, binaryRequestBody *common.OCIReadSeekCloser, extraHeaders map[string]string) (http.Request, error) {
+
+	return common.MakeDefaultHTTPRequestWithTaggedStructAndExtraHeaders(method, path, request, extraHeaders)
+}
+
+// BinaryRequestBody implements the OCIRequest interface
+func (request CommitMultipartUploadRequest) BinaryRequestBody() (*common.OCIReadSeekCloser, bool) {
+
+	return nil, false
+
 }
 
 // RetryPolicy implements the OCIRetryableRequest interface. This retrieves the specified retry policy.
@@ -82,8 +95,11 @@ type CommitMultipartUploadResponse struct {
 	// The entity tag (ETag) for the object.
 	ETag *string `presentIn:"header" name:"etag"`
 
-	// The time the object was last modified, as described in RFC 2616 (https://tools.ietf.org/rfc/rfc2616), section 14.29.
+	// The time the object was last modified, as described in RFC 2616 (https://tools.ietf.org/html/rfc2616#section-14.29).
 	LastModified *common.SDKTime `presentIn:"header" name:"last-modified"`
+
+	// VersionId of the newly created object
+	VersionId *string `presentIn:"header" name:"version-id"`
 }
 
 func (response CommitMultipartUploadResponse) String() string {

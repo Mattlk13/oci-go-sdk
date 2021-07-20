@@ -1,8 +1,13 @@
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
+
 package common
 
 import (
 	"context"
 	"fmt"
+	"io"
+	"math"
 	"math/rand"
 	"runtime"
 	"time"
@@ -20,6 +25,9 @@ const (
 type OCIRetryableRequest interface {
 	// Any retryable request must implement the OCIRequest interface
 	OCIRequest
+
+	// Each operation should implement this method, if has binary body, return OCIReadSeekCloser and true, otherwise return nil, false
+	BinaryRequestBody() (*OCIReadSeekCloser, bool)
 
 	// Each operation specifies default retry behavior. By passing no arguments to this method, the default retry
 	// behavior, as determined on a per-operation-basis, will be honored. Variadic retry policy option arguments
@@ -72,6 +80,47 @@ func NoRetryPolicy() RetryPolicy {
 	return NewRetryPolicy(uint(1), dontRetryOperation, zeroNextDuration)
 }
 
+// DefaultRetryPolicy is a helper method that assembles and returns a return policy that is defined to be a default one
+// The default retry policy will retry on (409, IncorrectState), (429, TooManyRequests) and any 5XX errors except (501, MethodNotImplemented)
+// The default retry behavior is using exponential backoff with jitter, the maximum wait time is 30s
+func DefaultRetryPolicy() RetryPolicy {
+	defaultRetryPolicy := func(r OCIOperationResponse) bool {
+		type HTTPStatus struct {
+			code    int
+			message string
+		}
+		defaultRetryStatusCodeMap := map[HTTPStatus]bool{
+			{409, "IncorrectState"}:  true,
+			{429, "TooManyRequests"}: true,
+
+			{501, "MethodNotImplemented"}: false,
+		}
+
+		if r.Error == nil && 199 < r.Response.HTTPResponse().StatusCode && r.Response.HTTPResponse().StatusCode < 300 {
+			return false
+		}
+		if IsNetworkError(r.Error) {
+			return true
+		}
+		if err, ok := IsServiceError(r.Error); ok {
+			if shouldRetry, ok := defaultRetryStatusCodeMap[HTTPStatus{err.GetHTTPStatusCode(), err.GetCode()}]; ok {
+				return shouldRetry
+			}
+			return 500 <= r.Response.HTTPResponse().StatusCode && r.Response.HTTPResponse().StatusCode < 600
+		}
+		return false
+	}
+	maxSleepBetween := 30.0
+	exponentialBackoffWithJitter := func(r OCIOperationResponse) time.Duration {
+		sleepTime := math.Pow(float64(2), float64(r.AttemptNumber-1))
+		if sleepTime < maxSleepBetween {
+			return time.Duration(sleepTime+rand.Float64()) * time.Second
+		}
+		return time.Duration(maxSleepBetween+rand.Float64()) * time.Second
+	}
+	return NewRetryPolicy(uint(8), defaultRetryPolicy, exponentialBackoffWithJitter)
+}
+
 // NewRetryPolicy is a helper method for assembling a Retry Policy object.
 func NewRetryPolicy(attempts uint, retryOperation func(OCIOperationResponse) bool, nextDuration func(OCIOperationResponse) time.Duration) RetryPolicy {
 	return RetryPolicy{
@@ -121,15 +170,42 @@ func Retry(ctx context.Context, request OCIRetryableRequest, operation OCIOperat
 			}
 		}()
 
+		// if request body is binary request body and seekable, save the current position
+		var curPos int64 = 0
+		isSeekable := false
+		rsc, isBinaryRequest := request.BinaryRequestBody()
+		if rsc != nil {
+			defer rsc.rc.Close()
+		}
+		if policy.MaximumNumberAttempts != uint(1) {
+			if rsc.Seekable() {
+				isSeekable = true
+				curPos, _ = rsc.Seek(0, io.SeekCurrent)
+			}
+		}
+
+		extraHeaders := make(map[string]string)
 		// use a one-based counter because it's easier to think about operation retry in terms of attempt numbering
 		for currentOperationAttempt := uint(1); shouldContinueIssuingRequests(currentOperationAttempt, policy.MaximumNumberAttempts); currentOperationAttempt++ {
 			Debugln(fmt.Sprintf("operation attempt #%v", currentOperationAttempt))
-			response, err = operation(ctx, request)
+			// rewind body once needed
+			if isSeekable {
+				rsc = NewOCIReadSeekCloser(rsc.rc)
+				rsc.Seek(curPos, io.SeekStart)
+			}
+			response, err = operation(ctx, request, rsc, extraHeaders)
+
 			operationResponse := NewOCIOperationResponse(response, err, currentOperationAttempt)
 
 			if !policy.ShouldRetryOperation(operationResponse) {
 				// we should NOT retry operation based on response and/or error => return
 				retrierChannel <- retrierResult{response, err}
+				return
+			}
+
+			// if the request body type is stream, requested retry but doesn't resettable, throw error and stop retrying
+			if isBinaryRequest && !isSeekable {
+				retrierChannel <- retrierResult{response, NonSeekableRequestRetryFailure{err}}
 				return
 			}
 
@@ -147,7 +223,7 @@ func Retry(ctx context.Context, request OCIRetryableRequest, operation OCIOperat
 			<-time.After(duration)
 		}
 
-		retrierChannel <- retrierResult{nil, fmt.Errorf("maximum number of attempts exceeded (%v)", policy.MaximumNumberAttempts)}
+		retrierChannel <- retrierResult{response, err}
 	}()
 
 	select {

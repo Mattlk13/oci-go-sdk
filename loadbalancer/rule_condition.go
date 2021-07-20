@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Load Balancing API
@@ -11,7 +12,7 @@ package loadbalancer
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // RuleCondition A condition to apply to an access control rule.
@@ -56,6 +57,10 @@ func (m *rulecondition) UnmarshalPolymorphicJSON(data []byte) (interface{}, erro
 		mm := SourceIpAddressCondition{}
 		err = json.Unmarshal(data, &mm)
 		return mm, err
+	case "PATH":
+		mm := PathMatchCondition{}
+		err = json.Unmarshal(data, &mm)
+		return mm, err
 	case "SOURCE_VCN_IP_ADDRESS":
 		mm := SourceVcnIpAddressCondition{}
 		err = json.Unmarshal(data, &mm)
@@ -74,15 +79,17 @@ type RuleConditionAttributeNameEnum string
 
 // Set of constants representing the allowable values for RuleConditionAttributeNameEnum
 const (
-	RuleConditionAttributeNameIpAddress    RuleConditionAttributeNameEnum = "SOURCE_IP_ADDRESS"
-	RuleConditionAttributeNameVcnId        RuleConditionAttributeNameEnum = "SOURCE_VCN_ID"
-	RuleConditionAttributeNameVcnIpAddress RuleConditionAttributeNameEnum = "SOURCE_VCN_IP_ADDRESS"
+	RuleConditionAttributeNameSourceIpAddress    RuleConditionAttributeNameEnum = "SOURCE_IP_ADDRESS"
+	RuleConditionAttributeNameSourceVcnId        RuleConditionAttributeNameEnum = "SOURCE_VCN_ID"
+	RuleConditionAttributeNameSourceVcnIpAddress RuleConditionAttributeNameEnum = "SOURCE_VCN_IP_ADDRESS"
+	RuleConditionAttributeNamePath               RuleConditionAttributeNameEnum = "PATH"
 )
 
 var mappingRuleConditionAttributeName = map[string]RuleConditionAttributeNameEnum{
-	"SOURCE_IP_ADDRESS":     RuleConditionAttributeNameIpAddress,
-	"SOURCE_VCN_ID":         RuleConditionAttributeNameVcnId,
-	"SOURCE_VCN_IP_ADDRESS": RuleConditionAttributeNameVcnIpAddress,
+	"SOURCE_IP_ADDRESS":     RuleConditionAttributeNameSourceIpAddress,
+	"SOURCE_VCN_ID":         RuleConditionAttributeNameSourceVcnId,
+	"SOURCE_VCN_IP_ADDRESS": RuleConditionAttributeNameSourceVcnIpAddress,
+	"PATH":                  RuleConditionAttributeNamePath,
 }
 
 // GetRuleConditionAttributeNameEnumValues Enumerates the set of values for RuleConditionAttributeNameEnum

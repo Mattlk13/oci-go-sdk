@@ -1,4 +1,5 @@
-// Copyright (c) 2016, 2018, 2019, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2021, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 // Code generated. DO NOT EDIT.
 
 // Core Services API
@@ -14,7 +15,7 @@ package core
 
 import (
 	"encoding/json"
-	"github.com/oracle/oci-go-sdk/common"
+	"github.com/oracle/oci-go-sdk/v45/common"
 )
 
 // CreateImageDetails Either instanceId or imageSourceDetails must be provided in addition to other required parameters.
@@ -24,31 +25,30 @@ type CreateImageDetails struct {
 	CompartmentId *string `mandatory:"true" json:"compartmentId"`
 
 	// Defined tags for this resource. Each key is predefined and scoped to a
-	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Operations": {"CostCenter": "42"}}`
 	DefinedTags map[string]map[string]interface{} `mandatory:"false" json:"definedTags"`
 
 	// A user-friendly name for the image. It does not have to be unique, and it's changeable.
 	// Avoid entering confidential information.
-	// You cannot use an Oracle-provided image name as a custom image name.
+	// You cannot use a platform image name as a custom image name.
 	// Example: `My Oracle Linux image`
 	DisplayName *string `mandatory:"false" json:"displayName"`
 
 	// Free-form tags for this resource. Each tag is a simple key-value pair with no
-	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/Content/General/Concepts/resourcetags.htm).
+	// predefined name, type, or namespace. For more information, see Resource Tags (https://docs.cloud.oracle.com/iaas/Content/General/Concepts/resourcetags.htm).
 	// Example: `{"Department": "Finance"}`
 	FreeformTags map[string]string `mandatory:"false" json:"freeformTags"`
 
-	// Details for creating an image through import
 	ImageSourceDetails ImageSourceDetails `mandatory:"false" json:"imageSourceDetails"`
 
 	// The OCID of the instance you want to use as the basis for the image.
 	InstanceId *string `mandatory:"false" json:"instanceId"`
 
 	// Specifies the configuration mode for launching virtual machine (VM) instances. The configuration modes are:
-	// * `NATIVE` - VM instances launch with paravirtualized boot and VFIO devices. The default value for Oracle-provided images.
+	// * `NATIVE` - VM instances launch with paravirtualized boot and VFIO devices. The default value for platform images.
 	// * `EMULATED` - VM instances launch with emulated devices, such as the E1000 network driver and emulated SCSI disk controller.
-	// * `PARAVIRTUALIZED` - VM instances launch with paravirtualized devices using virtio drivers.
+	// * `PARAVIRTUALIZED` - VM instances launch with paravirtualized devices using VirtIO drivers.
 	// * `CUSTOM` - VM instances launch with custom configuration settings specified in the `LaunchOptions` parameter.
 	LaunchMode CreateImageDetailsLaunchModeEnum `mandatory:"false" json:"launchMode,omitempty"`
 }
@@ -73,10 +73,14 @@ func (m *CreateImageDetails) UnmarshalJSON(data []byte) (e error) {
 	if e != nil {
 		return
 	}
+	var nn interface{}
 	m.DefinedTags = model.DefinedTags
+
 	m.DisplayName = model.DisplayName
+
 	m.FreeformTags = model.FreeformTags
-	nn, e := model.ImageSourceDetails.UnmarshalPolymorphicJSON(model.ImageSourceDetails.JsonData)
+
+	nn, e = model.ImageSourceDetails.UnmarshalPolymorphicJSON(model.ImageSourceDetails.JsonData)
 	if e != nil {
 		return
 	}
@@ -85,9 +89,13 @@ func (m *CreateImageDetails) UnmarshalJSON(data []byte) (e error) {
 	} else {
 		m.ImageSourceDetails = nil
 	}
+
 	m.InstanceId = model.InstanceId
+
 	m.LaunchMode = model.LaunchMode
+
 	m.CompartmentId = model.CompartmentId
+
 	return
 }
 

@@ -1,15 +1,18 @@
-// Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2016, 2018, 2020, Oracle and/or its affiliates.  All rights reserved.
+// This software is dual-licensed to you under the Universal Permissive License (UPL) 1.0 as shown at https://oss.oracle.com/licenses/upl or Apache License 2.0 as shown at http://www.apache.org/licenses/LICENSE-2.0. You may choose either license.
 
 package transfer
 
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
+	"strings"
 	"sync"
 
-	"github.com/oracle/oci-go-sdk/common"
-	"github.com/oracle/oci-go-sdk/objectstorage"
+	"github.com/oracle/oci-go-sdk/v45/common"
+	"github.com/oracle/oci-go-sdk/v45/objectstorage"
 )
 
 // FileUploader is an interface to upload a file
@@ -46,11 +49,11 @@ func (fileUpload *fileUpload) UploadFileMultiparts(ctx context.Context, request 
 	fileSize := fi.Size()
 
 	uploadID, err := fileUpload.multipartUploader.createMultipartUpload(ctx, request.UploadRequest)
-	fileUpload.uploadID = uploadID
 
 	if err != nil {
 		return
 	}
+	fileUpload.uploadID = uploadID
 
 	if fileUpload.fileUploadReqs == nil {
 		fileUpload.fileUploadReqs = make(map[string]UploadFileRequest)
@@ -66,8 +69,7 @@ func (fileUpload *fileUpload) UploadFileMultiparts(ctx context.Context, request 
 	// UploadFileMultiparts closes the done channel when it returns
 	done := make(chan struct{})
 	defer close(done)
-	parts := fileUpload.manifest.splitFileToParts(done, *request.PartSize, file, fileSize)
-
+	parts := fileUpload.manifest.splitFileToParts(done, *request.PartSize, request.EnableMultipartChecksumVerification, file, fileSize)
 	response, err = fileUpload.startConcurrentUpload(ctx, done, parts, request)
 	return
 }
@@ -102,6 +104,7 @@ func (fileUpload *fileUpload) UploadFilePutObject(ctx context.Context, request U
 		ContentMD5:         request.ContentMD5,
 		OpcClientRequestId: request.OpcClientRequestID,
 		RequestMetadata:    request.RequestMetadata,
+		StorageTier:        request.StorageTier,
 	}
 
 	resp, err := request.ObjectStorageClient.PutObject(ctx, req)
@@ -178,6 +181,9 @@ func (fileUpload *fileUpload) startConcurrentUpload(ctx context.Context, done <-
 	}()
 
 	fileUpload.manifest.updateManifest(result, fileUpload.uploadID)
+	// Calculate multipartMD5 once enabled multipart MD5 verification.
+	multipartMD5 := fileUpload.manifest.getMultipartMD5Checksum(request.EnableMultipartChecksumVerification, fileUpload.uploadID)
+
 	resp, err := fileUpload.multipartUploader.commit(ctx, request.UploadRequest, fileUpload.manifest.parts[fileUpload.uploadID], fileUpload.uploadID)
 
 	if err != nil {
@@ -187,6 +193,11 @@ func (fileUpload *fileUpload) startConcurrentUpload(ctx context.Context, done <-
 				MultipartUploadResponse: &MultipartUploadResponse{
 					isResumable: common.Bool(true), UploadID: common.String(fileUpload.uploadID)}},
 			err
+	}
+
+	if multipartMD5 != nil && *request.EnableMultipartChecksumVerification && strings.Compare(*resp.OpcMultipartMd5, *multipartMD5) != 0 {
+		err = fmt.Errorf("multipart base64 MD5 checksum verification failure, the sending opcMD5 is %s, the reveived is %s", *resp.OpcMultipartMd5, *multipartMD5)
+		common.Debugf("MD5 checksum error: %v\n", err)
 	}
 
 	response = UploadResponse{

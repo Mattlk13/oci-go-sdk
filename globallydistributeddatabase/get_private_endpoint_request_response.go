@@ -21,6 +21,13 @@ type GetPrivateEndpointRequest struct {
 	// Oracle Sharded Database PrivateEndpoint identifier
 	PrivateEndpointId *string `mandatory:"true" contributesTo:"path" name:"privateEndpointId"`
 
+	// For conditional requests. In the GET call for a resource, set the
+	// `If-None-Match` header to the value of the ETag from a previous GET (or
+	// POST or PUT) response for that resource. The server will return with
+	// either a 304 Not Modified response if the resource has not changed, or a
+	// 200 OK response with the updated representation.
+	IfNoneMatch *string `mandatory:"false" contributesTo:"header" name:"if-none-match"`
+
 	// The client request ID for tracing.
 	OpcRequestId *string `mandatory:"false" contributesTo:"header" name:"opc-request-id"`
 

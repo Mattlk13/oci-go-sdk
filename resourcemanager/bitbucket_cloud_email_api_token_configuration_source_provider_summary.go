@@ -19,9 +19,9 @@ import (
 	"strings"
 )
 
-// GithubAccessTokenConfigurationSourceProviderSummary Summary information for a configuration source provider of the type `GITHUB_ACCESS_TOKEN`.
-// This type corresponds to a configuration source provider in GitHub that is authenticated with a personal access token.
-type GithubAccessTokenConfigurationSourceProviderSummary struct {
+// BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary Summary information for a configuration source provider of the type `BITBUCKET_CLOUD_ACCESS_TOKEN`.
+// This type corresponds to a configuration source provider in Bitbucket Cloud that is authenticated with Atlassian account email and API token.
+type BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary struct {
 
 	// The OCID (https://docs.oracle.com/iaas/Content/General/Concepts/identifiers.htm) of the configuration source provider.
 	Id *string `mandatory:"false" json:"id"`
@@ -60,8 +60,8 @@ type GithubAccessTokenConfigurationSourceProviderSummary struct {
 	// Example: `{orcl-cloud: {free-tier-retain: true}}`
 	SystemTags map[string]map[string]interface{} `mandatory:"false" json:"systemTags"`
 
-	// The GitHub service endpoint.
-	// Example: `https://github.com/`
+	// The Bitbucket cloud service endpoint.
+	// Example: `https://bitbucket.org/`
 	ApiEndpoint *string `mandatory:"false" json:"apiEndpoint"`
 
 	// Current state of the specified configuration source provider.
@@ -71,68 +71,68 @@ type GithubAccessTokenConfigurationSourceProviderSummary struct {
 }
 
 // GetId returns Id
-func (m GithubAccessTokenConfigurationSourceProviderSummary) GetId() *string {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) GetId() *string {
 	return m.Id
 }
 
 // GetCompartmentId returns CompartmentId
-func (m GithubAccessTokenConfigurationSourceProviderSummary) GetCompartmentId() *string {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) GetCompartmentId() *string {
 	return m.CompartmentId
 }
 
 // GetDisplayName returns DisplayName
-func (m GithubAccessTokenConfigurationSourceProviderSummary) GetDisplayName() *string {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) GetDisplayName() *string {
 	return m.DisplayName
 }
 
 // GetDescription returns Description
-func (m GithubAccessTokenConfigurationSourceProviderSummary) GetDescription() *string {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) GetDescription() *string {
 	return m.Description
 }
 
 // GetTimeCreated returns TimeCreated
-func (m GithubAccessTokenConfigurationSourceProviderSummary) GetTimeCreated() *common.SDKTime {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) GetTimeCreated() *common.SDKTime {
 	return m.TimeCreated
 }
 
 // GetLifecycleState returns LifecycleState
-func (m GithubAccessTokenConfigurationSourceProviderSummary) GetLifecycleState() ConfigurationSourceProviderLifecycleStateEnum {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) GetLifecycleState() ConfigurationSourceProviderLifecycleStateEnum {
 	return m.LifecycleState
 }
 
 // GetPrivateServerConfigDetails returns PrivateServerConfigDetails
-func (m GithubAccessTokenConfigurationSourceProviderSummary) GetPrivateServerConfigDetails() *PrivateServerConfigDetails {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) GetPrivateServerConfigDetails() *PrivateServerConfigDetails {
 	return m.PrivateServerConfigDetails
 }
 
 // GetIsMigrationRequired returns IsMigrationRequired
-func (m GithubAccessTokenConfigurationSourceProviderSummary) GetIsMigrationRequired() *bool {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) GetIsMigrationRequired() *bool {
 	return m.IsMigrationRequired
 }
 
 // GetFreeformTags returns FreeformTags
-func (m GithubAccessTokenConfigurationSourceProviderSummary) GetFreeformTags() map[string]string {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) GetFreeformTags() map[string]string {
 	return m.FreeformTags
 }
 
 // GetDefinedTags returns DefinedTags
-func (m GithubAccessTokenConfigurationSourceProviderSummary) GetDefinedTags() map[string]map[string]interface{} {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) GetDefinedTags() map[string]map[string]interface{} {
 	return m.DefinedTags
 }
 
 // GetSystemTags returns SystemTags
-func (m GithubAccessTokenConfigurationSourceProviderSummary) GetSystemTags() map[string]map[string]interface{} {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) GetSystemTags() map[string]map[string]interface{} {
 	return m.SystemTags
 }
 
-func (m GithubAccessTokenConfigurationSourceProviderSummary) String() string {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) String() string {
 	return common.PointerString(m)
 }
 
 // ValidateEnumValue returns an error when providing an unsupported enum value
 // This function is being called during constructing API request process
 // Not recommended for calling this function directly
-func (m GithubAccessTokenConfigurationSourceProviderSummary) ValidateEnumValue() (bool, error) {
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) ValidateEnumValue() (bool, error) {
 	errMessage := []string{}
 
 	if _, ok := GetMappingConfigurationSourceProviderLifecycleStateEnum(string(m.LifecycleState)); !ok && m.LifecycleState != "" {
@@ -145,14 +145,14 @@ func (m GithubAccessTokenConfigurationSourceProviderSummary) ValidateEnumValue()
 }
 
 // MarshalJSON marshals to json representation
-func (m GithubAccessTokenConfigurationSourceProviderSummary) MarshalJSON() (buff []byte, e error) {
-	type MarshalTypeGithubAccessTokenConfigurationSourceProviderSummary GithubAccessTokenConfigurationSourceProviderSummary
+func (m BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary) MarshalJSON() (buff []byte, e error) {
+	type MarshalTypeBitbucketCloudEmailApiTokenConfigurationSourceProviderSummary BitbucketCloudEmailApiTokenConfigurationSourceProviderSummary
 	s := struct {
 		DiscriminatorParam string `json:"configSourceProviderType"`
-		MarshalTypeGithubAccessTokenConfigurationSourceProviderSummary
+		MarshalTypeBitbucketCloudEmailApiTokenConfigurationSourceProviderSummary
 	}{
-		"GITHUB_ACCESS_TOKEN",
-		(MarshalTypeGithubAccessTokenConfigurationSourceProviderSummary)(m),
+		"BITBUCKET_CLOUD_ACCESS_TOKEN",
+		(MarshalTypeBitbucketCloudEmailApiTokenConfigurationSourceProviderSummary)(m),
 	}
 
 	return json.Marshal(&s)
